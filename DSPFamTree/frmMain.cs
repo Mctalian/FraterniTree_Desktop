@@ -574,6 +574,7 @@ namespace FraterniTree
             xmlData += "First=\"" + B.m_First + "\" ";
             xmlData += "IniTerm=\"" + B.m_IniMonth + "\" ";
             xmlData += "IniYear=\"" + B.m_IniYear + "\" ";
+            xmlData += "Active=\"" + B.isActiveBrother.ToString() + "\" ";
 
             xmlData += ">";
 
@@ -595,9 +596,31 @@ namespace FraterniTree
                                       currentParent.Attributes["IniTerm"].Value,
                                       Int32.Parse(currentParent.Attributes["IniYear"].Value));
 
+            if (currentParent.Attributes["Active"] != null)
+            {
+                string val = currentParent.Attributes["Active"].Value;
+                switch (val.ToUpper())
+                {
+                    case "YES":
+                    case "Y":
+                    case "TRUE":
+                    case "T":
+                    case "1":
+                        big.isActiveBrother = true;
+                        break;
+                    default:
+                        big.isActiveBrother = false;
+                        break;
+                }
+            }
+            else
+            {
+                big.isActiveBrother = false;
+            }
+
             big.m_SelectCallback = PopulateBrotherEdit;
             big.m_DeleteCallback = RemoveBrotherFromTree;
-            ttTree.SetToolTip(big.m_Label, "Left Click to Select, Right Click to hide descendents.");
+            ttTree.SetToolTip(big.m_Label, "Left Click to Select, Right Click to Delete, Middle Click to Hide Children.");
 
             foreach (XmlNode child in currentParent.ChildNodes)
             {
@@ -642,7 +665,7 @@ namespace FraterniTree
                 xmlData += "First=\"Charles A.\" ";
                 xmlData += "IniTerm=\"Winter\" ";
                 xmlData += "IniYear=\"1899\" ";
-
+                xmlData += "Active=\"" + false.ToString() + "\" ";
                 xmlData += ">\n";
 
                 // End the Tag
@@ -667,6 +690,27 @@ namespace FraterniTree
                                        currentParent.Attributes["First"].Value,
                                        currentParent.Attributes["IniTerm"].Value,
                                        Int32.Parse(currentParent.Attributes["IniYear"].Value));
+                    if (currentParent.Attributes["Active"] != null)
+                    {
+                        string val = currentParent.Attributes["Active"].Value;
+                        switch (val.ToUpper())
+                        {
+                            case "yes":
+                            case "y":
+                            case "true":
+                            case "t":
+                            case "1":
+                                root.isActiveBrother = true;
+                                break;
+                            default:
+                                root.isActiveBrother = false;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        root.isActiveBrother = false;
+                    }
                     root.m_SelectCallback = PopulateBrotherEdit;
                     root.m_DeleteCallback = RemoveBrotherFromTree;
                 }
