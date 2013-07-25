@@ -155,10 +155,6 @@
     <None Include="Resources\Flags.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DSP_AH.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <None Include="Resources\UpToParent.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
