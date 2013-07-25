@@ -410,21 +410,6 @@ namespace FraterniTree
         {
             splitTreeInfo.Panel2Collapsed = false;
 
-            lblSelectedFirst.Visible = true;
-            lblSelectedLast.Visible = true;
-            lblSelectedIni.Visible = true;
-            lblSelectedBig.Visible = true;
-            lblSelectedLittles.Visible = true;
-            cbSelectedTerm.Visible = true;
-            dtpSelectedYear.Visible = true;
-            tbSelectedFirst.Visible = true;
-            tbSelectedLast.Visible = true;
-            tbSelectedBig.Visible = true;
-            tbSelectedLittles.Visible = true;
-            btnEditSelected.Visible = true;
-            btnApplySelected.Visible = true;
-            btnCancelSelected.Visible = true;
-
             cbSelectedTerm.Enabled = false;
             dtpSelectedYear.Enabled = false;
             tbSelectedFirst.Enabled = false;
@@ -433,6 +418,7 @@ namespace FraterniTree
             tbSelectedLittles.Enabled = false;
             btnApplySelected.Enabled = false;
             btnCancelSelected.Enabled = false;
+            chbActive.Enabled = false;
 
             tbSelectedFirst.Text = b.m_First;
             tbSelectedLast.Text = b.m_Last;
@@ -458,6 +444,9 @@ namespace FraterniTree
             {
                 cbSelectedTerm.SelectedItem = b.m_IniMonth;
             }
+
+            chbActive.Checked = b.isActiveBrother;
+
             if (Selected != null && Selected != b)
             {
                 Selected.m_Label.BackColor = System.Drawing.Color.White;
@@ -469,21 +458,6 @@ namespace FraterniTree
 
         private void HideSelectedEdit()
         {
-            lblSelectedFirst.Visible = false;
-            lblSelectedLast.Visible = false;
-            lblSelectedIni.Visible = false;
-            lblSelectedBig.Visible = false;
-            lblSelectedLittles.Visible = false;
-            cbSelectedTerm.Visible = false;
-            dtpSelectedYear.Visible = false;
-            tbSelectedFirst.Visible = false;
-            tbSelectedLast.Visible = false;
-            tbSelectedBig.Visible = false;
-            tbSelectedLittles.Visible = false;
-            btnEditSelected.Visible = false;
-            btnApplySelected.Visible = false;
-            btnCancelSelected.Visible = false;
-
             splitTreeInfo.Panel2Collapsed = true;
         }
 
@@ -1150,6 +1124,9 @@ namespace FraterniTree
             }
 
             Selected.m_IniYear = dtpSelectedYear.Value.Year;
+
+            Selected.isActiveBrother = chbActive.Checked;
+
             PopulateBrotherEdit(Selected);
             RefreshNoBigListBox(root);
             cbTreeParent.Sorted = true;
@@ -1175,6 +1152,7 @@ namespace FraterniTree
             cbSelectedTerm.Enabled = true;
             btnApplySelected.Enabled = true;
             btnCancelSelected.Enabled = true;
+            chbActive.Enabled = true;
         }
 
         #endregion

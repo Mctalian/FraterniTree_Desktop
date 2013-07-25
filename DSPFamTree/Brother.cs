@@ -19,6 +19,7 @@ namespace FraterniTree
         public string  m_First;
         public string  m_IniMonth;
         public int     m_IniYear;
+        public bool isActiveBrother = false;
         public Label   m_Label = new Label();
         public Action<Brother> m_SelectCallback = null;
         public Action<Brother> m_DeleteCallback = null;
@@ -29,7 +30,6 @@ namespace FraterniTree
         /// Reference to a Node object which represents all relational data and methods.
         /// </summary>
         private Node m_NodeRef;
-
 
         #region Constructors
 
@@ -111,6 +111,7 @@ namespace FraterniTree
 
             return found;
         }
+
 
         #region GUI Label Methods
 
