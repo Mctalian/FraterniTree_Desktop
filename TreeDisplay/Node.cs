@@ -166,6 +166,16 @@ namespace TreeDisplay
             this.m_NumChildren++;
         }
 
+        public void RemoveNode()
+        {
+            for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                this.Parent().AddChild(this[i]);
+            }
+
+            this.Parent().RemoveChild(this);
+        }
+
         private void RemoveChild(Node Child)
         {
             if (Child == this.FirstChild())
