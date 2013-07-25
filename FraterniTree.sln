@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraterniTree", "DSPFamTree\FraterniTree.csproj", "{D39BEDA2-B520-4251-AA42-6097365F8BB8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{15664CED-769B-4BB2-90FA-963D22894ACD} = {15664CED-769B-4BB2-90FA-963D22894ACD}
-		{3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6} = {3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeDisplay", "TreeDisplay\TreeDisplay.csproj", "{3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistryAccess", "RegistryAccess\RegistryAccess.csproj", "{15664CED-769B-4BB2-90FA-963D22894ACD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataProtectionSimple", "DataProtectionSimple\DataProtectionSimple.csproj", "{034CBCC9-74A4-4B95-A896-DB97BCCCB6FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraterniTree", "FraterniTree\FraterniTree.csproj", "{D39BEDA2-B520-4251-AA42-6097365F8BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,6 +27,10 @@ Global
 		{034CBCC9-74A4-4B95-A896-DB97BCCCB6FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{034CBCC9-74A4-4B95-A896-DB97BCCCB6FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{034CBCC9-74A4-4B95-A896-DB97BCCCB6FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D39BEDA2-B520-4251-AA42-6097365F8BB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
