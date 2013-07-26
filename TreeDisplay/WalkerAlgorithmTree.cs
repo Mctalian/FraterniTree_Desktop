@@ -74,7 +74,14 @@ namespace TreeDisplay
         {
             Node LeftMost;
             Node RightMost;
+            Node LeftMostUnignored = null;
+            Node RightMostUnignored = null;
             float Midpoint;
+
+            if (ThisNode.IsIgnored())
+            {
+                return;
+            }
 
             ThisNode.m_Prev = GetPrevNodeAtLevel(CurrentLevel);
 
@@ -86,9 +93,16 @@ namespace TreeDisplay
             {
                 if (ThisNode.HasLeftSibling())
                 {
-                    ThisNode.m_Prelim = ThisNode.LeftSibling().m_Prelim +
-                                    (float)SiblingSeparation +
-                                    MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
+                    if (!ThisNode.LeftSibling().IsIgnored())
+                    {
+                        ThisNode.m_Prelim = ThisNode.LeftSibling().m_Prelim +
+                                        (float)SiblingSeparation +
+                                        MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
+                    }
+                    else
+                    {
+                        ThisNode.m_Prelim = 0;
+                    }
                 }
                 else
                 {
@@ -99,23 +113,58 @@ namespace TreeDisplay
             {
                 RightMost = ThisNode.FirstChild();
                 LeftMost = RightMost;
-                FirstWalk(LeftMost, CurrentLevel + 1);
+                RightMostUnignored = RightMost;
+                LeftMostUnignored = LeftMost;
+                if (!LeftMost.IsIgnored())
+                {
+                    FirstWalk(LeftMost, CurrentLevel + 1);
+                }
 
                 while (RightMost.HasRightSibling())
                 {
                     RightMost = RightMost.RightSibling();
-                    FirstWalk(RightMost, CurrentLevel + 1);
+                    if (!RightMost.IsIgnored())
+                    {
+                        RightMostUnignored = RightMost;
+                        FirstWalk(RightMost, CurrentLevel + 1);
+                    }
+                    if (LeftMostUnignored.IsIgnored())
+                    {
+                        LeftMostUnignored = RightMost;
+                    }
                 }
-
-                Midpoint = ((float)(LeftMost.m_Prelim + RightMost.m_Prelim) / (float)(2));
+                if (!LeftMost.IsIgnored() && !RightMost.IsIgnored() && RightMost == RightMostUnignored)
+                {
+                    Midpoint = ((float)(LeftMost.m_Prelim + RightMost.m_Prelim) / (float)(2));
+                }
+                else if (LeftMost.IsIgnored() && !RightMost.IsIgnored() && RightMost == RightMostUnignored)
+                {
+                    Midpoint = ((float)(LeftMostUnignored.m_Prelim + RightMost.m_Prelim) / (float)(2));
+                }
+                else if (!LeftMost.IsIgnored())
+                {
+                    Midpoint = ((float)(LeftMost.m_Prelim + RightMostUnignored.m_Prelim) / (float)(2));
+                }
+                else
+                {
+                    Midpoint = ((float)(LeftMostUnignored.m_Prelim + RightMostUnignored.m_Prelim) / (float)(2));
+                }
+                
 
                 if (ThisNode.HasLeftSibling())
                 {
-                    ThisNode.m_Prelim = ThisNode.LeftSibling().m_Prelim +
-                                    (float)SiblingSeparation +
-                                    MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
-                    ThisNode.m_Modifier = ThisNode.m_Prelim - Midpoint;
-                    Apportion(ThisNode, CurrentLevel);
+                    if (!ThisNode.LeftSibling().IsIgnored())
+                    {
+                        ThisNode.m_Prelim = ThisNode.LeftSibling().m_Prelim +
+                                        (float)SiblingSeparation +
+                                        MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
+                        ThisNode.m_Modifier = ThisNode.m_Prelim - Midpoint;
+                        Apportion(ThisNode, CurrentLevel);
+                    }
+                    else
+                    {
+                        ThisNode.m_Prelim = Midpoint;
+                    }  
                 }
                 else
                 {

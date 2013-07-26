@@ -112,6 +112,35 @@ namespace FraterniTree
             return found;
         }
 
+        public bool RecursiveSetIgnoreNode()
+        {
+            bool isThisIgnored = !isActiveBrother;
+            for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                if (isThisIgnored)
+                {
+                    isThisIgnored = ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
+                }
+                else
+                {
+                    // Ignore return, but set descendant nodes accordingly
+                    ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
+                }
+            }
+
+            this.GetNodeRef().SetIgnore(isThisIgnored);
+            return isThisIgnored;
+        }
+
+        public void RecursiveClearIgnoreNode()
+        {
+            this.GetNodeRef().SetIgnore(false);
+            for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveClearIgnoreNode();
+            }
+        }
+
 
         #region GUI Label Methods
 

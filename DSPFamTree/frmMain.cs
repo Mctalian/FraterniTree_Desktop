@@ -243,7 +243,10 @@ namespace FraterniTree
                 parent.GetNodeRef().m_Modifier = 0;
                 parent.m_Label.Visible = false;
                 parent.m_Label.AutoSize = !FixedWidth;
-                pnlTree.Controls.Add(parent.m_Label);
+                if (!parent.GetNodeRef().IsIgnored())
+                {
+                    pnlTree.Controls.Add(parent.m_Label);
+                }
                 if (parent.m_Label.AutoSize)
                 {
                     MaximumWidth = Math.Max(MaximumWidth, parent.m_Label.Width);
@@ -269,6 +272,8 @@ namespace FraterniTree
             HideSelectedEdit();
             UnzoomControls();
 
+            root.RecursiveClearIgnoreNode();
+
             if (Selected != null)
             {
                 Selected.m_Label.BackColor = System.Drawing.Color.White;
@@ -278,7 +283,7 @@ namespace FraterniTree
 
             pnlTree.Controls.Clear();
 
-            if (cbTreeParent.Text != "*All*" && cbTreeParent.Text != "")
+            if (cbTreeParent.Text != "*All*" && cbTreeParent.Text != "*Active Only*" && cbTreeParent.Text != "")
             {
                 TreeRoot = root.FindBrotherByName(cbTreeParent.Text);
             }
@@ -289,6 +294,10 @@ namespace FraterniTree
             else
             {
                 TreeRoot = root;
+                if (cbTreeParent.Text == "*Active Only*")
+                {
+                    TreeRoot.RecursiveSetIgnoreNode();
+                }
             }
 
             Size s = TreeRoot.m_Label.Size;
@@ -1247,7 +1256,7 @@ namespace FraterniTree
 
             if (cbTreeParent.SelectedIndex != -1)
             {
-                if (cbTreeParent.Text != "*All*" && cbTreeParent.Text != "")
+                if (cbTreeParent.Text != "*All*" && cbTreeParent.Text != "*Active Only*" && cbTreeParent.Text != "")
                 {
                     if (root.FindBrotherByName(cbTreeParent.Text).GetNodeRef().HasParent())
                     {
@@ -1380,7 +1389,7 @@ namespace FraterniTree
             {
                 foreach (string bName in cbTreeParent.Items)
                 {
-                    if (bName == "*All*")
+                    if (bName == "*All*" || bName == "*Active Only*")
                     {
                         continue;
                     }
