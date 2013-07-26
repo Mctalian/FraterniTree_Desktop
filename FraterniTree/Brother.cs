@@ -112,6 +112,35 @@ namespace FraterniTree
             return found;
         }
 
+        public bool RecursiveSetIgnoreNode()
+        {
+            bool isThisIgnored = !isActiveBrother;
+            for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                if (isThisIgnored)
+                {
+                    isThisIgnored = ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
+                }
+                else
+                {
+                    // Ignore return, but set descendant nodes accordingly
+                    ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
+                }
+            }
+
+            this.GetNodeRef().SetIgnore(isThisIgnored);
+            return isThisIgnored;
+        }
+
+        public void RecursiveClearIgnoreNode()
+        {
+            this.GetNodeRef().SetIgnore(false);
+            for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveClearIgnoreNode();
+            }
+        }
+
 
         #region GUI Label Methods
 
@@ -182,6 +211,11 @@ namespace FraterniTree
 
         private void m_Label_Paint(object sender, PaintEventArgs e)
         {
+            if (isActiveBrother)
+            {
+                m_Label.ForeColor = Color.White;
+                m_Label.BackColor = Color.DarkGreen;
+            }
             m_Label.Parent.Invalidate();
         }
 
@@ -229,7 +263,7 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                m_Label.BackColor = System.Drawing.Color.SpringGreen;
+                m_Label.Font = new Font(m_Label.Font, FontStyle.Bold);
                 if (m_SelectCallback != null)
                 {
                     m_SelectCallback(this);

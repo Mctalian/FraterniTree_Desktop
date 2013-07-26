@@ -781,7 +781,8 @@
             this.cbTreeParent.Enabled = false;
             this.cbTreeParent.FormattingEnabled = true;
             this.cbTreeParent.Items.AddRange(new object[] {
-            "*All*"});
+            "*All*",
+            "*Active Only*"});
             this.cbTreeParent.Location = new System.Drawing.Point(13, 55);
             this.cbTreeParent.Name = "cbTreeParent";
             this.cbTreeParent.Size = new System.Drawing.Size(204, 21);

@@ -77,6 +77,10 @@ namespace TreeDisplay
         /// Any text that is associated with this node.
         /// </summary>
         private string m_Text;
+        /// <summary>
+        /// Ignore this node and consequently all descendants
+        /// </summary>
+        private bool m_IgnoreNode;
 
         #endregion
 
@@ -351,6 +355,16 @@ namespace TreeDisplay
         public void SetText(string t)
         {
             m_Text = t;
+        }
+
+        public void SetIgnore(bool b)
+        {
+            m_IgnoreNode = b;
+        }
+
+        public bool IsIgnored()
+        {
+            return m_IgnoreNode;
         }
 
         #endregion
