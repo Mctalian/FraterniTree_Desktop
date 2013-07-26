@@ -10,7 +10,7 @@ into existing databases that provide the desired information.
 -  Install [MySQL Connector/NET][mysqlnet] which is a fully-managed ADO.NET driver for MySQL.
 
 ### Setup:  
-1.  Open the Visual Studion Solution and Rebuild All.  
+1.  Open the Visual Studio Solution and Rebuild All.  
 
 ### Running the App
 1.  Run the project "FraterniTree".
