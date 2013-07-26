@@ -19,8 +19,10 @@ namespace FraterniTree
         public string  m_First;
         public string  m_IniMonth;
         public int     m_IniYear;
+        public bool isActiveBrother = false;
         public Label   m_Label = new Label();
-        public Action<Brother> m_Callback = null;
+        public Action<Brother> m_SelectCallback = null;
+        public Action<Brother> m_DeleteCallback = null;
         private bool areChildrenHidden = false;
         private Point lastPos;
 
@@ -28,7 +30,6 @@ namespace FraterniTree
         /// Reference to a Node object which represents all relational data and methods.
         /// </summary>
         private Node m_NodeRef;
-
 
         #region Constructors
 
@@ -111,6 +112,7 @@ namespace FraterniTree
             return found;
         }
 
+
         #region GUI Label Methods
 
         private void ApplyNodeLocationsToLabel()
@@ -166,6 +168,8 @@ namespace FraterniTree
             }
         }
 
+        #region GUI Event Handlers
+
         private void m_Label_ParentChanged(object sender, EventArgs e)
         {
             // Does nothing
@@ -183,8 +187,14 @@ namespace FraterniTree
 
         private void m_Label_MouseUp(object sender, MouseEventArgs e)
         {
-            m_Label.Capture = false;
-            m_Label.Parent.Invalidate();
+            if (m_Label != null)
+            {
+                m_Label.Capture = false;
+                if (m_Label.Parent != null)
+                {
+                    m_Label.Parent.Invalidate();
+                }
+            }
         }
 
         private void m_Label_MouseMove(object sender, MouseEventArgs e)
@@ -215,21 +225,21 @@ namespace FraterniTree
             }
         }
 
-        void m_Label_MouseClick(object sender, MouseEventArgs e)
+        private void m_Label_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
                 m_Label.BackColor = System.Drawing.Color.SpringGreen;
-                if (m_Callback != null)
+                if (m_SelectCallback != null)
                 {
-                    m_Callback(this);
+                    m_SelectCallback(this);
                 }
                 else
                 {
                     throw new NotImplementedException();
                 }
             }
-            else if (e.Button == MouseButtons.Right)
+            else if (e.Button == MouseButtons.Middle)
             {
                 if (this.GetNodeRef().FirstChild() == null)
                 {
@@ -254,7 +264,35 @@ namespace FraterniTree
                     }
                 }
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                DialogResult res = MessageBox.Show("Are you sure you want to delete this node: " + GetFullName() + "?\n\n" +
+                                                   "All its children nodes will be re-assigned to the parent.",
+                                                   "Node Removal Confirmation",
+                                                   MessageBoxButtons.YesNo,
+                                                   MessageBoxIcon.Warning);
+                if (res == DialogResult.Yes)
+                {
+                    this.GetNodeRef().RemoveNode();
+                    this.m_Label.Dispose();
+                    this.m_Label = null;
+                    if (m_DeleteCallback != null)
+                    {
+                        m_DeleteCallback(this);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    // Do Nothing
+                }
+            }
         }
+
+        #endregion
 
         #endregion
 
