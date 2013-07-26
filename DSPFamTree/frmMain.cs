@@ -276,7 +276,7 @@ namespace FraterniTree
 
             if (Selected != null)
             {
-                Selected.m_Label.BackColor = System.Drawing.Color.White;
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
             }
 
             Selected = null;
@@ -458,7 +458,7 @@ namespace FraterniTree
 
             if (Selected != null && Selected != b)
             {
-                Selected.m_Label.BackColor = System.Drawing.Color.White;
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
             }
             Selected = b;
 
@@ -1355,7 +1355,7 @@ namespace FraterniTree
             if (Selected != null)
             {
                 HideSelectedEdit();
-                Selected.m_Label.BackColor = System.Drawing.Color.White;
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
                 Selected = null;
             }
         }

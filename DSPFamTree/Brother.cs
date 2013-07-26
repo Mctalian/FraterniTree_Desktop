@@ -211,6 +211,11 @@ namespace FraterniTree
 
         private void m_Label_Paint(object sender, PaintEventArgs e)
         {
+            if (isActiveBrother)
+            {
+                m_Label.ForeColor = Color.White;
+                m_Label.BackColor = Color.DarkGreen;
+            }
             m_Label.Parent.Invalidate();
         }
 
@@ -258,7 +263,7 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                m_Label.BackColor = System.Drawing.Color.SpringGreen;
+                m_Label.Font = new Font(m_Label.Font, FontStyle.Bold);
                 if (m_SelectCallback != null)
                 {
                     m_SelectCallback(this);
