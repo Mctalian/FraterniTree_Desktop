@@ -241,7 +241,6 @@ namespace FraterniTree
                 int count = parent.GetNodeRef().GetNumberOfChildren();
                 parent.GetNodeRef().m_Prelim = 0;
                 parent.GetNodeRef().m_Modifier = 0;
-                parent.m_Label.Visible = false;
                 parent.m_Label.AutoSize = !FixedWidth;
                 if (!parent.GetNodeRef().IsIgnored())
                 {
@@ -271,6 +270,8 @@ namespace FraterniTree
         {
             HideSelectedEdit();
             UnzoomControls();
+
+            pnlTree.Visible = false;
 
             root.RecursiveClearIgnoreNode();
 
@@ -345,14 +346,6 @@ namespace FraterniTree
                 foreach (Control c in pnlTree.Controls)
                 {
                     c.Location = new Point(c.Location.X + leastPosX, c.Location.Y + leastPosY);
-                    c.Visible = true;
-                }
-            }
-            else
-            {
-                foreach (Control c in pnlTree.Controls)
-                {
-                    c.Visible = true;
                 }
             }
 
@@ -368,6 +361,7 @@ namespace FraterniTree
                     }
                 }
             }
+            pnlTree.Visible = true;
         }
 
         private void SetLabelWidths(Brother parent, int g)
