@@ -425,16 +425,16 @@ namespace FraterniTree
 
             tbSelectedFirst.Text = b.m_First;
             tbSelectedLast.Text = b.m_Last;
-            tbSelectedBig.Text = b.GetNodeRef().HasParent() ? b.GetNodeRef().Parent().GetText() : "";
+            tbSelectedBig.Text = b.GetNodeRef().HasParent() ? ((Brother)(b.GetNodeRef().Parent().GetUserData())).GetFullName() : "";
             if (b.GetNodeRef().HasChild())
             {
-                tbSelectedLittles.Text = b.GetNodeRef().FirstChild().GetText();
-
                 Brother l = (Brother)(b.GetNodeRef().FirstChild().GetUserData());
+                tbSelectedLittles.Text = l.GetFullName();
+
                 for (int i = 1; i < b.GetNodeRef().GetNumberOfChildren(); i++)
                 {
-                    tbSelectedLittles.Text += Environment.NewLine + l.GetNodeRef().RightSibling().GetText();
                     l = (Brother)(l.GetNodeRef().RightSibling().GetUserData());
+                    tbSelectedLittles.Text += Environment.NewLine + l.GetFullName();
                 }
             }
             else
@@ -530,7 +530,7 @@ namespace FraterniTree
 
                         if (currentParent.GetNodeRef().HasParent())
                         {
-                            cmd.Parameters.AddWithValue("@Big", currentParent.GetNodeRef().Parent().GetText());
+                            cmd.Parameters.AddWithValue("@Big", ((Brother)(currentParent.GetNodeRef().Parent().GetUserData())).GetFullName());
                         }
                         else
                         {
@@ -538,7 +538,7 @@ namespace FraterniTree
                         }
                         if (currentParent.GetNodeRef().HasRightSibling())
                         {
-                            cmd.Parameters.AddWithValue("@NextSibling", currentParent.GetNodeRef().RightSibling().GetText());
+                            cmd.Parameters.AddWithValue("@NextSibling", ((Brother)(currentParent.GetNodeRef().RightSibling().GetUserData())).GetFullName());
                         }
                         else
                         {
@@ -546,7 +546,7 @@ namespace FraterniTree
                         }
                         if (currentParent.GetNodeRef().HasChild())
                         {
-                            cmd.Parameters.AddWithValue("@FirstLittle", currentParent.GetNodeRef().FirstChild().GetText());
+                            cmd.Parameters.AddWithValue("@FirstLittle", ((Brother)(currentParent.GetNodeRef().FirstChild().GetUserData())).GetFullName());
                         }
                         else
                         {

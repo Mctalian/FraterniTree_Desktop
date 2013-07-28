@@ -74,10 +74,6 @@ namespace TreeDisplay
         /// </summary>
         private Action m_Callback = null;
         /// <summary>
-        /// Any text that is associated with this node.
-        /// </summary>
-        private string m_Text;
-        /// <summary>
         /// Ignore this node and consequently all descendants
         /// </summary>
         private bool m_IgnoreNode;
@@ -107,7 +103,7 @@ namespace TreeDisplay
 
         public Node(Node p, Node o, Node l, Node r,
                     int nC, int x, int y, int w, int h,
-                    Node prev, float prelim, float mod, string txt)
+                    Node prev, float prelim, float mod)
         {
             m_Parent = p;
             m_Offspring = o;
@@ -121,10 +117,9 @@ namespace TreeDisplay
             m_Prev = prev;
             m_Prelim = prelim;
             m_Modifier = mod;
-            m_Text = txt;
         }
 
-        public Node() : this(null, null, null, null, 0, 0, 0, 0, 0, null, 0, 0, "")
+        public Node() : this(null, null, null, null, 0, 0, 0, 0, 0, null, 0, 0)
         {
         }
 
@@ -345,16 +340,6 @@ namespace TreeDisplay
             {
                 this[i].ExecuteCallback();
             }
-        }
-
-        public string GetText()
-        {
-            return m_Text;
-        }
-
-        public void SetText(string t)
-        {
-            m_Text = t;
         }
 
         public void SetIgnore(bool b)
