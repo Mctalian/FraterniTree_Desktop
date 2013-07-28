@@ -73,7 +73,6 @@ namespace FraterniTree
             m_NodeRef = new Node();
             m_NodeRef.SetWidth(m_Label.Width);
             m_NodeRef.SetHeight(m_Label.Height);
-            m_NodeRef.SetText(m_Label.Text);
             m_NodeRef.SetUserData(this);
             m_NodeRef.SetCallback(ApplyNodeLocationsToLabel);
         }
