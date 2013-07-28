@@ -225,9 +225,8 @@
             this.splitTreeInfo.Panel2.Controls.Add(this.tbSelectedLast);
             this.splitTreeInfo.Panel2.Controls.Add(this.lblSelectedFirst);
             this.splitTreeInfo.Panel2.Controls.Add(this.tbSelectedFirst);
-            this.splitTreeInfo.Panel2Collapsed = true;
             this.splitTreeInfo.Size = new System.Drawing.Size(561, 576);
-            this.splitTreeInfo.SplitterDistance = 403;
+            this.splitTreeInfo.SplitterDistance = 399;
             this.splitTreeInfo.TabIndex = 0;
             // 
             // pnlTree
@@ -255,6 +254,7 @@
             this.chbActive.TabIndex = 34;
             this.chbActive.Text = "Currently Active?";
             this.chbActive.UseVisualStyleBackColor = true;
+            this.chbActive.CheckedChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // tbSelectedLittles
             // 
@@ -266,6 +266,7 @@
             this.tbSelectedLittles.Name = "tbSelectedLittles";
             this.tbSelectedLittles.Size = new System.Drawing.Size(126, 115);
             this.tbSelectedLittles.TabIndex = 33;
+            this.tbSelectedLittles.TextChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // lblSelectedLittles
             // 
@@ -294,6 +295,7 @@
             this.tbSelectedBig.Name = "tbSelectedBig";
             this.tbSelectedBig.Size = new System.Drawing.Size(127, 20);
             this.tbSelectedBig.TabIndex = 30;
+            this.tbSelectedBig.TextChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // btnCancelSelected
             // 
@@ -339,6 +341,7 @@
             this.dtpSelectedYear.ShowUpDown = true;
             this.dtpSelectedYear.Size = new System.Drawing.Size(51, 20);
             this.dtpSelectedYear.TabIndex = 25;
+            this.dtpSelectedYear.ValueChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // cbSelectedTerm
             // 
@@ -353,6 +356,7 @@
             this.cbSelectedTerm.Name = "cbSelectedTerm";
             this.cbSelectedTerm.Size = new System.Drawing.Size(76, 21);
             this.cbSelectedTerm.TabIndex = 24;
+            this.cbSelectedTerm.SelectedIndexChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // lblSelectedIni
             // 
@@ -379,6 +383,7 @@
             this.tbSelectedLast.Name = "tbSelectedLast";
             this.tbSelectedLast.Size = new System.Drawing.Size(120, 20);
             this.tbSelectedLast.TabIndex = 21;
+            this.tbSelectedLast.TextChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // lblSelectedFirst
             // 
@@ -396,6 +401,7 @@
             this.tbSelectedFirst.Name = "tbSelectedFirst";
             this.tbSelectedFirst.Size = new System.Drawing.Size(113, 20);
             this.tbSelectedFirst.TabIndex = 19;
+            this.tbSelectedFirst.TextChanged += new System.EventHandler(this.SelectedEdit_ValueChanged);
             // 
             // dtpIniYear
             // 

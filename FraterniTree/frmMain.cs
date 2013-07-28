@@ -72,6 +72,7 @@ namespace FraterniTree
         private bool DisplayApex    = false;
         private bool FixedWidth     = false;
         private bool WriteBackReady = false;
+        private bool IsSelectedEdit = false;
         #endregion
 
         #endregion
@@ -411,6 +412,8 @@ namespace FraterniTree
 
         private void PopulateBrotherEdit(Brother b)
         {
+            IsSelectedEdit = false;
+
             splitTreeInfo.Panel2Collapsed = false;
 
             cbSelectedTerm.Enabled = false;
@@ -462,6 +465,40 @@ namespace FraterniTree
         private void HideSelectedEdit()
         {
             splitTreeInfo.Panel2Collapsed = true;
+        }
+
+        private bool IsSelectedDataEdited()
+        {
+            if (tbSelectedFirst.Text != Selected.m_First)
+            {
+                return true;
+            }
+
+            if (tbSelectedLast.Text != Selected.m_Last)
+            {
+                return true;
+            }
+
+            if (tbSelectedBig.Text != ((Brother)(Selected.GetNodeRef().Parent().GetUserData())).GetFullName())
+            {
+                return true;
+            }
+
+            string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            if (littles.Length != Selected.GetNodeRef().GetNumberOfChildren())
+            {
+                return true;
+            }
+            else
+            {
+                for (int i = Selected.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+
+                }
+            }
+            
+
+            return false;
         }
 
         #endregion
@@ -1197,7 +1234,7 @@ namespace FraterniTree
             tbSelectedLittles.Enabled = true;
             dtpSelectedYear.Enabled = true;
             cbSelectedTerm.Enabled = true;
-            btnApplySelected.Enabled = true;
+            btnApplySelected.Enabled = false;
             btnCancelSelected.Enabled = true;
             chbActive.Enabled = true;
         }
@@ -1638,6 +1675,12 @@ namespace FraterniTree
 
         #endregion
 
+        private void SelectedEdit_ValueChanged(object sender, EventArgs e)
+        {
+            IsSelectedEdit = IsSelectedDataEdited();
+        }
+
         #endregion
+ 
     }
 }
