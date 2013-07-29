@@ -278,7 +278,7 @@ namespace FraterniTree
 
             if (Selected != null)
             {
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, Selected.m_Label.Font.Style & ~FontStyle.Bold);
             }
 
             Selected = null;
@@ -429,7 +429,7 @@ namespace FraterniTree
             if (Selected != null && Selected != b)
             {
                 int oldWidth = Selected.m_Label.Width;
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, Selected.m_Label.Font.Style & ~FontStyle.Bold);
                 Selected.m_Label.Refresh();
                 Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth- Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
             }
@@ -1403,7 +1403,7 @@ namespace FraterniTree
             {
                 HideSelectedEdit();
                 int oldWidth = Selected.m_Label.Width;
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, Selected.m_Label.Font.Style & ~FontStyle.Bold);
                 Selected.m_Label.Refresh();
                 Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth - Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
                 Selected = null;
