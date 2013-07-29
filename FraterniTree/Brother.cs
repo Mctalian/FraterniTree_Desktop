@@ -185,7 +185,18 @@ namespace FraterniTree
         {
             if (b.m_Label.Parent != null)
             {
-                b.m_Label.Visible = !b.m_Label.Visible;
+                if (((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Parent != null)
+                {
+                    b.m_Label.Visible = ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Visible && !((Brother)(b.GetNodeRef().Parent().GetUserData())).areChildrenHidden;
+                }
+                else
+                {
+                    b.m_Label.Visible = !b.m_Label.Visible;
+                }
+            }
+            else
+            {
+                b.m_Label.Visible = !((Brother)(b.GetNodeRef().Parent().GetUserData())).areChildrenHidden;
             }
             if (!b.areChildrenHidden)
             {
@@ -215,6 +226,14 @@ namespace FraterniTree
                 m_Label.ForeColor = Color.White;
                 m_Label.BackColor = Color.DarkGreen;
             }
+
+            Brother parent = ((Brother)(this.GetNodeRef().Parent().GetUserData()));
+
+            if (parent.m_Label.Parent != null && !parent.m_Label.Visible)
+            {
+                m_Label.Visible = parent.m_Label.Visible && !parent.areChildrenHidden;
+            }
+
             m_Label.Parent.Invalidate();
         }
 
@@ -263,7 +282,7 @@ namespace FraterniTree
             if (e.Button == MouseButtons.Left)
             {
                 int oldWidth = m_Label.Width;
-                m_Label.Font = new Font(m_Label.Font, FontStyle.Bold);
+                m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style | FontStyle.Bold);
                 m_Label.Refresh();
                 m_Label.Location = new Point(m_Label.Location.X - (m_Label.Width - oldWidth) / 2, m_Label.Location.Y);
                 if (m_SelectCallback != null)
@@ -286,12 +305,12 @@ namespace FraterniTree
                 {
                     if (firstChild.m_Label.Visible)
                     {
-                        this.m_Label.Text += "*";
+                        m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style | FontStyle.Italic);
                         areChildrenHidden = true;
                     }
                     else
                     {
-                        this.m_Label.Text = this.GetFullName();
+                        m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style & ~FontStyle.Italic);
                         areChildrenHidden = false;
                     }
                     for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
