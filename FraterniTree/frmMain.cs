@@ -122,6 +122,7 @@ namespace FraterniTree
                         tmpBig = new Brother(bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
                         tmpBig.m_SelectCallback = PopulateBrotherEdit;
                         tmpBig.m_DeleteCallback = RemoveBrotherFromTree;
+                        tmpBig.m_ShiftCallback = BoundsCheckShift;
                         root.GetNodeRef().AddChild(tmpBig.GetNodeRef());
                         if (!cbTreeParent.Items.Contains(tmpBig.GetFullName()))
                         {
@@ -155,6 +156,7 @@ namespace FraterniTree
                         newB = new Brother(last, first, month, year);
                         newB.m_SelectCallback = PopulateBrotherEdit;
                         newB.m_DeleteCallback = RemoveBrotherFromTree;
+                        newB.m_ShiftCallback = BoundsCheckShift;
                         tmpBig.GetNodeRef().AddChild(newB.GetNodeRef());
                     }
 
@@ -263,6 +265,32 @@ namespace FraterniTree
                 for (int i = 0; i < count; i++)
                 {
                     AddLabelsToPanel((Brother)parent.GetNodeRef()[i].GetUserData(), g - 1);
+                }
+            }
+        }
+
+        private void BoundsCheckShift()
+        {
+            int leastPosX = 0;
+            int leastPosY = 0;
+
+            foreach (Control c in pnlTree.Controls)
+            {
+                if (c.Location.X < 0)
+                {
+                    leastPosX = Math.Max(leastPosX, -c.Location.X);
+                }
+                if (c.Location.Y < 0)
+                {
+                    leastPosY = Math.Max(leastPosY, -c.Location.Y);
+                }
+            }
+
+            if (leastPosX > 0 || leastPosY > 0)
+            {
+                foreach (Control c in pnlTree.Controls)
+                {
+                    c.Location = new Point(c.Location.X + leastPosX, c.Location.Y + leastPosY);
                 }
             }
         }
@@ -676,6 +704,7 @@ namespace FraterniTree
 
             big.m_SelectCallback = PopulateBrotherEdit;
             big.m_DeleteCallback = RemoveBrotherFromTree;
+            big.m_ShiftCallback = BoundsCheckShift;
             ttTree.SetToolTip(big.m_Label, "Left Click to Select, Right Click to Delete, Middle Click to Hide Children.");
 
             foreach (XmlNode child in currentParent.ChildNodes)
@@ -769,6 +798,7 @@ namespace FraterniTree
                     }
                     root.m_SelectCallback = PopulateBrotherEdit;
                     root.m_DeleteCallback = RemoveBrotherFromTree;
+                    root.m_ShiftCallback = BoundsCheckShift;
                 }
                 foreach (XmlNode child in currentParent.ChildNodes)
                 {
@@ -920,6 +950,7 @@ namespace FraterniTree
             this.Text = GenderDependentName + "Tree" + (XmlParentNodeName != "" ? " - " + XmlParentNodeName : "");
             root.m_SelectCallback = PopulateBrotherEdit;
             root.m_DeleteCallback = RemoveBrotherFromTree;
+            root.m_ShiftCallback  = BoundsCheckShift;
             if (!bIsXml)
             {
                 WriteBackReady = true;
@@ -965,6 +996,7 @@ namespace FraterniTree
                 tmpBig = new Brother(bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
                 tmpBig.m_SelectCallback = PopulateBrotherEdit;
                 tmpBig.m_DeleteCallback = RemoveBrotherFromTree;
+                tmpBig.m_ShiftCallback = BoundsCheckShift;
                 root.GetNodeRef().AddChild(tmpBig.GetNodeRef());
                 if (!cbTreeParent.Items.Contains(tmpBig.GetFullName()))
                 {
@@ -989,6 +1021,7 @@ namespace FraterniTree
                 newB = new Brother(last, first, month, year);
                 newB.m_SelectCallback = PopulateBrotherEdit;
                 newB.m_DeleteCallback = RemoveBrotherFromTree;
+                newB.m_ShiftCallback = BoundsCheckShift;
                 tmpBig.GetNodeRef().AddChild(newB.GetNodeRef());
             }
 
@@ -1018,6 +1051,7 @@ namespace FraterniTree
                     litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", newB.m_IniYear + 1);
                     litt.m_SelectCallback = PopulateBrotherEdit;
                     litt.m_DeleteCallback = RemoveBrotherFromTree;
+                    litt.m_ShiftCallback  = BoundsCheckShift;
                     newB.GetNodeRef().AddChild(litt.GetNodeRef());
                 }
                 cbTreeParent.Items.Add(litt.GetFullName());
@@ -1150,6 +1184,7 @@ namespace FraterniTree
                     tmp = new Brother(tbSelectedBig.Text.Substring(space + 1), tbSelectedBig.Text.Substring(0, space), "Fall", 1920);
                     tmp.m_SelectCallback = PopulateBrotherEdit;
                     tmp.m_DeleteCallback = RemoveBrotherFromTree;
+                    tmp.m_ShiftCallback = BoundsCheckShift;
                     root.GetNodeRef().AddChild(tmp.GetNodeRef());
                     tmp.GetNodeRef().AddChild(Selected.GetNodeRef());
                     RefreshNoBigListBox(root);
@@ -1206,6 +1241,7 @@ namespace FraterniTree
                         litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", Selected.m_IniYear + 1);
                         litt.m_SelectCallback = PopulateBrotherEdit;
                         litt.m_DeleteCallback = RemoveBrotherFromTree;
+                        litt.m_ShiftCallback = BoundsCheckShift;
                         Selected.GetNodeRef().AddChild(litt.GetNodeRef());
                     }
                     if (!cbTreeParent.Items.Contains(litt.GetFullName()))
