@@ -426,6 +426,15 @@ namespace FraterniTree
             btnCancelSelected.Enabled = false;
             chbActive.Enabled = false;
 
+            if (Selected != null && Selected != b)
+            {
+                int oldWidth = Selected.m_Label.Width;
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Refresh();
+                Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth- Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
+            }
+            Selected = b;
+
             tbSelectedFirst.Text = b.m_First;
             tbSelectedLast.Text = b.m_Last;
             tbSelectedBig.Text = b.GetNodeRef().HasParent() ? ((Brother)(b.GetNodeRef().Parent().GetUserData())).GetFullName() : "";
@@ -452,12 +461,6 @@ namespace FraterniTree
             }
 
             chbActive.Checked = b.isActiveBrother;
-
-            if (Selected != null && Selected != b)
-            {
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
-            }
-            Selected = b;
 
             btnEditSelected.Enabled = true;
         }
@@ -493,8 +496,21 @@ namespace FraterniTree
             {
                 for (int i = Selected.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
                 {
-
+                    if (!littles.Contains(((Brother)(Selected.GetNodeRef()[i].GetUserData())).GetFullName()))
+                    {
+                        return true;
+                    }
                 }
+            }
+
+            if (dtpSelectedYear.Value.Year != Selected.m_IniYear)
+            {
+                return true;
+            }
+
+            if (cbSelectedTerm.Text != Selected.m_IniMonth)
+            {
+                return true;
             }
             
 
@@ -1386,7 +1402,10 @@ namespace FraterniTree
             if (Selected != null)
             {
                 HideSelectedEdit();
+                int oldWidth = Selected.m_Label.Width;
                 Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Refresh();
+                Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth - Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
                 Selected = null;
             }
         }
@@ -1678,6 +1697,14 @@ namespace FraterniTree
         private void SelectedEdit_ValueChanged(object sender, EventArgs e)
         {
             IsSelectedEdit = IsSelectedDataEdited();
+            if (IsSelectedEdit)
+            {
+                btnApplySelected.Enabled = true;
+            }
+            else
+            {
+                btnApplySelected.Enabled = false;
+            }
         }
 
         #endregion

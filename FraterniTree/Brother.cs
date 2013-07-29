@@ -262,7 +262,10 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
+                int oldWidth = m_Label.Width;
                 m_Label.Font = new Font(m_Label.Font, FontStyle.Bold);
+                m_Label.Refresh();
+                m_Label.Location = new Point(m_Label.Location.X - (m_Label.Width - oldWidth) / 2, m_Label.Location.Y);
                 if (m_SelectCallback != null)
                 {
                     m_SelectCallback(this);

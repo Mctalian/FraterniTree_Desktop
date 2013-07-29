@@ -225,6 +225,7 @@
             this.splitTreeInfo.Panel2.Controls.Add(this.tbSelectedLast);
             this.splitTreeInfo.Panel2.Controls.Add(this.lblSelectedFirst);
             this.splitTreeInfo.Panel2.Controls.Add(this.tbSelectedFirst);
+            this.splitTreeInfo.Panel2Collapsed = true;
             this.splitTreeInfo.Size = new System.Drawing.Size(561, 576);
             this.splitTreeInfo.SplitterDistance = 399;
             this.splitTreeInfo.TabIndex = 0;
