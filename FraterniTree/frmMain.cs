@@ -72,6 +72,7 @@ namespace FraterniTree
         private bool DisplayApex    = false;
         private bool FixedWidth     = false;
         private bool WriteBackReady = false;
+        private bool IsSelectedEdit = false;
         #endregion
 
         #endregion
@@ -411,6 +412,8 @@ namespace FraterniTree
 
         private void PopulateBrotherEdit(Brother b)
         {
+            IsSelectedEdit = false;
+
             splitTreeInfo.Panel2Collapsed = false;
 
             cbSelectedTerm.Enabled = false;
@@ -422,6 +425,15 @@ namespace FraterniTree
             btnApplySelected.Enabled = false;
             btnCancelSelected.Enabled = false;
             chbActive.Enabled = false;
+
+            if (Selected != null && Selected != b)
+            {
+                int oldWidth = Selected.m_Label.Width;
+                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Refresh();
+                Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth- Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
+            }
+            Selected = b;
 
             tbSelectedFirst.Text = b.m_First;
             tbSelectedLast.Text = b.m_Last;
@@ -450,18 +462,59 @@ namespace FraterniTree
 
             chbActive.Checked = b.isActiveBrother;
 
-            if (Selected != null && Selected != b)
-            {
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
-            }
-            Selected = b;
-
             btnEditSelected.Enabled = true;
         }
 
         private void HideSelectedEdit()
         {
             splitTreeInfo.Panel2Collapsed = true;
+        }
+
+        private bool IsSelectedDataEdited()
+        {
+            if (tbSelectedFirst.Text != Selected.m_First)
+            {
+                return true;
+            }
+
+            if (tbSelectedLast.Text != Selected.m_Last)
+            {
+                return true;
+            }
+
+            if (tbSelectedBig.Text != ((Brother)(Selected.GetNodeRef().Parent().GetUserData())).GetFullName())
+            {
+                return true;
+            }
+
+            string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            if (littles.Length != Selected.GetNodeRef().GetNumberOfChildren())
+            {
+                return true;
+            }
+            else
+            {
+                for (int i = Selected.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+                    if (!littles.Contains(((Brother)(Selected.GetNodeRef()[i].GetUserData())).GetFullName()))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            if (dtpSelectedYear.Value.Year != Selected.m_IniYear)
+            {
+                return true;
+            }
+
+            if (cbSelectedTerm.Text != Selected.m_IniMonth)
+            {
+                return true;
+            }
+            
+
+            return false;
         }
 
         #endregion
@@ -1197,7 +1250,7 @@ namespace FraterniTree
             tbSelectedLittles.Enabled = true;
             dtpSelectedYear.Enabled = true;
             cbSelectedTerm.Enabled = true;
-            btnApplySelected.Enabled = true;
+            btnApplySelected.Enabled = false;
             btnCancelSelected.Enabled = true;
             chbActive.Enabled = true;
         }
@@ -1349,7 +1402,10 @@ namespace FraterniTree
             if (Selected != null)
             {
                 HideSelectedEdit();
+                int oldWidth = Selected.m_Label.Width;
                 Selected.m_Label.Font = new Font(Selected.m_Label.Font, FontStyle.Regular);
+                Selected.m_Label.Refresh();
+                Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth - Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
                 Selected = null;
             }
         }
@@ -1638,6 +1694,20 @@ namespace FraterniTree
 
         #endregion
 
+        private void SelectedEdit_ValueChanged(object sender, EventArgs e)
+        {
+            IsSelectedEdit = IsSelectedDataEdited();
+            if (IsSelectedEdit)
+            {
+                btnApplySelected.Enabled = true;
+            }
+            else
+            {
+                btnApplySelected.Enabled = false;
+            }
+        }
+
         #endregion
+ 
     }
 }
