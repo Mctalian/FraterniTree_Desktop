@@ -23,6 +23,7 @@ namespace FraterniTree
         public Label   m_Label = new Label();
         public Action<Brother> m_SelectCallback = null;
         public Action<Brother> m_DeleteCallback = null;
+        public Action m_ShiftCallback = null;
         private bool areChildrenHidden = false;
         private Point lastPos;
 
@@ -247,6 +248,7 @@ namespace FraterniTree
                     m_Label.Parent.Invalidate();
                 }
             }
+            m_ShiftCallback();
         }
 
         private void m_Label_MouseMove(object sender, MouseEventArgs e)

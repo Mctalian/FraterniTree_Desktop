@@ -16,14 +16,7 @@ namespace FraterniTree
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            try
-            {
-                Application.Run(new frmMain());
-            }
-            catch (ObjectDisposedException ex)
-            {
-                Application.Exit();
-            }
+            Application.Run(new frmMain());
         }
     }
 }
