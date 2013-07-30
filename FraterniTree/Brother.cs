@@ -154,14 +154,14 @@ namespace FraterniTree
             if (b.m_Label.Parent != null)
             {
                 b.m_Label.Location = new Point(b.m_Label.Left + dx, b.m_Label.Top + dy);
-                if (b.GetNodeRef().HasRightSibling())
-                {
-                    RecursiveLabelMove((Brother)(b.GetNodeRef().RightSibling().GetUserData()), dx, dy);
-                }
-                if (b.GetNodeRef().HasChild())
-                {
-                    RecursiveLabelMove((Brother)(b.GetNodeRef().FirstChild().GetUserData()), dx, dy);
-                }
+            }
+            if (b.GetNodeRef().HasRightSibling())
+            {
+                RecursiveLabelMove((Brother)(b.GetNodeRef().RightSibling().GetUserData()), dx, dy);
+            }
+            if (b.GetNodeRef().HasChild())
+            {
+                RecursiveLabelMove((Brother)(b.GetNodeRef().FirstChild().GetUserData()), dx, dy);
             }
         }
 
