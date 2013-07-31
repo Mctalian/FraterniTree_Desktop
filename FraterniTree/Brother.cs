@@ -119,6 +119,10 @@ namespace FraterniTree
             {
                 if (isThisIgnored)
                 {
+                    if (this.GetNodeRef()[i] == null)
+                    {
+                        continue;
+                    }
                     isThisIgnored = ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
                 }
                 else
@@ -137,6 +141,10 @@ namespace FraterniTree
             this.GetNodeRef().SetIgnore(false);
             for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
             {
+                if (this.GetNodeRef()[i] == null)
+                {
+                    continue;
+                }
                 ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveClearIgnoreNode();
             }
         }
@@ -227,6 +235,11 @@ namespace FraterniTree
                 m_Label.ForeColor = Color.White;
                 m_Label.BackColor = Color.DarkGreen;
             }
+            else
+            {
+                m_Label.ForeColor = Color.Empty;
+                m_Label.BackColor = Color.Empty;
+            }
 
             Brother parent = ((Brother)(this.GetNodeRef().Parent().GetUserData()));
 
@@ -234,8 +247,6 @@ namespace FraterniTree
             {
                 m_Label.Visible = parent.m_Label.Visible && !parent.areChildrenHidden;
             }
-
-            m_Label.Parent.Invalidate();
         }
 
         private void m_Label_MouseUp(object sender, MouseEventArgs e)
