@@ -264,7 +264,10 @@ namespace FraterniTree
 
                 for (int i = 0; i < count; i++)
                 {
-                    AddLabelsToPanel((Brother)parent.GetNodeRef()[i].GetUserData(), g - 1);
+                    if (parent.GetNodeRef()[i] != null)
+                    {
+                        AddLabelsToPanel((Brother)parent.GetNodeRef()[i].GetUserData(), g - 1);
+                    }
                 }
             }
         }
@@ -537,6 +540,11 @@ namespace FraterniTree
             }
 
             if (cbSelectedTerm.Text != Selected.m_IniMonth)
+            {
+                return true;
+            }
+
+            if (chbActive.Checked != Selected.isActiveBrother)
             {
                 return true;
             }
@@ -1471,35 +1479,33 @@ namespace FraterniTree
 
         private void splitTreeInfo_Panel1_Paint(object sender, PaintEventArgs e)
         {
-            try
+            foreach (Control c in pnlTree.Controls)
             {
-                foreach (string bName in cbTreeParent.Items)
+                if (c is Label)
                 {
-                    if (bName == "*All*" || bName == "*Active Only*")
+                    Label l = (Label)c;
+                    Brother b = root.FindBrotherByName(l.Text);
+                    if (b.GetNodeRef().HasParent())
                     {
-                        continue;
-                    }
-                    Brother b = root.FindBrotherByName(bName);
-                    if (((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Parent != null &&
+                        if (((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Parent != null &&
                         ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Visible &&
                         b.m_Label.Parent != null &&
                         b.m_Label.Capture == false &&
                         b.m_Label.Visible)
-                    {
-                        Pen blackP = new Pen(Color.Black, 1);
-                        Point[] pt = {
-                        new Point(((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Location.X + 
-                                  ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Width / 2,
-                                  ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Location.Y +
-                                  ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Height),
-                        new Point(b.m_Label.Location.X + b.m_Label.Width / 2, b.m_Label.Location.Y)};
-                        e.Graphics.DrawCurve(blackP, pt, 0.00F);
+                        {
+                            Pen blackP = new Pen(Color.Black, 1);
+                            Point[] pt = 
+                        {
+                            new Point(((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Location.X + 
+                                        ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Width / 2,
+                                        ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Location.Y +
+                                        ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Height),
+                            new Point(b.m_Label.Location.X + b.m_Label.Width / 2, b.m_Label.Location.Y)
+                        };
+                            e.Graphics.DrawCurve(blackP, pt, 0.00F);
+                        }
                     }
                 }
-            }
-            catch (System.NullReferenceException exc)
-            {
-                MessageBox.Show(exc.Message + "\n" + exc.Source);
             }
         }
 

@@ -123,13 +123,40 @@ namespace TreeDisplay
         {
         }
 
+        public Node(Node duplicate)
+        {
+
+        }
+
         #endregion
 
         #region Tree Navigation and Manipulation Methods
 
         public Node FirstChild()
         {
-            return m_Offspring;
+            Node UnignoredChild = m_Offspring;
+            if (UnignoredChild == null)
+            {
+                return null;
+            }
+
+            if (!UnignoredChild.IsIgnored())
+            {
+                return m_Offspring;
+            }
+            else
+            {
+                while (UnignoredChild.HasRightSibling())
+                {
+                    UnignoredChild = UnignoredChild.RightSibling();
+
+                    if (!UnignoredChild.IsIgnored())
+                    {
+                        return UnignoredChild;
+                    }
+                }
+                return null;
+            }
         }
 
         private void FirstChild(Node Child)
@@ -169,6 +196,10 @@ namespace TreeDisplay
         {
             for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
             {
+                if (this[i] == null)
+                {
+                    continue;
+                }
                 this.Parent().AddChild(this[i]);
             }
 
@@ -220,7 +251,29 @@ namespace TreeDisplay
 
         public Node LeftSibling()
         {
-            return m_LeftSibling;
+            Node UnignoredLeftSib = m_LeftSibling;
+            if (UnignoredLeftSib == null)
+            {
+                return null;
+            }
+
+            if (!UnignoredLeftSib.IsIgnored())
+            {
+                return m_LeftSibling;
+            }
+            else
+            {
+                while (UnignoredLeftSib.HasLeftSibling())
+                {
+                    UnignoredLeftSib = UnignoredLeftSib.LeftSibling();
+
+                    if (!UnignoredLeftSib.IsIgnored())
+                    {
+                        return UnignoredLeftSib;
+                    }
+                }
+                return null;
+            }
         }
 
         private void LeftSibling(Node Sibling)
@@ -230,7 +283,29 @@ namespace TreeDisplay
 
         public Node RightSibling()
         {
-            return m_RightSibling;
+            Node UnignoredRightSib = m_RightSibling;
+            if (UnignoredRightSib == null)
+            {
+                return null;
+            }
+
+            if (!UnignoredRightSib.IsIgnored())
+            {
+                return m_RightSibling;
+            }
+            else
+            {
+                while (UnignoredRightSib.HasRightSibling())
+                {
+                    UnignoredRightSib = UnignoredRightSib.RightSibling();
+
+                    if (!UnignoredRightSib.IsIgnored())
+                    {
+                        return UnignoredRightSib;
+                    }
+                }
+                return null;
+            }
         }
 
         private void RightSibling(Node Sibling)
@@ -240,6 +315,13 @@ namespace TreeDisplay
 
         public Node Parent()
         {
+            if (m_Parent != null)
+            {
+                if (m_Parent.IsIgnored())
+                {
+                    return null;
+                }
+            }
             return m_Parent;
         }
 
@@ -250,7 +332,29 @@ namespace TreeDisplay
 
         public Node LeftNeighbor()
         {
-            return m_Prev;
+            Node UnignoredLeftNeighbor = m_Prev;
+            if (UnignoredLeftNeighbor == null)
+            {
+                return null;
+            }
+
+            if (!UnignoredLeftNeighbor.IsIgnored())
+            {
+                return m_Prev;
+            }
+            else
+            {
+                while (UnignoredLeftNeighbor.LeftNeighbor() != null)
+                {
+                    UnignoredLeftNeighbor = UnignoredLeftNeighbor.LeftNeighbor();
+
+                    if (!UnignoredLeftNeighbor.IsIgnored())
+                    {
+                        return UnignoredLeftNeighbor;
+                    }
+                }
+                return null;
+            }
         }
 
         #endregion
@@ -265,7 +369,23 @@ namespace TreeDisplay
             }
             else
             {
-                return false;
+                for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+                    if (this[i] == null)
+                    {
+                        continue;
+                    }
+                    if (this[i].IsIgnored())
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         }
 
@@ -273,16 +393,35 @@ namespace TreeDisplay
         {
             if (this != null && this.m_Parent != null)
             {
+                if (m_Parent.IsIgnored())
+                {
+                    return false;
+                }
                 return true;
             }
-            return false;
+            return false;    
         }
 
         public bool HasChild()
         {
             if (this != null && this.m_Offspring != null)
             {
-                return true;
+                for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+                    if (this[i] == null)
+                    {
+                        continue;
+                    }
+                    if (this[i].IsIgnored())
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
             else
             {
@@ -294,7 +433,26 @@ namespace TreeDisplay
         {
             if (this != null && this.m_LeftSibling != null)
             {
-                return true;
+                Node tempLeftSib = m_LeftSibling;
+                if (!tempLeftSib.IsIgnored())
+                {
+                    return true;
+                }
+                else
+                {
+                    while (tempLeftSib.IsIgnored())
+                    {
+                        if (tempLeftSib.HasLeftSibling())
+                        {
+                            tempLeftSib = tempLeftSib.LeftSibling();
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
             else
             {
@@ -306,7 +464,26 @@ namespace TreeDisplay
         {
             if (this != null && this.m_RightSibling != null)
             {
-                return true;
+                Node tempRightSib = m_RightSibling;
+                if (!tempRightSib.IsIgnored())
+                {
+                    return true;
+                }
+                else
+                {
+                    while (tempRightSib.IsIgnored())
+                    {
+                        if (tempRightSib.HasRightSibling())
+                        {
+                            tempRightSib = tempRightSib.RightSibling();
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
             else
             {
@@ -338,7 +515,10 @@ namespace TreeDisplay
             m_Callback();
             for (int i = 0; i < m_NumChildren; i++)
             {
-                this[i].ExecuteCallback();
+                if (this[i] != null)
+                {
+                    this[i].ExecuteCallback();
+                }
             }
         }
 
@@ -418,7 +598,10 @@ namespace TreeDisplay
                 int gens = 0;
                 for (int i = 0; i < GetNumberOfChildren(); i++)
                 {
-                    gens = Math.Max(gens, this[i].GetNumGenerations());
+                    if (this[i] != null)
+                    {
+                        gens = Math.Max(gens, this[i].GetNumGenerations());
+                    }
                 }
                 return gens + 1;
             }
