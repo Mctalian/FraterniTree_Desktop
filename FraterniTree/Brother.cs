@@ -21,9 +21,8 @@ namespace FraterniTree
         public int     m_IniYear;
         public bool isActiveBrother = false;
         public Label   m_Label = new Label();
-        public Action<Brother> m_SelectCallback = null;
-        public Action<Brother> m_DeleteCallback = null;
-        public Action m_ShiftCallback = null;
+        public static Action<Brother> m_SelectCallback = null;
+        public static Action m_ShiftCallback = null;
         private bool areChildrenHidden = false;
         private Point lastPos;
 
@@ -65,6 +64,7 @@ namespace FraterniTree
             m_Label.Padding     = new Padding(4);
             m_Label.AutoSize    = true;
             m_Label.BorderStyle = BorderStyle.FixedSingle;
+            m_Label.Tag         = this;
             m_Label.MouseClick += m_Label_MouseClick;
             m_Label.MouseDown  += m_Label_MouseDown;
             m_Label.MouseMove  += m_Label_MouseMove;
@@ -89,24 +89,26 @@ namespace FraterniTree
         {
             Brother found = null;
 
-            
-
             if (this.GetFullName() == fullName)
             {
-                found = this;
+                return this;
             }
 
-            if (this.HasChild() && found == null)
+            for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
             {
-                found = ((Brother)(this.FirstChild())).FindBrotherByName(fullName);
+                found = ((Brother)this[i]).FindBrotherByName(fullName);
+                if (found != null)
+                {
+                    return found;
+                }
             }
 
-            if (this.HasRightSibling() && found == null)
-            {
-                found = ((Brother)(this.RightSibling())).FindBrotherByName(fullName);
-            }
+            return null;
+        }
 
-            return found;
+        public void SetDescendantsHidden(bool status)
+        {
+            areChildrenHidden = status;
         }
 
         public bool RecursiveSetIgnoreNode()
@@ -116,10 +118,6 @@ namespace FraterniTree
             {
                 if (isThisIgnored)
                 {
-                    if (this[i] == null)
-                    {
-                        continue;
-                    }
                     isThisIgnored = ((Brother)(this[i])).RecursiveSetIgnoreNode();
                 }
                 else
@@ -277,7 +275,7 @@ namespace FraterniTree
             }
         }
 
-        private void RecursiveLabelVisibleToggle(Brother b)
+        public void RecursiveLabelVisibleToggle(Brother b)
         {
             if (b.m_Label.Parent != null)
             {
@@ -392,57 +390,6 @@ namespace FraterniTree
                 else
                 {
                     throw new NotImplementedException();
-                }
-            }
-            else if (e.Button == MouseButtons.Middle)
-            {
-                if (this.FirstChild() == null)
-                {
-                    return;
-                }
-                Brother firstChild = ((Brother)(this.FirstChild()));
-                if (firstChild.m_Label.Parent != null)
-                {
-                    if (firstChild.m_Label.Visible)
-                    {
-                        m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style | FontStyle.Italic);
-                        areChildrenHidden = true;
-                    }
-                    else
-                    {
-                        m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style & ~FontStyle.Italic);
-                        areChildrenHidden = false;
-                    }
-                    for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
-                    {
-                        RecursiveLabelVisibleToggle((Brother)(this[i]));
-                    }
-                }
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                DialogResult res = MessageBox.Show("Are you sure you want to delete this node: " + GetFullName() + "?\n\n" +
-                                                   "All its children nodes will be re-assigned to the parent.",
-                                                   "Node Removal Confirmation",
-                                                   MessageBoxButtons.YesNo,
-                                                   MessageBoxIcon.Warning);
-                if (res == DialogResult.Yes)
-                {
-                    this.RemoveNode();
-                    this.m_Label.Dispose();
-                    this.m_Label = null;
-                    if (m_DeleteCallback != null)
-                    {
-                        m_DeleteCallback(this);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
-                }
-                else
-                {
-                    // Do Nothing
                 }
             }
         }
