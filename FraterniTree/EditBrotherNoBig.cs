@@ -12,7 +12,7 @@ namespace FraterniTree
 {
     public partial class EditBrotherNoBig : Form
     {
-        private const string PRETEXT = "Please enter the full name of";
+        private const string PRETEXT = "Please enter the full name of ";
         private const string POSTTEXT = "\'s Big:";
         public Brother m_BrotherUnderEdit;
         public EditBrotherNoBig(Brother b)
