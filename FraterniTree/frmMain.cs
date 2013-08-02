@@ -61,9 +61,8 @@ namespace FraterniTree
         private int ZoomLevel           = 0;
 
         private int MaximumWidth      = 0;
-        private int VerticalSpacing   = 25;
-        private int HorizontalSpacing = 5;
         private int MaxGeneration     = 1;
+
         #endregion
 
         #region Flags
@@ -386,7 +385,7 @@ namespace FraterniTree
                 if (root.m_Label.Parent != null)
                 {
                     root.m_Label.Parent = null;
-                    leastPosY = root.m_Label.Height + VerticalSpacing;
+                    leastPosY = root.m_Label.Height + (int)(updwnVertSpace.Value);
                     foreach (Control c in pnlTree.Controls)
                     {
                         c.Location = new Point(c.Location.X, c.Location.Y - leastPosY);
@@ -1403,37 +1402,56 @@ namespace FraterniTree
             MaxGeneration = (int)(updwnNumGen.Value);
             if (cbTreeParent.SelectedIndex != -1)
             {
+                float horizPercentage = ((float)splitTreeInfo.Panel1.HorizontalScroll.Value) / ((float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                float vertPercentage = ((float)splitTreeInfo.Panel1.VerticalScroll.Value) / ((float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
                 CreateTree();
                 PostCreationShift();
+                splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                splitTreeInfo.Panel1.VerticalScroll.Value = (int)(vertPercentage * (float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
+                splitTreeInfo.Panel1.PerformLayout();
             }
         }
 
         private void updwnVertSpace_ValueChanged(object sender, EventArgs e)
         {
-            VerticalSpacing = (int)(updwnVertSpace.Value);
             if (cbTreeParent.SelectedIndex != -1)
             {
+                float horizPercentage = ((float)splitTreeInfo.Panel1.HorizontalScroll.Value) / ((float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                float vertPercentage = ((float)splitTreeInfo.Panel1.VerticalScroll.Value) / ((float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
                 CreateTree();
                 PostCreationShift();
+                splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                splitTreeInfo.Panel1.VerticalScroll.Value = (int)(vertPercentage * (float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
+                splitTreeInfo.Panel1.PerformLayout();
             }
         }
 
         private void updwnHorizSpace_ValueChanged(object sender, EventArgs e)
         {
-            HorizontalSpacing = (int)(updwnHorizSpace.Value);
             if (cbTreeParent.SelectedIndex != -1)
             {
+                float horizPercentage = ((float)splitTreeInfo.Panel1.HorizontalScroll.Value) / ((float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                float vertPercentage = ((float)splitTreeInfo.Panel1.VerticalScroll.Value) / ((float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
                 CreateTree();
                 PostCreationShift();
+                splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                splitTreeInfo.Panel1.VerticalScroll.Value = (int)(vertPercentage * (float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
+                splitTreeInfo.Panel1.PerformLayout();
             }
         }
 
         private void updwnSubTree_ValueChanged(object sender, EventArgs e)
         {
+
             if (cbTreeParent.SelectedIndex != -1)
             {
+                float horizPercentage = ((float)splitTreeInfo.Panel1.HorizontalScroll.Value) / ((float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                float vertPercentage = ((float)splitTreeInfo.Panel1.VerticalScroll.Value) / ((float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
                 CreateTree();
                 PostCreationShift();
+                splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                splitTreeInfo.Panel1.VerticalScroll.Value = (int)(vertPercentage * (float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
+                splitTreeInfo.Panel1.PerformLayout();
             }
         }
 
@@ -1508,6 +1526,23 @@ namespace FraterniTree
                 }
             }
         }
+
+        #region Selected Edit Panel
+
+        private void SelectedEdit_ValueChanged(object sender, EventArgs e)
+        {
+            IsSelectedEdit = IsSelectedDataEdited();
+            if (IsSelectedEdit)
+            {
+                btnApplySelected.Enabled = true;
+            }
+            else
+            {
+                btnApplySelected.Enabled = false;
+            }
+        }
+
+        #endregion
 
         #endregion
 
@@ -1736,18 +1771,6 @@ namespace FraterniTree
 
         #endregion
 
-        private void SelectedEdit_ValueChanged(object sender, EventArgs e)
-        {
-            IsSelectedEdit = IsSelectedDataEdited();
-            if (IsSelectedEdit)
-            {
-                btnApplySelected.Enabled = true;
-            }
-            else
-            {
-                btnApplySelected.Enabled = false;
-            }
-        }
 
         #endregion
  

@@ -281,7 +281,7 @@ namespace TreeDisplay
             m_LeftSibling = Sibling;
         }
 
-        public Node RightSibling()
+        public Node RightSibling(bool IsIndex = false)
         {
             Node UnignoredRightSib = m_RightSibling;
             if (UnignoredRightSib == null)
@@ -289,7 +289,7 @@ namespace TreeDisplay
                 return null;
             }
 
-            if (!UnignoredRightSib.IsIgnored())
+            if (!UnignoredRightSib.IsIgnored() || IsIndex)
             {
                 return m_RightSibling;
             }
@@ -646,7 +646,7 @@ namespace TreeDisplay
                 uint i;
                 for (ChildIter = this.m_Offspring, i = 0;
                      ChildIter != null && i < ind;
-                     ChildIter = ChildIter.RightSibling(), i++)
+                     ChildIter = ChildIter.RightSibling(true), i++)
                 {
                     // Nothing to do here
                 }
