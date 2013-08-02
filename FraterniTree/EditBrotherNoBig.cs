@@ -46,9 +46,9 @@ namespace FraterniTree
             {
                 int space = tbEditBig.Text.IndexOf(' ');
                 b = new Brother(tbEditBig.Text.Substring(space + 1), tbEditBig.Text.Substring(0, space), "Fall", 1920);
-                frmMain.root.GetNodeRef().AddChild(b.GetNodeRef());
+                frmMain.root.AddChild(b);
             }
-            b.GetNodeRef().AddChild(m_BrotherUnderEdit.GetNodeRef());
+            b.AddChild(m_BrotherUnderEdit);
         }
     }
 }

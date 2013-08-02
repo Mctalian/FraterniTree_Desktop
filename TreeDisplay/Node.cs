@@ -18,19 +18,19 @@ namespace TreeDisplay
         /// <summary>
         /// Parent Node of this Node.
         /// </summary>
-        private Node m_Parent;
+        protected Node m_Parent;
         /// <summary>
         /// Offspring, or First Child of this Node.
         /// </summary>
-        private Node m_Offspring;
+        protected Node m_Offspring;
         /// <summary>
         /// Left Sibling Node of this Node.
         /// </summary>
-        private Node m_LeftSibling;
+        protected Node m_LeftSibling;
         /// <summary>
         /// Right Sibling Node of this Node.
         /// </summary>
-        private Node m_RightSibling;
+        protected Node m_RightSibling;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace TreeDisplay
         /// <summary>
         /// Number of children nodes of this Node.
         /// </summary>
-        private int m_NumChildren;
+        protected int m_NumChildren;
 
         #endregion
 
@@ -48,35 +48,31 @@ namespace TreeDisplay
         /// <summary>
         /// Node X Location
         /// </summary>
-        private int m_XCoord;
+        protected int m_XCoord;
         /// <summary>
         /// Node Y Location
         /// </summary>
-        private int m_YCoord;
+        protected int m_YCoord;
         /// <summary>
         /// Node Width
         /// </summary>
-        private int m_Width;
+        protected int m_Width;
         /// <summary>
         /// Node Height
         /// </summary>
-        private int m_Height;
+        protected int m_Height;
 
         #endregion
 
         #region Implementation Specific Data
         /// <summary>
-        /// Any object that represents needed user data
-        /// </summary>
-        private Object m_UserData;
-        /// <summary>
         /// If a callback is needed based on user implementation
         /// </summary>
-        private Action m_Callback = null;
+        protected Action m_Callback = null;
         /// <summary>
         /// Ignore this node and consequently all descendants
         /// </summary>
-        private bool m_IgnoreNode;
+        protected bool m_IgnoreNode;
 
         #endregion
 
@@ -159,7 +155,7 @@ namespace TreeDisplay
             }
         }
 
-        private void FirstChild(Node Child)
+        protected void FirstChild(Node Child)
         {
             m_Offspring = Child;
         }
@@ -206,7 +202,7 @@ namespace TreeDisplay
             this.Parent().RemoveChild(this);
         }
 
-        private void RemoveChild(Node Child)
+        protected void RemoveChild(Node Child)
         {
             if (Child == this.FirstChild())
             {
@@ -276,7 +272,7 @@ namespace TreeDisplay
             }
         }
 
-        private void LeftSibling(Node Sibling)
+        protected void LeftSibling(Node Sibling)
         {
             m_LeftSibling = Sibling;
         }
@@ -308,7 +304,7 @@ namespace TreeDisplay
             }
         }
 
-        private void RightSibling(Node Sibling)
+        protected void RightSibling(Node Sibling)
         {
             m_RightSibling = Sibling;
         }
@@ -325,7 +321,7 @@ namespace TreeDisplay
             return m_Parent;
         }
 
-        private void Parent(Node Parent)
+        protected void Parent(Node Parent)
         {
             m_Parent = Parent;
         }
@@ -494,16 +490,6 @@ namespace TreeDisplay
         #endregion
 
         #region Implementation Specific
-
-        public Object GetUserData()
-        {
-            return m_UserData;
-        }
-
-        public void SetUserData(Object o)
-        {
-            m_UserData = o;
-        }
 
         public void SetCallback(Action cb)
         {
