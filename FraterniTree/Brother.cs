@@ -13,11 +13,11 @@ namespace FraterniTree
     /// <summary>
     /// Represents a Fraternity Brother in a Fraternity Family Tree.
     /// </summary>
-    public class Brother
+    public class Brother : Node
     {
         public string  m_Last;
         public string  m_First;
-        public string  m_IniMonth;
+        public InitiationTerm  m_IniMonth;
         public int     m_IniYear;
         public bool isActiveBrother = false;
         public Label   m_Label = new Label();
@@ -27,10 +27,12 @@ namespace FraterniTree
         private bool areChildrenHidden = false;
         private Point lastPos;
 
-        /// <summary>
-        /// Reference to a Node object which represents all relational data and methods.
-        /// </summary>
-        private Node m_NodeRef;
+        public enum InitiationTerm
+        {
+            Winter = 0,
+            Spring = 1,
+            Fall = 2
+        };
 
         #region Constructors
 
@@ -39,7 +41,7 @@ namespace FraterniTree
         /// </summary>
         private Brother()
         {
-
+            
         }
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace FraterniTree
             // Initialize Brother object
             m_Last              = Last;
             m_First             = First;
-            m_IniMonth          = Month;
+            m_IniMonth          = (InitiationTerm)Enum.Parse(typeof(InitiationTerm),Month);
             m_IniYear           = Year;            
 
             // Initialize the label
@@ -71,11 +73,9 @@ namespace FraterniTree
             m_Label.LocationChanged += m_Label_LocationChanged;
             m_Label.ParentChanged += m_Label_ParentChanged;
 
-            m_NodeRef = new Node();
-            m_NodeRef.SetWidth(m_Label.Width);
-            m_NodeRef.SetHeight(m_Label.Height);
-            m_NodeRef.SetUserData(this);
-            m_NodeRef.SetCallback(ApplyNodeLocationsToLabel);
+            SetWidth(m_Label.Width);
+            SetHeight(m_Label.Height);
+            SetCallback(ApplyNodeLocationsToLabel);
         }
 
         #endregion
@@ -85,28 +85,25 @@ namespace FraterniTree
             return m_First + " " + m_Last;
         }
 
-        public Node GetNodeRef()
-        {
-            return m_NodeRef;
-        }
-
         public Brother FindBrotherByName(string fullName)
         {
             Brother found = null;
+
+            
 
             if (this.GetFullName() == fullName)
             {
                 found = this;
             }
 
-            if (this.GetNodeRef().FirstChild() != null && found == null)
+            if (this.HasChild() && found == null)
             {
-                found = ((Brother)(this.GetNodeRef().FirstChild().GetUserData())).FindBrotherByName(fullName);
+                found = ((Brother)(this.FirstChild())).FindBrotherByName(fullName);
             }
 
-            if (this.GetNodeRef().RightSibling() != null && found == null)
+            if (this.HasRightSibling() && found == null)
             {
-                found = ((Brother)(this.GetNodeRef().RightSibling().GetUserData())).FindBrotherByName(fullName);
+                found = ((Brother)(this.RightSibling())).FindBrotherByName(fullName);
             }
 
             return found;
@@ -115,46 +112,136 @@ namespace FraterniTree
         public bool RecursiveSetIgnoreNode()
         {
             bool isThisIgnored = !isActiveBrother;
-            for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+            for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 if (isThisIgnored)
                 {
-                    if (this.GetNodeRef()[i] == null)
+                    if (this[i] == null)
                     {
                         continue;
                     }
-                    isThisIgnored = ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
+                    isThisIgnored = ((Brother)(this[i])).RecursiveSetIgnoreNode();
                 }
                 else
                 {
                     // Ignore return, but set descendant nodes accordingly
-                    ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveSetIgnoreNode();
+                    ((Brother)(this[i])).RecursiveSetIgnoreNode();
                 }
             }
 
-            this.GetNodeRef().SetIgnore(isThisIgnored);
+            this.SetIgnore(isThisIgnored);
             return isThisIgnored;
         }
 
         public void RecursiveClearIgnoreNode()
         {
-            this.GetNodeRef().SetIgnore(false);
-            for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+            this.SetIgnore(false);
+            for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
             {
-                if (this.GetNodeRef()[i] == null)
+                if (this[i] == null)
                 {
                     continue;
                 }
-                ((Brother)(this.GetNodeRef()[i].GetUserData())).RecursiveClearIgnoreNode();
+                ((Brother)(this[i])).RecursiveClearIgnoreNode();
             }
         }
 
+        public void AddChild(Brother Child)
+        {
+            if (Child.HasParent())
+            {
+                ((Brother)(Child.Parent())).RemoveChild(Child);
+            }
+            if (this.IsLeaf())
+            {
+                this.FirstChild(Child);
+                Child.LeftSibling(null);
+            }
+            else
+            {
+                Brother SiblingIter;
+                for (SiblingIter = (Brother)this.FirstChild(); SiblingIter != null && SiblingIter.HasRightSibling(); SiblingIter = (Brother)SiblingIter.RightSibling())
+                {
+                    if (SiblingIter.m_IniYear > Child.m_IniYear)
+                    {
+                        if (SiblingIter.HasLeftSibling())
+                        {
+                            Child.LeftSibling(SiblingIter.LeftSibling());
+                            ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
+                        }
+                        Child.RightSibling(SiblingIter);
+                        SiblingIter.LeftSibling(Child);
+                        break;
+                    }
+                    else if (SiblingIter.m_IniYear == Child.m_IniYear)
+                    {
+                        if (Child.m_IniMonth < SiblingIter.m_IniMonth)
+                        {
+                            if (SiblingIter.HasLeftSibling())
+                            {
+                                Child.LeftSibling(SiblingIter.LeftSibling());
+                                ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
+                            }
+                            Child.RightSibling(SiblingIter);
+                            SiblingIter.LeftSibling(Child);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // Nothing to do
+                    }
+                }
+                if (SiblingIter != null && !(Child.HasRightSibling() || Child.HasLeftSibling()))
+                {
+                    if (SiblingIter.m_IniYear > Child.m_IniYear)
+                    {
+                        if (SiblingIter.HasLeftSibling())
+                        {
+                            Child.LeftSibling(SiblingIter.LeftSibling());
+                            ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
+                        }
+                        Child.RightSibling(SiblingIter);
+                        SiblingIter.LeftSibling(Child);
+                    }
+                    else if (SiblingIter.m_IniYear == Child.m_IniYear)
+                    {
+                        if (Child.m_IniMonth < SiblingIter.m_IniMonth)
+                        {
+                            if (SiblingIter.HasLeftSibling())
+                            {
+                                Child.LeftSibling(SiblingIter.LeftSibling());
+                                ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
+                            }
+                            Child.RightSibling(SiblingIter);
+                            SiblingIter.LeftSibling(Child);
+                        }
+                        else
+                        {
+                            SiblingIter.RightSibling(Child);
+                            Child.LeftSibling(SiblingIter);
+                        }
+                    }
+                    else
+                    {
+                        SiblingIter.RightSibling(Child);
+                        Child.LeftSibling(SiblingIter);
+                    }
+                }
+            }
+            Child.Parent(this);
+            if (!Child.HasLeftSibling() && this.FirstChild() != Child)
+            {
+                this.FirstChild(Child);
+            }
+            this.m_NumChildren++;
+        }
 
         #region GUI Label Methods
 
         private void ApplyNodeLocationsToLabel()
         {
-            m_Label.Location = new Point(m_NodeRef.GetXCoord(), m_NodeRef.GetYCoord());
+            m_Label.Location = new Point(GetXCoord(), GetYCoord());
         }
 
         private void RecursiveLabelMove(Brother b, int dx, int dy)
@@ -163,13 +250,13 @@ namespace FraterniTree
             {
                 b.m_Label.Location = new Point(b.m_Label.Left + dx, b.m_Label.Top + dy);
             }
-            if (b.GetNodeRef().HasRightSibling())
+            if (b.HasRightSibling())
             {
-                RecursiveLabelMove((Brother)(b.GetNodeRef().RightSibling().GetUserData()), dx, dy);
+                RecursiveLabelMove((Brother)(b.RightSibling()), dx, dy);
             }
-            if (b.GetNodeRef().HasChild())
+            if (b.HasChild())
             {
-                RecursiveLabelMove((Brother)(b.GetNodeRef().FirstChild().GetUserData()), dx, dy);
+                RecursiveLabelMove((Brother)(b.FirstChild()), dx, dy);
             }
         }
 
@@ -179,13 +266,13 @@ namespace FraterniTree
             {
                 b.lastPos = e.Location;
                 b.m_Label.BringToFront();
-                if (b.GetNodeRef().HasRightSibling())
+                if (b.HasRightSibling())
                 {
-                    RecursiveLabelCapture((Brother)(b.GetNodeRef().RightSibling().GetUserData()), e);
+                    RecursiveLabelCapture((Brother)(b.RightSibling()), e);
                 }
-                if (b.GetNodeRef().HasChild())
+                if (b.HasChild())
                 {
-                    RecursiveLabelCapture((Brother)(b.GetNodeRef().FirstChild().GetUserData()), e);
+                    RecursiveLabelCapture((Brother)(b.FirstChild()), e);
                 }
             }
         }
@@ -194,9 +281,9 @@ namespace FraterniTree
         {
             if (b.m_Label.Parent != null)
             {
-                if (((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Parent != null)
+                if (((Brother)(b.Parent())).m_Label.Parent != null)
                 {
-                    b.m_Label.Visible = ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Visible && !((Brother)(b.GetNodeRef().Parent().GetUserData())).areChildrenHidden;
+                    b.m_Label.Visible = ((Brother)(b.Parent())).m_Label.Visible && !((Brother)(b.Parent())).areChildrenHidden;
                 }
                 else
                 {
@@ -205,13 +292,13 @@ namespace FraterniTree
             }
             else
             {
-                b.m_Label.Visible = !((Brother)(b.GetNodeRef().Parent().GetUserData())).areChildrenHidden;
+                b.m_Label.Visible = !((Brother)(b.Parent())).areChildrenHidden;
             }
             if (!b.areChildrenHidden)
             {
-                for (int i = b.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+                for (int i = b.GetNumberOfChildren() - 1; i >= 0; i--)
                 {
-                    RecursiveLabelVisibleToggle((Brother)(b.GetNodeRef()[i].GetUserData()));
+                    RecursiveLabelVisibleToggle((Brother)(b[i]));
                 }
             }
         }
@@ -241,7 +328,7 @@ namespace FraterniTree
                 m_Label.BackColor = Color.Empty;
             }
 
-            Brother parent = ((Brother)(this.GetNodeRef().Parent().GetUserData()));
+            Brother parent = ((Brother)(this.Parent()));
 
             if (parent.m_Label.Parent != null && !parent.m_Label.Visible)
             {
@@ -269,9 +356,9 @@ namespace FraterniTree
                 int dx = e.X - lastPos.X;
                 int dy = e.Y - lastPos.Y;
                 m_Label.Location = new Point(m_Label.Left + dx, m_Label.Top + dy);
-                if (this.GetNodeRef().HasChild())
+                if (this.HasChild())
                 {
-                    RecursiveLabelMove((Brother)this.GetNodeRef().FirstChild().GetUserData(), dx, dy);
+                    RecursiveLabelMove((Brother)this.FirstChild(), dx, dy);
                 }
             }
         }
@@ -283,9 +370,9 @@ namespace FraterniTree
                 lastPos = e.Location;
                 m_Label.BringToFront();
                 m_Label.Capture = true;
-                if (this.GetNodeRef().HasChild())
+                if (this.HasChild())
                 {
-                    RecursiveLabelCapture((Brother)this.GetNodeRef().FirstChild().GetUserData(), e);
+                    RecursiveLabelCapture((Brother)this.FirstChild(), e);
                 }
             }
         }
@@ -309,11 +396,11 @@ namespace FraterniTree
             }
             else if (e.Button == MouseButtons.Middle)
             {
-                if (this.GetNodeRef().FirstChild() == null)
+                if (this.FirstChild() == null)
                 {
                     return;
                 }
-                Brother firstChild = ((Brother)(this.GetNodeRef().FirstChild().GetUserData()));
+                Brother firstChild = ((Brother)(this.FirstChild()));
                 if (firstChild.m_Label.Parent != null)
                 {
                     if (firstChild.m_Label.Visible)
@@ -326,9 +413,9 @@ namespace FraterniTree
                         m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style & ~FontStyle.Italic);
                         areChildrenHidden = false;
                     }
-                    for (int i = this.GetNodeRef().GetNumberOfChildren() - 1; i >= 0; i--)
+                    for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
                     {
-                        RecursiveLabelVisibleToggle((Brother)(this.GetNodeRef()[i].GetUserData()));
+                        RecursiveLabelVisibleToggle((Brother)(this[i]));
                     }
                 }
             }
@@ -341,7 +428,7 @@ namespace FraterniTree
                                                    MessageBoxIcon.Warning);
                 if (res == DialogResult.Yes)
                 {
-                    this.GetNodeRef().RemoveNode();
+                    this.RemoveNode();
                     this.m_Label.Dispose();
                     this.m_Label = null;
                     if (m_DeleteCallback != null)

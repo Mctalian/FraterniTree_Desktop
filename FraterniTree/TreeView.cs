@@ -78,16 +78,16 @@ namespace FraterniTree
             foreach (Label l in pnlTree.Controls)
             {
                 Brother b = m_Root.FindBrotherByName(l.Text);
-                if (b.GetNodeRef().HasParent())
+                if (b.HasParent())
                 {
-                    if (((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Parent != null && b.m_Label.Parent != null && b.m_Label.Capture == false)
+                    if (((Brother)(b.Parent())).m_Label.Parent != null && b.m_Label.Parent != null && b.m_Label.Capture == false)
                     {
                         Pen blackP = new Pen(Color.Black, 1);
                         Point[] pt = {
-                        new Point(((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Location.X + 
-                                  ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Width / 2,
-                                  ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Location.Y +
-                                  ((Brother)(b.GetNodeRef().Parent().GetUserData())).m_Label.Height),
+                        new Point(((Brother)(b.Parent())).m_Label.Location.X + 
+                                  ((Brother)(b.Parent())).m_Label.Width / 2,
+                                  ((Brother)(b.Parent())).m_Label.Location.Y +
+                                  ((Brother)(b.Parent())).m_Label.Height),
                         new Point(b.m_Label.Location.X + b.m_Label.Width / 2, b.m_Label.Location.Y)};
                         e.Graphics.DrawCurve(blackP, pt, 0.00F);
                     }
