@@ -102,6 +102,9 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.supportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ttTree = new System.Windows.Forms.ToolTip(this.components);
+            this.cmNodeActions = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toggleHideDescendantsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -124,6 +127,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.updwnVertSpace)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updwnNumGen)).BeginInit();
             this.MenuStrip.SuspendLayout();
+            this.cmNodeActions.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlMain
@@ -1004,6 +1008,28 @@
             this.supportToolStripMenuItem.Text = "&Support... (Web Page)";
             this.supportToolStripMenuItem.Click += new System.EventHandler(this.supportToolStripMenuItem_Click);
             // 
+            // cmNodeActions
+            // 
+            this.cmNodeActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toggleHideDescendantsToolStripMenuItem,
+            this.removeNodeToolStripMenuItem});
+            this.cmNodeActions.Name = "cmNodeActions";
+            this.cmNodeActions.Size = new System.Drawing.Size(210, 70);
+            // 
+            // toggleHideDescendantsToolStripMenuItem
+            // 
+            this.toggleHideDescendantsToolStripMenuItem.Name = "toggleHideDescendantsToolStripMenuItem";
+            this.toggleHideDescendantsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.toggleHideDescendantsToolStripMenuItem.Text = "Toggle Hide Descendants";
+            this.toggleHideDescendantsToolStripMenuItem.Click += new System.EventHandler(this.toggleHideDescendantsToolStripMenuItem_Click);
+            // 
+            // removeNodeToolStripMenuItem
+            // 
+            this.removeNodeToolStripMenuItem.Name = "removeNodeToolStripMenuItem";
+            this.removeNodeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.removeNodeToolStripMenuItem.Text = "Remove Node";
+            this.removeNodeToolStripMenuItem.Click += new System.EventHandler(this.removeNodeToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1047,6 +1073,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.updwnNumGen)).EndInit();
             this.MenuStrip.ResumeLayout(false);
             this.MenuStrip.PerformLayout();
+            this.cmNodeActions.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1125,6 +1152,9 @@
         private System.Windows.Forms.ToolStripMenuItem fixedLabelWidthsToolStripMenuItem;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.CheckBox chbActive;
+        private System.Windows.Forms.ContextMenuStrip cmNodeActions;
+        private System.Windows.Forms.ToolStripMenuItem toggleHideDescendantsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeNodeToolStripMenuItem;
 
     }
 }
