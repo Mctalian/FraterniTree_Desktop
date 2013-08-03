@@ -198,95 +198,76 @@ namespace FraterniTree
             }
         }
 
+        public void RefreshLittleOrder()
+        {
+            bool isSorted;
+            do
+            {
+                isSorted = true;
+                for (int i = 1; i < GetNumberOfChildren(); i++)
+                {
+                    Brother L = (Brother)this[i - 1];
+                    Brother R = (Brother)this[i];
+                    if (R.m_IniYear < L.m_IniYear)
+                    {
+                        SwapLittles(L, R);
+                        isSorted = false;
+                    }
+                    else if (R.m_IniYear == L.m_IniYear)
+                    {
+                        if (R.m_IniMonth < L.m_IniMonth)
+                        {
+                            SwapLittles(L, R);
+                            isSorted = false;
+                        }
+                    }
+                    else
+                    {
+                        // Do nothing
+                    }
+                }
+            } while (!isSorted);
+        }
+
+        private void SwapLittles(Brother L, Brother R)
+        {
+            if (L.HasParent(true) && R.HasParent(true))
+            {
+                if ((Brother)L.Parent(true) == (Brother)R.Parent(true) && (Brother)L.Parent(true) == this)
+                {
+                    if (L.HasRightSibling(true) && R.HasLeftSibling(true))
+                    {
+                        if ((Brother)L.RightSibling(true) == R && (Brother)R.LeftSibling(true) == L)
+                        {
+                            if (L == (Brother)this.FirstChild(true))
+                            {
+                                this.FirstChild(R);
+                            }
+
+                            R.LeftSibling(L.LeftSibling(true));
+                            L.RightSibling(R.RightSibling(true));
+
+                            if (R.HasRightSibling(true))
+                            {
+                                ((Brother)R.RightSibling(true)).LeftSibling(L);
+                            }
+                            if (L.HasLeftSibling(true))
+                            {
+                                ((Brother)L.LeftSibling(true)).RightSibling(R);
+                            }
+
+                            L.LeftSibling(R);
+                            R.RightSibling(L);
+                        }
+                    }
+                }
+            }
+        }
+
         public void AddChild(Brother Child)
         {
-            if (Child.HasParent())
-            {
-                ((Brother)(Child.Parent())).RemoveChild(Child);
-            }
-            if (this.IsLeaf())
-            {
-                this.FirstChild(Child);
-                Child.LeftSibling(null);
-            }
-            else
-            {
-                Brother SiblingIter;
-                for (SiblingIter = (Brother)this.FirstChild(); SiblingIter != null && SiblingIter.HasRightSibling(); SiblingIter = (Brother)SiblingIter.RightSibling())
-                {
-                    if (SiblingIter.m_IniYear > Child.m_IniYear)
-                    {
-                        if (SiblingIter.HasLeftSibling())
-                        {
-                            Child.LeftSibling(SiblingIter.LeftSibling());
-                            ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
-                        }
-                        Child.RightSibling(SiblingIter);
-                        SiblingIter.LeftSibling(Child);
-                        break;
-                    }
-                    else if (SiblingIter.m_IniYear == Child.m_IniYear)
-                    {
-                        if (Child.m_IniMonth < SiblingIter.m_IniMonth)
-                        {
-                            if (SiblingIter.HasLeftSibling())
-                            {
-                                Child.LeftSibling(SiblingIter.LeftSibling());
-                                ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
-                            }
-                            Child.RightSibling(SiblingIter);
-                            SiblingIter.LeftSibling(Child);
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        // Nothing to do
-                    }
-                }
-                if (SiblingIter != null && !(Child.HasRightSibling() || Child.HasLeftSibling()))
-                {
-                    if (SiblingIter.m_IniYear > Child.m_IniYear)
-                    {
-                        if (SiblingIter.HasLeftSibling())
-                        {
-                            Child.LeftSibling(SiblingIter.LeftSibling());
-                            ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
-                        }
-                        Child.RightSibling(SiblingIter);
-                        SiblingIter.LeftSibling(Child);
-                    }
-                    else if (SiblingIter.m_IniYear == Child.m_IniYear)
-                    {
-                        if (Child.m_IniMonth < SiblingIter.m_IniMonth)
-                        {
-                            if (SiblingIter.HasLeftSibling())
-                            {
-                                Child.LeftSibling(SiblingIter.LeftSibling());
-                                ((Brother)SiblingIter.LeftSibling()).RightSibling(Child);
-                            }
-                            Child.RightSibling(SiblingIter);
-                            SiblingIter.LeftSibling(Child);
-                        }
-                        else
-                        {
-                            SiblingIter.RightSibling(Child);
-                            Child.LeftSibling(SiblingIter);
-                        }
-                    }
-                    else
-                    {
-                        SiblingIter.RightSibling(Child);
-                        Child.LeftSibling(SiblingIter);
-                    }
-                }
-            }
-            Child.Parent(this);
-            if (!Child.HasLeftSibling() && this.FirstChild() != Child)
-            {
-                this.FirstChild(Child);
-            }
-            this.m_NumChildren++;
+            base.AddChild(Child);
+            RefreshLittleOrder();
         }
 
         #region GUI Label Methods
@@ -452,71 +433,5 @@ namespace FraterniTree
 
         #endregion
 
-
-        public void RefreshLittleOrder()
-        {
-            bool isSorted;
-            do
-            {
-                isSorted = true;
-                for (int i = 1; i < GetNumberOfChildren(); i++)
-                {
-                    Brother L = (Brother)this[i - 1];
-                    Brother R = (Brother)this[i];
-                    if (R.m_IniYear < L.m_IniYear)
-                    {
-                        SwapLittles(L, R);
-                        isSorted = false;
-                    }
-                    else if (R.m_IniYear == L.m_IniYear)
-                    {
-                        if (R.m_IniMonth < L.m_IniMonth)
-                        {
-                            SwapLittles(L, R);
-                            isSorted = false;
-                        }
-                    }
-                    else
-                    {
-                        // Do nothing
-                    }
-                }
-            } while (!isSorted);
-        }
-
-        private void SwapLittles(Brother L, Brother R)
-        {
-            if (L.HasParent(true) && R.HasParent(true))
-            {
-                if ((Brother)L.Parent(true) == (Brother)R.Parent(true) && (Brother)L.Parent(true) == this)
-                {
-                    if (L.HasRightSibling(true) && R.HasLeftSibling(true))
-                    {
-                        if ((Brother)L.RightSibling(true) == R && (Brother)R.LeftSibling(true) == L)
-                        {
-                            if (L == (Brother)this.FirstChild(true))
-                            {
-                                this.FirstChild(R);
-                            }
-
-                            R.LeftSibling(L.LeftSibling(true));
-                            L.RightSibling(R.RightSibling(true));
-
-                            if (R.HasRightSibling(true))
-                            {
-                                ((Brother)R.RightSibling(true)).LeftSibling(L);
-                            }
-                            if (L.HasLeftSibling(true))
-                            {
-                                ((Brother)L.LeftSibling(true)).RightSibling(R);
-                            }
-
-                            L.LeftSibling(R);
-                            R.RightSibling(L);
-                        }
-                    }
-                }
-            }
-        }
     }
 }

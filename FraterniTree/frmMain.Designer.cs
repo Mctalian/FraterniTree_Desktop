@@ -34,7 +34,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitTreeAdd = new System.Windows.Forms.SplitContainer();
             this.splitTreeInfo = new System.Windows.Forms.SplitContainer();
-            this.pnlTree = new FraterniTree.NoFlickerPanel();
             this.chbActive = new System.Windows.Forms.CheckBox();
             this.tbSelectedLittles = new System.Windows.Forms.TextBox();
             this.lblSelectedLittles = new System.Windows.Forms.Label();
@@ -105,6 +104,14 @@
             this.cmNodeActions = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toggleHideDescendantsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.makeThisTreeParentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.allTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.activesOnlyTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generationUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generationDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pnlTree = new FraterniTree.NoFlickerPanel();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -233,20 +240,6 @@
             this.splitTreeInfo.Size = new System.Drawing.Size(561, 576);
             this.splitTreeInfo.SplitterDistance = 399;
             this.splitTreeInfo.TabIndex = 0;
-            // 
-            // pnlTree
-            // 
-            this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
-            this.pnlTree.AutoSize = true;
-            this.pnlTree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pnlTree.Location = new System.Drawing.Point(0, 0);
-            this.pnlTree.Name = "pnlTree";
-            this.pnlTree.Size = new System.Drawing.Size(0, 0);
-            this.pnlTree.TabIndex = 0;
-            this.ttTree.SetToolTip(this.pnlTree, "Double click to toggle tree view.");
-            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
-            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
-            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
             // 
             // chbActive
             // 
@@ -882,6 +875,11 @@
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allTreeToolStripMenuItem,
+            this.activesOnlyTreeToolStripMenuItem,
+            this.generationUpToolStripMenuItem,
+            this.generationDownToolStripMenuItem,
+            this.toolStripSeparator5,
             this.displayRootOfAllTreeToolStripMenuItem,
             this.fixedLabelWidthsToolStripMenuItem,
             this.zoomInToolStripMenuItem,
@@ -894,10 +892,12 @@
             // 
             // displayRootOfAllTreeToolStripMenuItem
             // 
+            this.displayRootOfAllTreeToolStripMenuItem.Enabled = false;
             this.displayRootOfAllTreeToolStripMenuItem.Name = "displayRootOfAllTreeToolStripMenuItem";
             this.displayRootOfAllTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.displayRootOfAllTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.displayRootOfAllTreeToolStripMenuItem.Text = "&Display Root of \'*All*\' Tree";
+            this.displayRootOfAllTreeToolStripMenuItem.Visible = false;
             this.displayRootOfAllTreeToolStripMenuItem.Click += new System.EventHandler(this.displayRootOfAllTreeToolStripMenuItem_Click);
             // 
             // fixedLabelWidthsToolStripMenuItem
@@ -1011,10 +1011,12 @@
             // cmNodeActions
             // 
             this.cmNodeActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.makeThisTreeParentToolStripMenuItem,
+            this.toolStripSeparator4,
             this.toggleHideDescendantsToolStripMenuItem,
             this.removeNodeToolStripMenuItem});
             this.cmNodeActions.Name = "cmNodeActions";
-            this.cmNodeActions.Size = new System.Drawing.Size(210, 70);
+            this.cmNodeActions.Size = new System.Drawing.Size(210, 76);
             // 
             // toggleHideDescendantsToolStripMenuItem
             // 
@@ -1029,6 +1031,69 @@
             this.removeNodeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.removeNodeToolStripMenuItem.Text = "Remove Node";
             this.removeNodeToolStripMenuItem.Click += new System.EventHandler(this.removeNodeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(206, 6);
+            // 
+            // makeThisTreeParentToolStripMenuItem
+            // 
+            this.makeThisTreeParentToolStripMenuItem.Name = "makeThisTreeParentToolStripMenuItem";
+            this.makeThisTreeParentToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.makeThisTreeParentToolStripMenuItem.Text = "Make This Tree Parent";
+            this.makeThisTreeParentToolStripMenuItem.Click += new System.EventHandler(this.makeThisTreeParentToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(252, 6);
+            // 
+            // allTreeToolStripMenuItem
+            // 
+            this.allTreeToolStripMenuItem.Name = "allTreeToolStripMenuItem";
+            this.allTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.allTreeToolStripMenuItem.Text = "*All* Tree";
+            this.allTreeToolStripMenuItem.Click += new System.EventHandler(this.allTreeToolStripMenuItem_Click);
+            // 
+            // activesOnlyTreeToolStripMenuItem
+            // 
+            this.activesOnlyTreeToolStripMenuItem.Name = "activesOnlyTreeToolStripMenuItem";
+            this.activesOnlyTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.activesOnlyTreeToolStripMenuItem.Text = "*Active Only* Tree";
+            this.activesOnlyTreeToolStripMenuItem.Click += new System.EventHandler(this.activesOnlyTreeToolStripMenuItem_Click);
+            // 
+            // generationUpToolStripMenuItem
+            // 
+            this.generationUpToolStripMenuItem.Enabled = false;
+            this.generationUpToolStripMenuItem.Name = "generationUpToolStripMenuItem";
+            this.generationUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.generationUpToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.generationUpToolStripMenuItem.Text = "Next Generation";
+            this.generationUpToolStripMenuItem.Click += new System.EventHandler(this.generationUpToolStripMenuItem_Click);
+            // 
+            // generationDownToolStripMenuItem
+            // 
+            this.generationDownToolStripMenuItem.Enabled = false;
+            this.generationDownToolStripMenuItem.Name = "generationDownToolStripMenuItem";
+            this.generationDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.generationDownToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.generationDownToolStripMenuItem.Text = "Previous Generation";
+            this.generationDownToolStripMenuItem.Click += new System.EventHandler(this.generationDownToolStripMenuItem_Click);
+            // 
+            // pnlTree
+            // 
+            this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
+            this.pnlTree.AutoSize = true;
+            this.pnlTree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlTree.Location = new System.Drawing.Point(0, 0);
+            this.pnlTree.Name = "pnlTree";
+            this.pnlTree.Size = new System.Drawing.Size(0, 0);
+            this.pnlTree.TabIndex = 0;
+            this.ttTree.SetToolTip(this.pnlTree, "Double click to toggle tree view.");
+            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
+            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
+            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
             // 
             // frmMain
             // 
@@ -1155,6 +1220,13 @@
         private System.Windows.Forms.ContextMenuStrip cmNodeActions;
         private System.Windows.Forms.ToolStripMenuItem toggleHideDescendantsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeNodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem makeThisTreeParentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem allTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem activesOnlyTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem generationUpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generationDownToolStripMenuItem;
 
     }
 }

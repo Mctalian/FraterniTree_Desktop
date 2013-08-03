@@ -18,19 +18,19 @@ namespace TreeDisplay
         /// <summary>
         /// Parent Node of this Node.
         /// </summary>
-        protected Node m_Parent;
+        private Node m_Parent;
         /// <summary>
         /// Offspring, or First Child of this Node.
         /// </summary>
-        protected Node m_Offspring;
+        private Node m_Offspring;
         /// <summary>
         /// Left Sibling Node of this Node.
         /// </summary>
-        protected Node m_LeftSibling;
+        private Node m_LeftSibling;
         /// <summary>
         /// Right Sibling Node of this Node.
         /// </summary>
-        protected Node m_RightSibling;
+        private Node m_RightSibling;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace TreeDisplay
         /// <summary>
         /// Number of children nodes of this Node.
         /// </summary>
-        protected int m_NumChildren;
+        private int m_NumChildren;
 
         #endregion
 
@@ -48,19 +48,19 @@ namespace TreeDisplay
         /// <summary>
         /// Node X Location
         /// </summary>
-        protected int m_XCoord;
+        private int m_XCoord;
         /// <summary>
         /// Node Y Location
         /// </summary>
-        protected int m_YCoord;
+        private int m_YCoord;
         /// <summary>
         /// Node Width
         /// </summary>
-        protected int m_Width;
+        private int m_Width;
         /// <summary>
         /// Node Height
         /// </summary>
-        protected int m_Height;
+        private int m_Height;
 
         #endregion
 
@@ -68,11 +68,11 @@ namespace TreeDisplay
         /// <summary>
         /// If a callback is needed based on user implementation
         /// </summary>
-        protected Action m_Callback = null;
+        private Action m_Callback = null;
         /// <summary>
         /// Ignore this node and consequently all descendants
         /// </summary>
-        protected bool m_IgnoreNode;
+        private bool m_IgnoreNode;
 
         #endregion
 

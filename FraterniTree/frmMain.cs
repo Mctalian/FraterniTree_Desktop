@@ -301,6 +301,10 @@ namespace FraterniTree
 
         private void CreateTree()
         {
+            displayRootOfAllTreeToolStripMenuItem.Enabled = false;
+            generationDownToolStripMenuItem.Enabled = false;
+            generationUpToolStripMenuItem.Enabled = false;
+
             HideSelectedEdit();
             UnzoomControls();
 
@@ -327,15 +331,20 @@ namespace FraterniTree
             }
             else
             {
+                displayRootOfAllTreeToolStripMenuItem.Enabled = true;
                 TreeRoot = root;
                 if (cbTreeParent.Text == "*Active Only*")
                 {
+                    displayRootOfAllTreeToolStripMenuItem.Enabled = false;
                     TreeRoot.RecursiveSetIgnoreNode();
                 }
             }
 
             if (TreeRoot != null)
             {
+                generationDownToolStripMenuItem.Enabled = true;
+                generationUpToolStripMenuItem.Enabled = true;
+
                 Size s = TreeRoot.m_Label.Size;
                 Point p = new Point((splitTreeInfo.Panel1.Width / 2) - (s.Width / 2), 2);
                 TreeRoot.SetXCoord(p.X);
@@ -711,7 +720,7 @@ namespace FraterniTree
             }
 
             big.m_Label.ContextMenuStrip = cmNodeActions;
-            ttTree.SetToolTip(big.m_Label, "Left Click to Select, Right Click to Delete, Middle Click to Hide Children.");
+            ttTree.SetToolTip(big.m_Label, "Left click to select and edit");
 
             foreach (XmlNode child in currentParent.ChildNodes)
             {
@@ -1490,6 +1499,32 @@ namespace FraterniTree
 
         #region ToolStripMenuItems
 
+        private void allTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cbTreeParent.SelectedItem = "*All*";
+        }
+
+        private void activesOnlyTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            cbTreeParent.SelectedItem = "*Active Only*";
+        }
+
+        private void generationUpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (updwnNumGen.Value < updwnNumGen.Maximum)
+            {
+                updwnNumGen.Value++;
+            }
+        }
+
+        private void generationDownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (updwnNumGen.Value > updwnNumGen.Minimum)
+            {
+                updwnNumGen.Value--;
+            }
+        }
+
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -1801,6 +1836,33 @@ namespace FraterniTree
                     clicked.RecursiveLabelVisibleToggle((Brother)(clicked[i]));
                 }
             }
+        }
+
+        private void makeThisTreeParentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Label lbl = new Label();
+            ToolStripItem tsi = sender as ToolStripItem;
+
+            if (tsi != null)
+            {
+                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
+                if (cm != null)
+                {
+                    lbl = cm.SourceControl as Label;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            Brother clicked = (Brother)lbl.Tag;
+
+            cbTreeParent.SelectedItem = clicked;
         }
 
         #endregion
