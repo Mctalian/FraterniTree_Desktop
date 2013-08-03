@@ -451,6 +451,72 @@ namespace FraterniTree
         #endregion
 
         #endregion
-        
+
+
+        public void RefreshLittleOrder()
+        {
+            bool isSorted;
+            do
+            {
+                isSorted = true;
+                for (int i = 1; i < GetNumberOfChildren(); i++)
+                {
+                    Brother L = (Brother)this[i - 1];
+                    Brother R = (Brother)this[i];
+                    if (R.m_IniYear < L.m_IniYear)
+                    {
+                        SwapLittles(L, R);
+                        isSorted = false;
+                    }
+                    else if (R.m_IniYear == L.m_IniYear)
+                    {
+                        if (R.m_IniMonth < L.m_IniMonth)
+                        {
+                            SwapLittles(L, R);
+                            isSorted = false;
+                        }
+                    }
+                    else
+                    {
+                        // Do nothing
+                    }
+                }
+            } while (!isSorted);
+        }
+
+        private void SwapLittles(Brother L, Brother R)
+        {
+            if (L.HasParent(true) && R.HasParent(true))
+            {
+                if ((Brother)L.Parent(true) == (Brother)R.Parent(true) && (Brother)L.Parent(true) == this)
+                {
+                    if (L.HasRightSibling(true) && R.HasLeftSibling(true))
+                    {
+                        if ((Brother)L.RightSibling(true) == R && (Brother)R.LeftSibling(true) == L)
+                        {
+                            if (L == (Brother)this.FirstChild(true))
+                            {
+                                this.FirstChild(R);
+                            }
+
+                            R.LeftSibling(L.LeftSibling(true));
+                            L.RightSibling(R.RightSibling(true));
+
+                            if (R.HasRightSibling(true))
+                            {
+                                ((Brother)R.RightSibling(true)).LeftSibling(L);
+                            }
+                            if (L.HasLeftSibling(true))
+                            {
+                                ((Brother)L.LeftSibling(true)).RightSibling(R);
+                            }
+
+                            L.LeftSibling(R);
+                            R.RightSibling(L);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

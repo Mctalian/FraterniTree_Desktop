@@ -71,9 +71,23 @@ namespace FraterniTree
         private bool DisplayApex    = false;
         private bool FixedWidth     = false;
         private bool WriteBackReady = false;
-        private bool IsSelectedEdit = false;
+        private FieldEdit SelectedEdits = FieldEdit.NONE;
 
         #endregion
+
+        [Flags]
+        private enum FieldEdit
+        {
+            NONE       = 0x0,
+            FIRST_NAME = 0x1,
+            LAST_NAME  = 0x2,
+            BIG        = 0x4,
+            LITTLES    = 0x8,
+            INI_MONTH  = 0x10,
+            INI_YEAR   = 0x11,
+            ACTIVE     = 0x12,
+            ALL_MASK   = 0xFF
+        };
 
         #endregion
         
@@ -437,7 +451,7 @@ namespace FraterniTree
 
         private void PopulateBrotherEdit(Brother b)
         {
-            IsSelectedEdit = false;
+            SelectedEdits = FieldEdit.NONE;
 
             splitTreeInfo.Panel2Collapsed = false;
 
@@ -488,25 +502,26 @@ namespace FraterniTree
 
         private bool IsSelectedDataEdited()
         {
+            SelectedEdits = FieldEdit.NONE;
             if (tbSelectedFirst.Text != Selected.First)
             {
-                return true;
+                SelectedEdits |= FieldEdit.FIRST_NAME;
             }
 
             if (tbSelectedLast.Text != Selected.Last)
             {
-                return true;
+                SelectedEdits |= FieldEdit.LAST_NAME;
             }
 
             if (tbSelectedBig.Text != ((Brother)(Selected.Parent())).ToString())
             {
-                return true;
+                SelectedEdits |= FieldEdit.BIG;
             }
 
             string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             if (littles.Length != Selected.GetNumberOfChildren())
             {
-                return true;
+                SelectedEdits |= FieldEdit.LITTLES;
             }
             else
             {
@@ -514,28 +529,28 @@ namespace FraterniTree
                 {
                     if (!littles.Contains(((Brother)(Selected[i])).ToString()))
                     {
-                        return true;
+                        SelectedEdits |= FieldEdit.LITTLES;
                     }
                 }
             }
 
             if (dtpSelectedYear.Value.Year != Selected.IniYear)
             {
-                return true;
+                SelectedEdits |= FieldEdit.INI_YEAR;
             }
 
             if (cbSelectedTerm.Text != Selected.IniMonth)
             {
-                return true;
+                SelectedEdits |= FieldEdit.INI_MONTH;
             }
 
             if (chbActive.Checked != Selected.isActiveBrother)
             {
-                return true;
+                SelectedEdits |= FieldEdit.ACTIVE;
             }
             
 
-            return false;
+            return ((SelectedEdits & FieldEdit.ALL_MASK) != 0);
         }
 
         #endregion
@@ -1100,106 +1115,122 @@ namespace FraterniTree
 
         private void btnApplySelected_Click(object sender, EventArgs e)
         {
-            if (cbSelectedTerm.SelectedIndex != -1)
+            if (cbSelectedTerm.SelectedIndex != -1 && ((SelectedEdits & FieldEdit.INI_MONTH) != 0))
             {
                 Selected.IniMonth = cbSelectedTerm.SelectedItem.ToString();
             }
 
-            Selected.IniYear = dtpSelectedYear.Value.Year;
+            if ((SelectedEdits & FieldEdit.INI_YEAR) != 0)
+            {
+                Selected.IniYear = dtpSelectedYear.Value.Year;
+            }
+            if ((SelectedEdits & FieldEdit.ACTIVE) != 0)
+            {
+                Selected.isActiveBrother = chbActive.Checked;
+            }
 
-            Selected.isActiveBrother = chbActive.Checked;
-
-            if (tbSelectedFirst.Text != "" && tbSelectedFirst.Text != Selected.First)
+            if (tbSelectedFirst.Text != "" && ((SelectedEdits & FieldEdit.FIRST_NAME) != 0))
             {
                 cbTreeParent.Items.Remove(Selected);
                 Selected.First = tbSelectedFirst.Text;
                 cbTreeParent.Items.Add(Selected);
                 cbTreeParent.Sorted = true;
             }
-            if (tbSelectedLast.Text != "" && tbSelectedLast.Text != Selected.Last)
+            if (tbSelectedLast.Text != "" && ((SelectedEdits & FieldEdit.LAST_NAME) != 0))
             {
                 cbTreeParent.Items.Remove(Selected);
                 Selected.Last = tbSelectedLast.Text;
                 cbTreeParent.Items.Add(Selected);
                 cbTreeParent.Sorted = true;
             }
-            if (tbSelectedBig.Text == "")
+            if ((SelectedEdits & FieldEdit.BIG) != 0)
             {
-                if (Selected.HasParent())
+                if (tbSelectedBig.Text == "")
                 {
-                    if (Selected != root)
+                    if (Selected.HasParent())
                     {
-                        root.AddChild(Selected);
+                        if (Selected != root)
+                        {
+                            root.AddChild(Selected);
+                        }
+                        RefreshNoBigListBox(root);
                     }
-                    RefreshNoBigListBox(root);
+                }
+                else
+                {
+                    Brother tmp = root.FindBrotherByName(tbSelectedBig.Text);
+                    if (tmp == null)
+                    {
+                        int space = tbSelectedBig.Text.LastIndexOf(' ');
+                        tmp = new Brother(tbSelectedBig.Text.Substring(space + 1), tbSelectedBig.Text.Substring(0, space), "Fall", 1920);
+                        tmp.m_Label.ContextMenuStrip = cmNodeActions;
+                        root.AddChild(tmp);
+                        tmp.AddChild(Selected);
+                        RefreshNoBigListBox(root);
+                    }
+                    else
+                    {
+                        if (Selected.HasParent())
+                        {
+                            tmp.AddChild(Selected);
+                        }
+                        else
+                        {
+                            tmp.AddChild(Selected);
+                        }
+                    }
                 }
             }
-            else
+            if ((SelectedEdits & FieldEdit.LITTLES) != 0)
             {
-                Brother tmp = root.FindBrotherByName(tbSelectedBig.Text);
-                if (tmp == null)
+                if (tbSelectedLittles.Text == "")
                 {
-                    int space = tbSelectedBig.Text.LastIndexOf(' ');
-                    tmp = new Brother(tbSelectedBig.Text.Substring(space + 1), tbSelectedBig.Text.Substring(0, space), "Fall", 1920);
-                    tmp.m_Label.ContextMenuStrip = cmNodeActions;
-                    root.AddChild(tmp);
-                    tmp.AddChild(Selected);
+                    for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
+                    {
+                        root.AddChild((Brother)Selected[i]);
+                    }
                     RefreshNoBigListBox(root);
                 }
                 else
                 {
-                    if (Selected.HasParent())
+                    for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
                     {
-                        tmp.AddChild(Selected);
+                        root.AddChild((Brother)Selected[i]);
                     }
-                    else
+                    int space;
+                    string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                    Brother litt = null;
+                    Brother tmp = null;
+                    for (int i = 0; i < littles.Count(); i++)
                     {
-                        tmp.AddChild(Selected);
-                    }
-                }
-            }
-            if (tbSelectedLittles.Text == "")
-            {
-                for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
-                {
-                    root.AddChild((Brother)Selected[i]);
-                }
-                RefreshNoBigListBox(root);
-            }
-            else
-            {
-                for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
-                {
-                    root.AddChild((Brother)Selected[i]);
-                }
-                int space;
-                string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                Brother litt = null;
-                Brother tmp = null;
-                for (int i = 0; i < littles.Count(); i++)
-                {
-                    space = littles[i].LastIndexOf(' ');
-                    tmp = root.FindBrotherByName(littles[i]);
-                    if (tmp != null)
-                    {
-                        litt = tmp;
-                        if (litt.HasParent())
+                        space = littles[i].LastIndexOf(' ');
+                        tmp = root.FindBrotherByName(littles[i]);
+                        if (tmp != null)
                         {
-                            Selected.AddChild(litt);
+                            litt = tmp;
+                            if (litt.HasParent())
+                            {
+                                Selected.AddChild(litt);
+                            }
+                            else
+                            {
+                                Selected.AddChild(litt);
+                                RefreshNoBigListBox(root);
+                            }
                         }
                         else
                         {
+                            litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", Selected.IniYear + 1);
+                            litt.m_Label.ContextMenuStrip = cmNodeActions;
                             Selected.AddChild(litt);
-                            RefreshNoBigListBox(root);
                         }
                     }
-                    else
-                    {
-                        litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", Selected.IniYear + 1);
-                        litt.m_Label.ContextMenuStrip = cmNodeActions;
-                        Selected.AddChild(litt);
-                    }
                 }
+            }
+
+            if ((SelectedEdits & (FieldEdit.INI_MONTH | FieldEdit.INI_YEAR)) != 0)
+            {
+                ((Brother)Selected.Parent()).RefreshLittleOrder();
             }
 
             if (TreeRoot == Selected && cbTreeParent.Text == "")
@@ -1442,8 +1473,8 @@ namespace FraterniTree
 
         private void SelectedEdit_ValueChanged(object sender, EventArgs e)
         {
-            IsSelectedEdit = IsSelectedDataEdited();
-            if (IsSelectedEdit)
+            bool isSelectedEdit = IsSelectedDataEdited();
+            if (isSelectedEdit)
             {
                 btnApplySelected.Enabled = true;
             }
