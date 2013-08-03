@@ -19,7 +19,7 @@ namespace FraterniTree
         {
             InitializeComponent();
             m_BrotherUnderEdit = b;
-            lblEditBig.Text = PRETEXT + b.GetFullName() + POSTTEXT;
+            lblEditBig.Text = PRETEXT + b.ToString() + POSTTEXT;
             tbEditBig.AutoCompleteCustomSource = frmMain.CurrentBrothers;
             btnCancelEdit.Enabled = true;
         }
