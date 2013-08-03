@@ -128,7 +128,7 @@ namespace TreeDisplay
 
         #region Tree Navigation and Manipulation Methods
 
-        public Node FirstChild()
+        public Node FirstChild(bool isIndex = false)
         {
             Node UnignoredChild = m_Offspring;
             if (UnignoredChild == null)
@@ -136,7 +136,7 @@ namespace TreeDisplay
                 return null;
             }
 
-            if (!UnignoredChild.IsIgnored())
+            if (!UnignoredChild.IsIgnored() || isIndex)
             {
                 return m_Offspring;
             }
@@ -245,7 +245,7 @@ namespace TreeDisplay
         //    }
         //}
 
-        public Node LeftSibling()
+        public Node LeftSibling(bool isIndex = false)
         {
             Node UnignoredLeftSib = m_LeftSibling;
             if (UnignoredLeftSib == null)
@@ -253,7 +253,7 @@ namespace TreeDisplay
                 return null;
             }
 
-            if (!UnignoredLeftSib.IsIgnored())
+            if (!UnignoredLeftSib.IsIgnored() || isIndex)
             {
                 return m_LeftSibling;
             }
@@ -309,16 +309,16 @@ namespace TreeDisplay
             m_RightSibling = Sibling;
         }
 
-        public Node Parent()
+        public Node Parent(bool isIndex = false)
         {
             if (m_Parent != null)
             {
-                if (m_Parent.IsIgnored())
+                if (!m_Parent.IsIgnored() || isIndex)
                 {
-                    return null;
+                    return m_Parent;
                 }
             }
-            return m_Parent;
+            return null;
         }
 
         protected void Parent(Node Parent)
@@ -385,15 +385,14 @@ namespace TreeDisplay
             }
         }
 
-        public bool HasParent()
+        public bool HasParent(bool isIndex = false)
         {
             if (this != null && this.m_Parent != null)
             {
-                if (m_Parent.IsIgnored())
+                if (!m_Parent.IsIgnored() || isIndex)
                 {
-                    return false;
+                    return true;
                 }
-                return true;
             }
             return false;    
         }
@@ -425,12 +424,12 @@ namespace TreeDisplay
             }
         }
 
-        public bool HasLeftSibling()
+        public bool HasLeftSibling(bool isIndex = false)
         {
             if (this != null && this.m_LeftSibling != null)
             {
                 Node tempLeftSib = m_LeftSibling;
-                if (!tempLeftSib.IsIgnored())
+                if (!tempLeftSib.IsIgnored() || isIndex)
                 {
                     return true;
                 }
@@ -456,12 +455,12 @@ namespace TreeDisplay
             }
         }
 
-        public bool HasRightSibling()
+        public bool HasRightSibling(bool isIndex = false)
         {
             if (this != null && this.m_RightSibling != null)
             {
                 Node tempRightSib = m_RightSibling;
-                if (!tempRightSib.IsIgnored())
+                if (!tempRightSib.IsIgnored() || isIndex)
                 {
                     return true;
                 }

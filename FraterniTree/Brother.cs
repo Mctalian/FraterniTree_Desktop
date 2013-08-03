@@ -15,10 +15,10 @@ namespace FraterniTree
     /// </summary>
     public class Brother : Node
     {
-        public string  m_Last;
-        public string  m_First;
-        public InitiationTerm  m_IniMonth;
-        public int     m_IniYear;
+        private string  m_Last;
+        private string  m_First;
+        private InitiationTerm  m_IniMonth;
+        private int     m_IniYear;
         public bool isActiveBrother = false;
         public Label   m_Label = new Label();
         public static Action<Brother> m_SelectCallback = null;
@@ -26,7 +26,7 @@ namespace FraterniTree
         private bool areChildrenHidden = false;
         private Point lastPos;
 
-        public enum InitiationTerm
+        private enum InitiationTerm
         {
             Winter = 0,
             Spring = 1,
@@ -46,20 +46,20 @@ namespace FraterniTree
         /// <summary>
         /// Allow a Brother to be created only by specifying the following parameters
         /// </summary>
-        /// <param name="Last">Last Name of the Brother</param>
-        /// <param name="First">First Name of the Brother</param>
-        /// <param name="Month">Initiation Term of the Brother</param>
-        /// <param name="Year">Initiation Year of the Brother</param>
-        public Brother(string Last, string First, string Month, int Year)
+        /// <param name="strLast">Last Name of the Brother</param>
+        /// <param name="strFirst">First Name of the Brother</param>
+        /// <param name="strMonth">Initiation Term of the Brother</param>
+        /// <param name="iYear">Initiation Year of the Brother</param>
+        public Brother(string strLast, string strFirst, string strMonth, int iYear)
         {
             // Initialize Brother object
-            m_Last              = Last;
-            m_First             = First;
-            m_IniMonth          = (InitiationTerm)Enum.Parse(typeof(InitiationTerm),Month);
-            m_IniYear           = Year;            
+            Last                = strLast;
+            First               = strFirst;
+            IniMonth            = strMonth;
+            IniYear           = iYear;            
 
             // Initialize the label
-            m_Label.Text        = m_First + " " + m_Last;
+            m_Label.Text        = ToString();
             m_Label.TextAlign   = System.Drawing.ContentAlignment.MiddleCenter;
             m_Label.Padding     = new Padding(4);
             m_Label.AutoSize    = true;
@@ -80,16 +80,70 @@ namespace FraterniTree
 
         #endregion
 
-        public string GetFullName()
+        public string Last
+        { 
+            get
+            { 
+                return m_Last;
+            }
+
+            set
+            {
+                m_Last       = value;
+                m_Label.Text = ToString();
+            }
+        }
+
+        public string First
         {
-            return m_First + " " + m_Last;
+            get
+            {
+                return m_First;
+            }
+
+            set
+            {
+                m_First      = value;
+                m_Label.Text = ToString();
+            }
+        }
+
+        public string IniMonth
+        {
+            get
+            {
+                return m_IniMonth.ToString();
+            }
+
+            set
+            {
+                m_IniMonth = (InitiationTerm)Enum.Parse(typeof(InitiationTerm), value);
+            }
+        }
+
+        public int IniYear
+        {
+            get
+            {
+                return m_IniYear;
+            }
+
+            set
+            {
+                m_IniYear = value;
+            }
+        }
+
+        public override string ToString()
+        {
+            return First + " " + Last;
         }
 
         public Brother FindBrotherByName(string fullName)
         {
             Brother found = null;
 
-            if (this.GetFullName() == fullName)
+            if (this.ToString() == fullName)
             {
                 return this;
             }
@@ -398,5 +452,71 @@ namespace FraterniTree
 
         #endregion
 
+
+        public void RefreshLittleOrder()
+        {
+            bool isSorted;
+            do
+            {
+                isSorted = true;
+                for (int i = 1; i < GetNumberOfChildren(); i++)
+                {
+                    Brother L = (Brother)this[i - 1];
+                    Brother R = (Brother)this[i];
+                    if (R.m_IniYear < L.m_IniYear)
+                    {
+                        SwapLittles(L, R);
+                        isSorted = false;
+                    }
+                    else if (R.m_IniYear == L.m_IniYear)
+                    {
+                        if (R.m_IniMonth < L.m_IniMonth)
+                        {
+                            SwapLittles(L, R);
+                            isSorted = false;
+                        }
+                    }
+                    else
+                    {
+                        // Do nothing
+                    }
+                }
+            } while (!isSorted);
+        }
+
+        private void SwapLittles(Brother L, Brother R)
+        {
+            if (L.HasParent(true) && R.HasParent(true))
+            {
+                if ((Brother)L.Parent(true) == (Brother)R.Parent(true) && (Brother)L.Parent(true) == this)
+                {
+                    if (L.HasRightSibling(true) && R.HasLeftSibling(true))
+                    {
+                        if ((Brother)L.RightSibling(true) == R && (Brother)R.LeftSibling(true) == L)
+                        {
+                            if (L == (Brother)this.FirstChild(true))
+                            {
+                                this.FirstChild(R);
+                            }
+
+                            R.LeftSibling(L.LeftSibling(true));
+                            L.RightSibling(R.RightSibling(true));
+
+                            if (R.HasRightSibling(true))
+                            {
+                                ((Brother)R.RightSibling(true)).LeftSibling(L);
+                            }
+                            if (L.HasLeftSibling(true))
+                            {
+                                ((Brother)L.LeftSibling(true)).RightSibling(R);
+                            }
+
+                            L.LeftSibling(R);
+                            R.RightSibling(L);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
