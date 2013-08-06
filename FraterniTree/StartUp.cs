@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DataProtectionSimple;
 using Microsoft.VisualBasic;
 using System.IO;
 using System.Xml;
