@@ -30,6 +30,8 @@ namespace FraterniTree
 
         #region Private Data
 
+        static System.Timers.Timer AutoSave = new System.Timers.Timer();
+
         #region Mysql-Specific Data
         private const string INSERT_INTO_STM = "INSERT INTO Brothers (Last, First, IniMonth, IniYear, Big, NextSibling, FirstLittle)" +
                                                "VALUES (@Last, @First, @IniMonth, @IniYear, @Big, @NextSibling, @FirstLittle)" +
@@ -743,10 +745,18 @@ namespace FraterniTree
 
             XmlDocument tmp = new XmlDocument();
             tmp.LoadXml(xmlDoc);
-            //File.WriteAllText(filePath, xmlDoc);
             XmlTextWriter xWriter = new XmlTextWriter(filePath, Encoding.UTF8);
             xWriter.Formatting = Formatting.Indented;
             tmp.Save(xWriter);
+            xWriter.Close();
+
+            if (filePath == OpenedXmlFilePath)
+            {
+                if (File.Exists(OpenedXmlFilePath + ".sav"))
+                {
+                    File.Delete(OpenedXmlFilePath + ".sav");
+                }
+            }
         }
 
         private void ImportFromXml()
@@ -823,6 +833,7 @@ namespace FraterniTree
             {
                 throw new Exception("More than one root node, please check your XML and try again.");
             }
+            ExportToXml(OpenedXmlFilePath + ".BAK", XmlParentNodeName);
         }
 
         #endregion
@@ -923,9 +934,12 @@ namespace FraterniTree
             bIsXml = start.m_bXML;
             if (bIsXml)
             {
+                AutoSave.Elapsed += AutoSave_Elapsed;
+                AutoSave.Interval = 30000;
                 OpenedXmlFilePath = start.m_FilePath;
                 XmlParentNodeName = start.m_ParentNode;
                 saveXmlToolStripMenuItem.Enabled = true;
+                AutoSave.Start();
             }
             else
             {
@@ -971,6 +985,8 @@ namespace FraterniTree
                 WriteBackReady = true;
             }
         }
+
+        
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -1374,6 +1390,130 @@ namespace FraterniTree
 
         #endregion
 
+        #region Node Context Menu
+
+        private void removeNodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Label lbl = new Label();
+            ToolStripItem tsi = sender as ToolStripItem;
+
+            if (tsi != null)
+            {
+                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
+                if (cm != null)
+                {
+                    lbl = cm.SourceControl as Label;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            Brother clicked = (Brother)lbl.Tag;
+
+            DialogResult res = MessageBox.Show("Are you sure you want to delete this node: " + clicked.ToString() + "?\n\n" +
+                                               "All its children nodes will be re-assigned to the parent.",
+                                               "Node Removal Confirmation",
+                                               MessageBoxButtons.YesNo,
+                                               MessageBoxIcon.Warning);
+            if (res == DialogResult.Yes)
+            {
+                if (Selected == clicked)
+                {
+                    Selected = null;
+                }
+                clicked.RemoveNode();
+                clicked.m_Label.Dispose();
+                clicked.m_Label = null;
+                RemoveBrotherFromTree(clicked);
+            }
+            else
+            {
+                // Do Nothing
+            }
+        }
+
+        private void toggleHideDescendantsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Label lbl = new Label();
+            ToolStripItem tsi = sender as ToolStripItem;
+
+            if (tsi != null)
+            {
+                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
+                if (cm != null)
+                {
+                    lbl = cm.SourceControl as Label;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            Brother clicked = (Brother)lbl.Tag;
+            if (clicked.FirstChild() == null)
+            {
+                return;
+            }
+            Brother firstChild = ((Brother)(clicked.FirstChild()));
+            if (firstChild.m_Label.Parent != null)
+            {
+                if (firstChild.m_Label.Visible)
+                {
+                    lbl.Font = new Font(lbl.Font, lbl.Font.Style | FontStyle.Italic);
+                    clicked.SetDescendantsHidden(true);
+                }
+                else
+                {
+                    lbl.Font = new Font(lbl.Font, lbl.Font.Style & ~FontStyle.Italic);
+                    clicked.SetDescendantsHidden(false);
+                }
+                for (int i = clicked.GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+                    clicked.RecursiveLabelVisibleToggle((Brother)(clicked[i]));
+                }
+            }
+        }
+
+        private void makeThisTreeParentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Label lbl = new Label();
+            ToolStripItem tsi = sender as ToolStripItem;
+
+            if (tsi != null)
+            {
+                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
+                if (cm != null)
+                {
+                    lbl = cm.SourceControl as Label;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+
+            Brother clicked = (Brother)lbl.Tag;
+
+            cbTreeParent.SelectedItem = clicked;
+        }
+
+        #endregion
+
         #region Numeric Up-Downs
 
         private void updwnNumGen_ValueChanged(object sender, EventArgs e)
@@ -1494,6 +1634,17 @@ namespace FraterniTree
         }
 
         #endregion
+
+        #endregion
+
+        #region Timers
+
+        void AutoSave_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            AutoSave.Stop();
+            ExportToXml(OpenedXmlFilePath + ".sav", XmlParentNodeName);
+            AutoSave.Start();
+        }
 
         #endregion
 
@@ -1739,130 +1890,6 @@ namespace FraterniTree
         private void saveXmlToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExportToXml(OpenedXmlFilePath, XmlParentNodeName);
-        }
-
-        #endregion
-
-        #region Node Context Menu
-
-        private void removeNodeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Label lbl = new Label();
-            ToolStripItem tsi = sender as ToolStripItem;
-
-            if (tsi != null)
-            {
-                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
-                if (cm != null)
-                {
-                    lbl = cm.SourceControl as Label;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
-
-            Brother clicked = (Brother)lbl.Tag;
-
-            DialogResult res = MessageBox.Show("Are you sure you want to delete this node: " + clicked.ToString() + "?\n\n" +
-                                               "All its children nodes will be re-assigned to the parent.",
-                                               "Node Removal Confirmation",
-                                               MessageBoxButtons.YesNo,
-                                               MessageBoxIcon.Warning);
-            if (res == DialogResult.Yes)
-            {
-                if (Selected == clicked)
-                {
-                    Selected = null;
-                }
-                clicked.RemoveNode();
-                clicked.m_Label.Dispose();
-                clicked.m_Label = null;
-                RemoveBrotherFromTree(clicked);
-            }
-            else
-            {
-                // Do Nothing
-            }
-        }
-
-        private void toggleHideDescendantsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Label lbl = new Label();
-            ToolStripItem tsi = sender as ToolStripItem;
-
-            if (tsi != null)
-            {
-                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
-                if (cm != null)
-                {
-                    lbl = cm.SourceControl as Label;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
-
-            Brother clicked = (Brother)lbl.Tag;
-            if (clicked.FirstChild() == null)
-            {
-                return;
-            }
-            Brother firstChild = ((Brother)(clicked.FirstChild()));
-            if (firstChild.m_Label.Parent != null)
-            {
-                if (firstChild.m_Label.Visible)
-                {
-                    lbl.Font = new Font(lbl.Font, lbl.Font.Style | FontStyle.Italic);
-                    clicked.SetDescendantsHidden(true);
-                }
-                else
-                {
-                    lbl.Font = new Font(lbl.Font, lbl.Font.Style & ~FontStyle.Italic);
-                    clicked.SetDescendantsHidden(false);
-                }
-                for (int i = clicked.GetNumberOfChildren() - 1; i >= 0; i--)
-                {
-                    clicked.RecursiveLabelVisibleToggle((Brother)(clicked[i]));
-                }
-            }
-        }
-
-        private void makeThisTreeParentToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Label lbl = new Label();
-            ToolStripItem tsi = sender as ToolStripItem;
-
-            if (tsi != null)
-            {
-                ContextMenuStrip cm = tsi.Owner as ContextMenuStrip;
-                if (cm != null)
-                {
-                    lbl = cm.SourceControl as Label;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                return;
-            }
-
-            Brother clicked = (Brother)lbl.Tag;
-
-            cbTreeParent.SelectedItem = clicked;
         }
 
         #endregion
