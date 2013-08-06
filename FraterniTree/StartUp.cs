@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RegistryAccess;
 using DataProtectionSimple;
 using Microsoft.VisualBasic;
 using System.IO;
@@ -27,31 +26,49 @@ namespace FraterniTree
         public string m_PWord      { get; set; }
         public string m_FilePath   { get; set; }
         public string m_ParentNode { get; set; }
+        public MySql.Data.MySqlClient.MySqlConnection Connection { get; set; }
 
         public StartUp()
         {
             InitializeComponent();
 
-            m_Port    = 0;
-            m_bIsMale = true;
-            m_Server  = "";
-            m_DBase   = "";
-            m_UName   = "";
-            m_PWord   = "";
+            m_Port     = 0;
+            m_bIsMale  = true;
+            m_Server   = "";
+            m_DBase    = "";
+            m_UName    = "";
+            m_PWord    = "";
+            Connection = null;
 
-            RegAccess.APPLICATION_NAME = AssemblyProduct;
-            RegAccess.COMPANY_NAME = AssemblyCompany;
-            string[] dbs = RegAccess.GetAllSubKeys();
-
-            if (dbs != null)
+            if (Properties.Settings.Default.RecentMySqlConnection != null)
             {
-                foreach (string db in dbs)
-                {
-                    ToolStripMenuItem tmp = new ToolStripMenuItem(db);
-                    tmp.Click += genericToolStripMenuItem_Click;
-                    connectToolStripMenuItem.DropDownItems.Add(tmp);
-                }
+                ToolStripMenuItem tmp = new ToolStripMenuItem(Properties.Settings.Default.RecentMySqlConnection.Database);
+                tmp.Click += genericToolStripMenuItem_Click;
+                connectToolStripMenuItem.DropDownItems.Add(tmp);
+                connectToolStripMenuItem.Enabled = true;
             }
+            
+            if (Properties.Settings.Default.RecentXmlPath != "")
+            {
+                ToolStripMenuItem tmp = new ToolStripMenuItem(Path.GetFileName(Properties.Settings.Default.RecentXmlPath));
+                tmp.Click += genericToolStripMenuItem_Click;
+                connectToolStripMenuItem.DropDownItems.Add(tmp);
+                connectToolStripMenuItem.Enabled = true;
+            }
+
+            //RegAccess.APPLICATION_NAME = AssemblyProduct;
+            //RegAccess.COMPANY_NAME = AssemblyCompany;
+            //string[] dbs = RegAccess.GetAllSubKeys();
+
+            //if (dbs != null)
+            //{
+            //    foreach (string db in dbs)
+            //    {
+            //        ToolStripMenuItem tmp = new ToolStripMenuItem(db);
+            //        tmp.Click += genericToolStripMenuItem_Click;
+            //        connectToolStripMenuItem.DropDownItems.Add(tmp);
+            //    }
+            //}
         }
 
         private bool[] m_bInputValid = new bool[5];
@@ -169,19 +186,27 @@ namespace FraterniTree
             }
         }
 
-        private void StartUp_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //this.DialogResult = DialogResult.Abort;
-        }
-
         private void genericToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string dbName = ((ToolStripMenuItem)(sender)).Text;
-            tbDb.Text = RegistryAccess.RegAccess.GetStringRegistryValue("db", "", dbName);
-            tbPort.Text = RegistryAccess.RegAccess.GetStringRegistryValue("port", "", dbName);
-            tbServer.Text = RegistryAccess.RegAccess.GetStringRegistryValue("server", "", dbName);
-            tbUser.Text = RegistryAccess.RegAccess.GetStringRegistryValue("user", "", dbName);
-            tbPass.Text = DP.Decrypt(RegistryAccess.RegAccess.GetStringRegistryValue("pass", "", dbName), "1950");
+            if (((ToolStripMenuItem)(sender)).Text == Path.GetFileName(Properties.Settings.Default.RecentXmlPath))
+            {
+                m_FilePath = Properties.Settings.Default.RecentXmlPath;
+                m_bXML = true;
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else if (((ToolStripMenuItem)(sender)).Text == Properties.Settings.Default.RecentMySqlConnection.Database)
+            {
+                Connection = Properties.Settings.Default.RecentMySqlConnection;
+
+            }
+            else
+            {
+                this.DialogResult = DialogResult.Abort;
+                this.Close();
+            }
+
+            
         }
 
         #region Assembly Attribute Accessors
@@ -288,8 +313,11 @@ namespace FraterniTree
                     tmpDoc.Load(ofd.FileName);
                     m_ParentNode = tmpDoc.DocumentElement.Name;
                 }
-                m_bXML = true;
+                Properties.Settings.Default.RecentXmlPath = m_FilePath;
             }
+
+            m_bXML = true;
+
             this.DialogResult = res;
             this.Close();
         }

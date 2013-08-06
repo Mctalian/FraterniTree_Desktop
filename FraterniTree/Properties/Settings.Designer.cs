@@ -22,5 +22,28 @@ namespace FraterniTree.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::MySql.Data.MySqlClient.MySqlConnection RecentMySqlConnection {
+            get {
+                return ((global::MySql.Data.MySqlClient.MySqlConnection)(this["RecentMySqlConnection"]));
+            }
+            set {
+                this["RecentMySqlConnection"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RecentXmlPath {
+            get {
+                return ((string)(this["RecentXmlPath"]));
+            }
+            set {
+                this["RecentXmlPath"] = value;
+            }
+        }
     }
 }

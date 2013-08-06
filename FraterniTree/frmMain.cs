@@ -1,7 +1,6 @@
 ﻿using DataProtectionSimple;
 using Microsoft.VisualBasic;
 using MySql.Data.MySqlClient;
-using RegistryAccess;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -568,17 +567,6 @@ namespace FraterniTree
 
         #region MySql-Specific Methods
 
-        private void AddDBToReg(string server, int port, string dbName, string uName, string pWord)
-        {
-            string salt = "1950";
-
-            RegistryAccess.RegAccess.SetStringRegistryValue("db", dbName, dbName);
-            RegistryAccess.RegAccess.SetStringRegistryValue("port", port.ToString(), dbName);
-            RegistryAccess.RegAccess.SetStringRegistryValue("server", server, dbName);
-            RegistryAccess.RegAccess.SetStringRegistryValue("user", uName, dbName);
-            RegistryAccess.RegAccess.SetStringRegistryValue("pass", DP.Encrypt(pWord, salt), dbName);
-        }
-
         private bool ConnectDB(string server, int port, string dbName, string uName, string pWord)
         {
             bool ret = true;
@@ -590,8 +578,32 @@ namespace FraterniTree
                 if (DbConnect.State == ConnectionState.Open)
                 {
                     DbConnect.Close();
-                    AddDBToReg(server, port, dbName, uName, pWord);
+                    Properties.Settings.Default.RecentMySqlConnection = DbConnect;
                 }
+                
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show(ex.Message);
+                ret = false;
+            }
+            return ret;
+        }
+
+        private bool ConnectDB(MySqlConnection conn)
+        {
+            bool ret = true;
+            
+            try
+            {
+                DbConnect = conn;
+                DbConnect.Open();
+                if (DbConnect.State == ConnectionState.Open)
+                {
+                    DbConnect.Close();
+                    Properties.Settings.Default.RecentMySqlConnection = DbConnect;
+                }
+
             }
             catch (MySqlException ex)
             {
@@ -695,9 +707,9 @@ namespace FraterniTree
         private Brother ConvertXmlToTree(XmlNode currentParent)
         {
             Brother big = new Brother(currentParent.Attributes["Last"].Value,
-                                      currentParent.Attributes["First"].Value,
-                                      currentParent.Attributes["IniTerm"].Value,
-                                      Int32.Parse(currentParent.Attributes["IniYear"].Value));
+                                        currentParent.Attributes["First"].Value,
+                                        currentParent.Attributes["IniTerm"].Value,
+                                        Int32.Parse(currentParent.Attributes["IniYear"].Value));
 
             if (currentParent.Attributes["Active"] != null)
             {
@@ -728,7 +740,6 @@ namespace FraterniTree
             {
                 big.AddChild(ConvertXmlToTree(child));
             }
-
             return big;
         }
 
@@ -765,7 +776,7 @@ namespace FraterniTree
             {
                 // Xml Document Header
                 string xmlData = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                                   "<" + XmlParentNodeName + ">\n";
+                                    "<" + XmlParentNodeName + ">\n";
 
                 // Begin the Root Tag
                 xmlData += "<Brother ";
@@ -797,9 +808,9 @@ namespace FraterniTree
                 if (root == null)
                 {
                     root = new Brother(currentParent.Attributes["Last"].Value,
-                                       currentParent.Attributes["First"].Value,
-                                       currentParent.Attributes["IniTerm"].Value,
-                                       Int32.Parse(currentParent.Attributes["IniYear"].Value));
+                                        currentParent.Attributes["First"].Value,
+                                        currentParent.Attributes["IniTerm"].Value,
+                                        Int32.Parse(currentParent.Attributes["IniYear"].Value));
                     if (currentParent.Attributes["Active"] != null)
                     {
                         string val = currentParent.Attributes["Active"].Value;
@@ -828,12 +839,19 @@ namespace FraterniTree
                     root.AddChild(ConvertXmlToTree(child));
                 }
                 saveXmlToolStripMenuItem.Enabled = true;
+
+                if (XmlParentNodeName == null)
+                {
+                    XmlParentNodeName = XmlDoc.DocumentElement.Name;
+                }
+
+                ExportToXml(OpenedXmlFilePath + ".BAK", XmlParentNodeName);
+                AutoSave.Start();
             }
             else
             {
                 throw new Exception("More than one root node, please check your XML and try again.");
             }
-            ExportToXml(OpenedXmlFilePath + ".BAK", XmlParentNodeName);
         }
 
         #endregion
@@ -923,7 +941,7 @@ namespace FraterniTree
 
             StartUp start = new StartUp();
             start.ShowDialog();
-            if (start.DialogResult == System.Windows.Forms.DialogResult.Abort)
+            if (start.DialogResult != System.Windows.Forms.DialogResult.OK)
             {
                 this.Close();
                 return;
@@ -939,7 +957,6 @@ namespace FraterniTree
                 OpenedXmlFilePath = start.m_FilePath;
                 XmlParentNodeName = start.m_ParentNode;
                 saveXmlToolStripMenuItem.Enabled = true;
-                AutoSave.Start();
             }
             else
             {
@@ -947,15 +964,27 @@ namespace FraterniTree
                 root = new Brother("Tonsor Jr.", "Charles A", "Winter", 1899);
 
                 bIsMale = start.m_bIsMale;
-                string server = start.m_Server;
-                string db = start.m_DBase;
-                string user = start.m_UName;
-                string pword = start.m_PWord;
-                int portNum = start.m_Port;
 
                 bool ret;
 
-                ret = ConnectDB(server, portNum, db, user, pword);
+                if (start.Connection != null)
+                {
+                    ret = ConnectDB(start.Connection);
+                }
+                else
+                {
+                    string server = start.m_Server;
+                    string db = start.m_DBase;
+                    string user = start.m_UName;
+                    string pword = start.m_PWord;
+                    int portNum = start.m_Port;
+
+                    ret = ConnectDB(server, portNum, db, user, pword);
+                }
+
+                
+
+                
 
                 if (!ret)
                 {
@@ -984,9 +1013,10 @@ namespace FraterniTree
             {
                 WriteBackReady = true;
             }
-        }
 
-        
+            Properties.Settings.Default.Save();
+
+        }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
