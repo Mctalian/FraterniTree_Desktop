@@ -226,13 +226,13 @@
             this.menuStrip1.Size = new System.Drawing.Size(194, 24);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
-            this.menuStrip1.Visible = false;
             // 
             // connectToolStripMenuItem
             // 
+            this.connectToolStripMenuItem.Enabled = false;
             this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
-            this.connectToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
-            this.connectToolStripMenuItem.Text = "Connect";
+            this.connectToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
+            this.connectToolStripMenuItem.Text = "Open Recent";
             // 
             // btnXml
             // 
@@ -287,7 +287,6 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Choose a Tree Source";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StartUp_FormClosing);
             this.gbGender.ResumeLayout(false);
             this.gbGender.PerformLayout();
             this.menuStrip1.ResumeLayout(false);

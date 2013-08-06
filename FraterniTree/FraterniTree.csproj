@@ -132,10 +132,6 @@
       <Project>{034cbcc9-74a4-4b95-a896-db97bcccb6fd}</Project>
       <Name>DataProtectionSimple</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RegistryAccess\RegistryAccess.csproj">
-      <Project>{15664ced-769b-4bb2-90fa-963d22894acd}</Project>
-      <Name>RegistryAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TreeDisplay\TreeDisplay.csproj">
       <Project>{3130a3f4-fc7f-4d63-a3cf-2a5b65c662a6}</Project>
       <Name>TreeDisplay</Name>
