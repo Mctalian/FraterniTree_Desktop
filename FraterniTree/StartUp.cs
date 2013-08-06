@@ -267,7 +267,7 @@ namespace FraterniTree
         private void btnXml_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "XML Document (*.xml) | *.xml";
+            ofd.Filter = "XML Document|*.xml|All Files|*.*";
             ofd.DefaultExt = ".xml";
             ofd.AddExtension = true;
             ofd.CheckFileExists = true;
