@@ -87,6 +87,11 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.activesOnlyTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generationUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generationDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.displayRootOfAllTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixedLabelWidthsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomInToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,16 +107,12 @@
             this.supportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ttTree = new System.Windows.Forms.ToolTip(this.components);
             this.cmNodeActions = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.makeThisTreeParentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toggleHideDescendantsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.makeThisTreeParentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.allTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.activesOnlyTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generationUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generationDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlTree = new FraterniTree.NoFlickerPanel();
+            this.toggleActiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -890,6 +891,43 @@
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
             // 
+            // allTreeToolStripMenuItem
+            // 
+            this.allTreeToolStripMenuItem.Name = "allTreeToolStripMenuItem";
+            this.allTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.allTreeToolStripMenuItem.Text = "*All* Tree";
+            this.allTreeToolStripMenuItem.Click += new System.EventHandler(this.allTreeToolStripMenuItem_Click);
+            // 
+            // activesOnlyTreeToolStripMenuItem
+            // 
+            this.activesOnlyTreeToolStripMenuItem.Name = "activesOnlyTreeToolStripMenuItem";
+            this.activesOnlyTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.activesOnlyTreeToolStripMenuItem.Text = "*Active Only* Tree";
+            this.activesOnlyTreeToolStripMenuItem.Click += new System.EventHandler(this.activesOnlyTreeToolStripMenuItem_Click);
+            // 
+            // generationUpToolStripMenuItem
+            // 
+            this.generationUpToolStripMenuItem.Enabled = false;
+            this.generationUpToolStripMenuItem.Name = "generationUpToolStripMenuItem";
+            this.generationUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.generationUpToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.generationUpToolStripMenuItem.Text = "Next Generation";
+            this.generationUpToolStripMenuItem.Click += new System.EventHandler(this.generationUpToolStripMenuItem_Click);
+            // 
+            // generationDownToolStripMenuItem
+            // 
+            this.generationDownToolStripMenuItem.Enabled = false;
+            this.generationDownToolStripMenuItem.Name = "generationDownToolStripMenuItem";
+            this.generationDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.generationDownToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
+            this.generationDownToolStripMenuItem.Text = "Previous Generation";
+            this.generationDownToolStripMenuItem.Click += new System.EventHandler(this.generationDownToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(252, 6);
+            // 
             // displayRootOfAllTreeToolStripMenuItem
             // 
             this.displayRootOfAllTreeToolStripMenuItem.Enabled = false;
@@ -1014,9 +1052,22 @@
             this.makeThisTreeParentToolStripMenuItem,
             this.toolStripSeparator4,
             this.toggleHideDescendantsToolStripMenuItem,
-            this.removeNodeToolStripMenuItem});
+            this.removeNodeToolStripMenuItem,
+            this.toggleActiveToolStripMenuItem});
             this.cmNodeActions.Name = "cmNodeActions";
-            this.cmNodeActions.Size = new System.Drawing.Size(210, 76);
+            this.cmNodeActions.Size = new System.Drawing.Size(210, 120);
+            // 
+            // makeThisTreeParentToolStripMenuItem
+            // 
+            this.makeThisTreeParentToolStripMenuItem.Name = "makeThisTreeParentToolStripMenuItem";
+            this.makeThisTreeParentToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.makeThisTreeParentToolStripMenuItem.Text = "Make This Tree Parent";
+            this.makeThisTreeParentToolStripMenuItem.Click += new System.EventHandler(this.makeThisTreeParentToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(206, 6);
             // 
             // toggleHideDescendantsToolStripMenuItem
             // 
@@ -1032,55 +1083,6 @@
             this.removeNodeToolStripMenuItem.Text = "Remove Node";
             this.removeNodeToolStripMenuItem.Click += new System.EventHandler(this.removeNodeToolStripMenuItem_Click);
             // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(206, 6);
-            // 
-            // makeThisTreeParentToolStripMenuItem
-            // 
-            this.makeThisTreeParentToolStripMenuItem.Name = "makeThisTreeParentToolStripMenuItem";
-            this.makeThisTreeParentToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.makeThisTreeParentToolStripMenuItem.Text = "Make This Tree Parent";
-            this.makeThisTreeParentToolStripMenuItem.Click += new System.EventHandler(this.makeThisTreeParentToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(252, 6);
-            // 
-            // allTreeToolStripMenuItem
-            // 
-            this.allTreeToolStripMenuItem.Name = "allTreeToolStripMenuItem";
-            this.allTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
-            this.allTreeToolStripMenuItem.Text = "*All* Tree";
-            this.allTreeToolStripMenuItem.Click += new System.EventHandler(this.allTreeToolStripMenuItem_Click);
-            // 
-            // activesOnlyTreeToolStripMenuItem
-            // 
-            this.activesOnlyTreeToolStripMenuItem.Name = "activesOnlyTreeToolStripMenuItem";
-            this.activesOnlyTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
-            this.activesOnlyTreeToolStripMenuItem.Text = "*Active Only* Tree";
-            this.activesOnlyTreeToolStripMenuItem.Click += new System.EventHandler(this.activesOnlyTreeToolStripMenuItem_Click);
-            // 
-            // generationUpToolStripMenuItem
-            // 
-            this.generationUpToolStripMenuItem.Enabled = false;
-            this.generationUpToolStripMenuItem.Name = "generationUpToolStripMenuItem";
-            this.generationUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
-            this.generationUpToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
-            this.generationUpToolStripMenuItem.Text = "Next Generation";
-            this.generationUpToolStripMenuItem.Click += new System.EventHandler(this.generationUpToolStripMenuItem_Click);
-            // 
-            // generationDownToolStripMenuItem
-            // 
-            this.generationDownToolStripMenuItem.Enabled = false;
-            this.generationDownToolStripMenuItem.Name = "generationDownToolStripMenuItem";
-            this.generationDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.generationDownToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
-            this.generationDownToolStripMenuItem.Text = "Previous Generation";
-            this.generationDownToolStripMenuItem.Click += new System.EventHandler(this.generationDownToolStripMenuItem_Click);
-            // 
             // pnlTree
             // 
             this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
@@ -1094,6 +1096,13 @@
             this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
             this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
             this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
+            // 
+            // toggleActiveToolStripMenuItem
+            // 
+            this.toggleActiveToolStripMenuItem.Name = "toggleActiveToolStripMenuItem";
+            this.toggleActiveToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.toggleActiveToolStripMenuItem.Text = "Toggle Active";
+            this.toggleActiveToolStripMenuItem.Click += new System.EventHandler(this.toggleActiveToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -1227,6 +1236,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem generationUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generationDownToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toggleActiveToolStripMenuItem;
 
     }
 }

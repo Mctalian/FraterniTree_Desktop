@@ -15,23 +15,134 @@ namespace FraterniTree
     /// </summary>
     public class Brother : Node
     {
-        private string  m_Last;
-        private string  m_First;
+        #region Private Data
+        private string          m_Last;
+        private string          m_First;
         private InitiationTerm  m_IniMonth;
-        private int     m_IniYear;
-        public bool isActiveBrother = false;
-        public Label   m_Label = new Label();
-        public static Action<Brother> m_SelectCallback = null;
-        public static Action m_ShiftCallback = null;
-        private bool areChildrenHidden = false;
-        private Point lastPos;
+        private int             m_IniYear;
+        private bool            m_IsActiveBrother   = false;
+        private bool            m_AreChildrenHidden = false;
+        private Point           m_LastPos;
+        #region Static Data
+        private static Action<Brother> m_SelectCallback = null;
+        private static Action          m_ShiftCallback  = null;
+        #endregion
+        #endregion
+
+        #region Public Data
+        public Label                    m_Label = new Label();
+        #endregion
 
         private enum InitiationTerm
         {
             Winter = 0,
             Spring = 1,
-            Fall = 2
+            Fall   = 2
         };
+
+        #region Properties
+        public string Last
+        {
+            get
+            {
+                return m_Last;
+            }
+
+            set
+            {
+                m_Last = value;
+                int width = m_Label.Width;
+                m_Label.Text = ToString();
+                m_Label.Refresh();
+                m_Label.Location = new Point(m_Label.Location.X + (width - m_Label.Width) / 2, m_Label.Location.Y);
+            }
+        }
+
+        public string First
+        {
+            get
+            {
+                return m_First;
+            }
+
+            set
+            {
+                m_First = value;
+                int width = m_Label.Width;
+                m_Label.Text = ToString();
+                m_Label.Refresh();
+                m_Label.Location = new Point(m_Label.Location.X + (width - m_Label.Width) / 2, m_Label.Location.Y);
+            }
+        }
+
+        public string IniMonth
+        {
+            get
+            {
+                return m_IniMonth.ToString();
+            }
+
+            set
+            {
+                m_IniMonth = (InitiationTerm)Enum.Parse(typeof(InitiationTerm), value);
+            }
+        }
+
+        public int IniYear
+        {
+            get
+            {
+                return m_IniYear;
+            }
+
+            set
+            {
+                m_IniYear = value;
+            }
+        }
+
+        public bool IsActive
+        {
+            get
+            {
+                return m_IsActiveBrother;
+            }
+
+            set
+            {
+                m_IsActiveBrother = value;
+
+                if (m_IsActiveBrother)
+                {
+                    m_Label.ForeColor = Color.White;
+                    m_Label.BackColor = Color.DarkGreen;
+                }
+                else
+                {
+                    m_Label.ForeColor = Color.Empty;
+                    m_Label.BackColor = Color.Empty;
+                }
+
+                m_Label.Refresh();
+            }
+        }
+
+        public static Action<Brother> SelectCallback
+        {
+            set
+            {
+                m_SelectCallback = value;
+            }
+        }
+
+        public static Action ShiftCallback
+        {
+            set
+            {
+                m_ShiftCallback = value;
+            }
+        }
+        #endregion
 
         #region Constructors
 
@@ -80,60 +191,6 @@ namespace FraterniTree
 
         #endregion
 
-        public string Last
-        { 
-            get
-            { 
-                return m_Last;
-            }
-
-            set
-            {
-                m_Last       = value;
-                m_Label.Text = ToString();
-            }
-        }
-
-        public string First
-        {
-            get
-            {
-                return m_First;
-            }
-
-            set
-            {
-                m_First      = value;
-                m_Label.Text = ToString();
-            }
-        }
-
-        public string IniMonth
-        {
-            get
-            {
-                return m_IniMonth.ToString();
-            }
-
-            set
-            {
-                m_IniMonth = (InitiationTerm)Enum.Parse(typeof(InitiationTerm), value);
-            }
-        }
-
-        public int IniYear
-        {
-            get
-            {
-                return m_IniYear;
-            }
-
-            set
-            {
-                m_IniYear = value;
-            }
-        }
-
         public override string ToString()
         {
             return First + " " + Last;
@@ -162,12 +219,12 @@ namespace FraterniTree
 
         public void SetDescendantsHidden(bool status)
         {
-            areChildrenHidden = status;
+            m_AreChildrenHidden = status;
         }
 
         public bool RecursiveSetIgnoreNode()
         {
-            bool isThisIgnored = !isActiveBrother;
+            bool isThisIgnored = !m_IsActiveBrother;
             for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 if (isThisIgnored)
@@ -297,7 +354,7 @@ namespace FraterniTree
         {
             if (b.m_Label.Parent != null)
             {
-                b.lastPos = e.Location;
+                b.m_LastPos = e.Location;
                 b.m_Label.BringToFront();
                 if (b.HasRightSibling())
                 {
@@ -316,7 +373,7 @@ namespace FraterniTree
             {
                 if (((Brother)(b.Parent())).m_Label.Parent != null)
                 {
-                    b.m_Label.Visible = ((Brother)(b.Parent())).m_Label.Visible && !((Brother)(b.Parent())).areChildrenHidden;
+                    b.m_Label.Visible = ((Brother)(b.Parent())).m_Label.Visible && !((Brother)(b.Parent())).m_AreChildrenHidden;
                 }
                 else
                 {
@@ -325,9 +382,9 @@ namespace FraterniTree
             }
             else
             {
-                b.m_Label.Visible = !((Brother)(b.Parent())).areChildrenHidden;
+                b.m_Label.Visible = !((Brother)(b.Parent())).m_AreChildrenHidden;
             }
-            if (!b.areChildrenHidden)
+            if (!b.m_AreChildrenHidden)
             {
                 for (int i = b.GetNumberOfChildren() - 1; i >= 0; i--)
                 {
@@ -350,22 +407,11 @@ namespace FraterniTree
 
         private void m_Label_Paint(object sender, PaintEventArgs e)
         {
-            if (isActiveBrother)
-            {
-                m_Label.ForeColor = Color.White;
-                m_Label.BackColor = Color.DarkGreen;
-            }
-            else
-            {
-                m_Label.ForeColor = Color.Empty;
-                m_Label.BackColor = Color.Empty;
-            }
-
             Brother parent = ((Brother)(this.Parent()));
 
             if (parent.m_Label.Parent != null && !parent.m_Label.Visible)
             {
-                m_Label.Visible = parent.m_Label.Visible && !parent.areChildrenHidden;
+                m_Label.Visible = parent.m_Label.Visible && !parent.m_AreChildrenHidden;
             }
         }
 
@@ -386,8 +432,8 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                int dx = e.X - lastPos.X;
-                int dy = e.Y - lastPos.Y;
+                int dx = e.X - m_LastPos.X;
+                int dy = e.Y - m_LastPos.Y;
                 m_Label.Location = new Point(m_Label.Left + dx, m_Label.Top + dy);
                 if (this.HasChild())
                 {
@@ -400,7 +446,7 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                lastPos = e.Location;
+                m_LastPos = e.Location;
                 m_Label.BringToFront();
                 m_Label.Capture = true;
                 if (this.HasChild())
@@ -414,10 +460,6 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                int oldWidth = m_Label.Width;
-                m_Label.Font = new Font(m_Label.Font, m_Label.Font.Style | FontStyle.Bold);
-                m_Label.Refresh();
-                m_Label.Location = new Point(m_Label.Location.X - (m_Label.Width - oldWidth) / 2, m_Label.Location.Y);
                 if (m_SelectCallback != null)
                 {
                     m_SelectCallback(this);

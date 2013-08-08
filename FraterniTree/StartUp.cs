@@ -313,12 +313,12 @@ namespace FraterniTree
                     m_ParentNode = tmpDoc.DocumentElement.Name;
                 }
                 Properties.Settings.Default.RecentXmlPath = m_FilePath;
-            }
 
-            m_bXML = true;
+                m_bXML = true;
 
-            this.DialogResult = res;
-            this.Close();
+                this.DialogResult = res;
+                this.Close();
+            }   
         }
 
         private void btnMysql_Click(object sender, EventArgs e)
