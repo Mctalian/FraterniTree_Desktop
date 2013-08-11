@@ -1082,6 +1082,7 @@ namespace FraterniTree
                 newB = new Brother(last, first, month, year);
                 newB.m_Label.ContextMenuStrip = cmNodeActions;
                 tmpBig.AddChild(newB);
+                newB.IsActive = cbNewActive.Checked;
             }
 
             Brother litt = null;

@@ -34,6 +34,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitTreeAdd = new System.Windows.Forms.SplitContainer();
             this.splitTreeInfo = new System.Windows.Forms.SplitContainer();
+            this.pnlTree = new FraterniTree.NoFlickerPanel();
             this.chbActive = new System.Windows.Forms.CheckBox();
             this.tbSelectedLittles = new System.Windows.Forms.TextBox();
             this.lblSelectedLittles = new System.Windows.Forms.Label();
@@ -111,8 +112,8 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toggleHideDescendantsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pnlTree = new FraterniTree.NoFlickerPanel();
             this.toggleActiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cbNewActive = new System.Windows.Forms.CheckBox();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -182,6 +183,7 @@
             // 
             // splitTreeAdd.Panel2
             // 
+            this.splitTreeAdd.Panel2.Controls.Add(this.cbNewActive);
             this.splitTreeAdd.Panel2.Controls.Add(this.dtpIniYear);
             this.splitTreeAdd.Panel2.Controls.Add(this.cbIniMonth);
             this.splitTreeAdd.Panel2.Controls.Add(this.btnClear);
@@ -237,10 +239,23 @@
             this.splitTreeInfo.Panel2.Controls.Add(this.tbSelectedLast);
             this.splitTreeInfo.Panel2.Controls.Add(this.lblSelectedFirst);
             this.splitTreeInfo.Panel2.Controls.Add(this.tbSelectedFirst);
-            this.splitTreeInfo.Panel2Collapsed = true;
             this.splitTreeInfo.Size = new System.Drawing.Size(561, 576);
-            this.splitTreeInfo.SplitterDistance = 399;
+            this.splitTreeInfo.SplitterDistance = 395;
             this.splitTreeInfo.TabIndex = 0;
+            // 
+            // pnlTree
+            // 
+            this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
+            this.pnlTree.AutoSize = true;
+            this.pnlTree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlTree.Location = new System.Drawing.Point(0, 0);
+            this.pnlTree.Name = "pnlTree";
+            this.pnlTree.Size = new System.Drawing.Size(0, 0);
+            this.pnlTree.TabIndex = 0;
+            this.ttTree.SetToolTip(this.pnlTree, "Double click to toggle tree view.");
+            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
+            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
+            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
             // 
             // chbActive
             // 
@@ -406,7 +421,7 @@
             // 
             this.dtpIniYear.CustomFormat = "yyyy";
             this.dtpIniYear.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpIniYear.Location = new System.Drawing.Point(105, 188);
+            this.dtpIniYear.Location = new System.Drawing.Point(104, 204);
             this.dtpIniYear.MinDate = new System.DateTime(1899, 1, 1, 0, 0, 0, 0);
             this.dtpIniYear.Name = "dtpIniYear";
             this.dtpIniYear.ShowUpDown = true;
@@ -422,7 +437,7 @@
             "Fall",
             "Winter",
             "Spring"});
-            this.cbIniMonth.Location = new System.Drawing.Point(22, 187);
+            this.cbIniMonth.Location = new System.Drawing.Point(22, 203);
             this.cbIniMonth.Name = "cbIniMonth";
             this.cbIniMonth.Size = new System.Drawing.Size(76, 21);
             this.cbIniMonth.TabIndex = 7;
@@ -433,7 +448,7 @@
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClear.Enabled = false;
-            this.btnClear.Location = new System.Drawing.Point(22, 507);
+            this.btnClear.Location = new System.Drawing.Point(22, 499);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(152, 40);
             this.btnClear.TabIndex = 16;
@@ -446,7 +461,7 @@
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAdd.Enabled = false;
-            this.btnAdd.Location = new System.Drawing.Point(22, 454);
+            this.btnAdd.Location = new System.Drawing.Point(22, 449);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(152, 40);
             this.btnAdd.TabIndex = 15;
@@ -461,7 +476,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbLittles.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.tbLittles.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.tbLittles.Location = new System.Drawing.Point(22, 312);
+            this.tbLittles.Location = new System.Drawing.Point(22, 310);
             this.tbLittles.Multiline = true;
             this.tbLittles.Name = "tbLittles";
             this.tbLittles.Size = new System.Drawing.Size(152, 129);
@@ -471,7 +486,7 @@
             // lblLittles
             // 
             this.lblLittles.AutoSize = true;
-            this.lblLittles.Location = new System.Drawing.Point(22, 286);
+            this.lblLittles.Location = new System.Drawing.Point(22, 287);
             this.lblLittles.Name = "lblLittles";
             this.lblLittles.Size = new System.Drawing.Size(43, 13);
             this.lblLittles.TabIndex = 13;
@@ -480,7 +495,7 @@
             // lblBig
             // 
             this.lblBig.AutoSize = true;
-            this.lblBig.Location = new System.Drawing.Point(22, 227);
+            this.lblBig.Location = new System.Drawing.Point(22, 234);
             this.lblBig.Name = "lblBig";
             this.lblBig.Size = new System.Drawing.Size(25, 13);
             this.lblBig.TabIndex = 11;
@@ -490,7 +505,7 @@
             // 
             this.tbBig.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.tbBig.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.tbBig.Location = new System.Drawing.Point(22, 253);
+            this.tbBig.Location = new System.Drawing.Point(22, 257);
             this.tbBig.Name = "tbBig";
             this.tbBig.Size = new System.Drawing.Size(152, 20);
             this.tbBig.TabIndex = 10;
@@ -499,7 +514,7 @@
             // lbTerm
             // 
             this.lbTerm.AutoSize = true;
-            this.lbTerm.Location = new System.Drawing.Point(22, 168);
+            this.lbTerm.Location = new System.Drawing.Point(22, 180);
             this.lbTerm.Name = "lbTerm";
             this.lbTerm.Size = new System.Drawing.Size(76, 13);
             this.lbTerm.TabIndex = 9;
@@ -508,7 +523,7 @@
             // lblLast
             // 
             this.lblLast.AutoSize = true;
-            this.lblLast.Location = new System.Drawing.Point(22, 109);
+            this.lblLast.Location = new System.Drawing.Point(22, 100);
             this.lblLast.Name = "lblLast";
             this.lblLast.Size = new System.Drawing.Size(61, 13);
             this.lblLast.TabIndex = 7;
@@ -516,7 +531,7 @@
             // 
             // tbLastName
             // 
-            this.tbLastName.Location = new System.Drawing.Point(22, 135);
+            this.tbLastName.Location = new System.Drawing.Point(22, 123);
             this.tbLastName.Name = "tbLastName";
             this.tbLastName.Size = new System.Drawing.Size(152, 20);
             this.tbLastName.TabIndex = 6;
@@ -525,7 +540,7 @@
             // lblFirst
             // 
             this.lblFirst.AutoSize = true;
-            this.lblFirst.Location = new System.Drawing.Point(22, 50);
+            this.lblFirst.Location = new System.Drawing.Point(22, 47);
             this.lblFirst.Name = "lblFirst";
             this.lblFirst.Size = new System.Drawing.Size(60, 13);
             this.lblFirst.TabIndex = 5;
@@ -543,7 +558,7 @@
             // 
             // tbFirstName
             // 
-            this.tbFirstName.Location = new System.Drawing.Point(22, 76);
+            this.tbFirstName.Location = new System.Drawing.Point(22, 70);
             this.tbFirstName.Name = "tbFirstName";
             this.tbFirstName.Size = new System.Drawing.Size(152, 20);
             this.tbFirstName.TabIndex = 1;
@@ -1055,7 +1070,7 @@
             this.removeNodeToolStripMenuItem,
             this.toggleActiveToolStripMenuItem});
             this.cmNodeActions.Name = "cmNodeActions";
-            this.cmNodeActions.Size = new System.Drawing.Size(210, 120);
+            this.cmNodeActions.Size = new System.Drawing.Size(210, 98);
             // 
             // makeThisTreeParentToolStripMenuItem
             // 
@@ -1083,26 +1098,24 @@
             this.removeNodeToolStripMenuItem.Text = "Remove Node";
             this.removeNodeToolStripMenuItem.Click += new System.EventHandler(this.removeNodeToolStripMenuItem_Click);
             // 
-            // pnlTree
-            // 
-            this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
-            this.pnlTree.AutoSize = true;
-            this.pnlTree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pnlTree.Location = new System.Drawing.Point(0, 0);
-            this.pnlTree.Name = "pnlTree";
-            this.pnlTree.Size = new System.Drawing.Size(0, 0);
-            this.pnlTree.TabIndex = 0;
-            this.ttTree.SetToolTip(this.pnlTree, "Double click to toggle tree view.");
-            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
-            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
-            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
-            // 
             // toggleActiveToolStripMenuItem
             // 
             this.toggleActiveToolStripMenuItem.Name = "toggleActiveToolStripMenuItem";
             this.toggleActiveToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.toggleActiveToolStripMenuItem.Text = "Toggle Active";
             this.toggleActiveToolStripMenuItem.Click += new System.EventHandler(this.toggleActiveToolStripMenuItem_Click);
+            // 
+            // cbNewActive
+            // 
+            this.cbNewActive.AutoSize = true;
+            this.cbNewActive.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cbNewActive.Enabled = false;
+            this.cbNewActive.Location = new System.Drawing.Point(22, 153);
+            this.cbNewActive.Name = "cbNewActive";
+            this.cbNewActive.Size = new System.Drawing.Size(106, 17);
+            this.cbNewActive.TabIndex = 35;
+            this.cbNewActive.Text = "Currently Active?";
+            this.cbNewActive.UseVisualStyleBackColor = true;
             // 
             // frmMain
             // 
@@ -1237,6 +1250,7 @@
         private System.Windows.Forms.ToolStripMenuItem generationUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generationDownToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toggleActiveToolStripMenuItem;
+        private System.Windows.Forms.CheckBox cbNewActive;
 
     }
 }
