@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -479,107 +478,6 @@ namespace FraterniTree
 
         #endregion
 
-        #region Selected Member Information Edit
-
-        private void PopulateBrotherEdit(Brother b)
-        {
-            SelectedEdits = FieldEdit.NONE;
-
-            splitTreeInfo.Panel2Collapsed = false;
-
-            cbSelectedTerm.Enabled = false;
-            dtpSelectedYear.Enabled = false;
-            tbSelectedFirst.Enabled = false;
-            tbSelectedLast.Enabled = false;
-            tbSelectedBig.Enabled = false;
-            tbSelectedLittles.Enabled = false;
-            btnApplySelected.Enabled = false;
-            btnCancelSelected.Enabled = false;
-            chbActive.Enabled = false;
-
-            Selected = b;
-
-            tbSelectedFirst.Text = b.First;
-            tbSelectedLast.Text = b.Last;
-            tbSelectedBig.Text = b.HasParent() ? ((Brother)(b.Parent())).ToString() : "";
-            tbSelectedLittles.Text = "";
-            for (int i = 0; i < b.GetNumberOfChildren(); i++)
-            {
-                Brother l = (Brother)(b[i]);
-                tbSelectedLittles.Text += (i == 0 ? "" : Environment.NewLine ) + l.ToString();
-            }
-
-            dtpSelectedYear.Value = new DateTime(b.IniYear, 1, 1);
-            if (b.IniMonth != "")
-            {
-                cbSelectedTerm.SelectedItem = b.IniMonth;
-            }
-
-            chbActive.Checked = b.IsActive;
-
-            btnEditSelected.Enabled = true;
-        }
-
-        private void HideSelectedEdit()
-        {
-            splitTreeInfo.Panel2Collapsed = true;
-        }
-
-        private bool IsSelectedDataEdited()
-        {
-            SelectedEdits = FieldEdit.NONE;
-            if (tbSelectedFirst.Text != Selected.First)
-            {
-                SelectedEdits |= FieldEdit.FIRST_NAME;
-            }
-
-            if (tbSelectedLast.Text != Selected.Last)
-            {
-                SelectedEdits |= FieldEdit.LAST_NAME;
-            }
-
-            if (tbSelectedBig.Text != ((Brother)(Selected.Parent())).ToString())
-            {
-                SelectedEdits |= FieldEdit.BIG;
-            }
-
-            string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            if (littles.Length != Selected.GetNumberOfChildren())
-            {
-                SelectedEdits |= FieldEdit.LITTLES;
-            }
-            else
-            {
-                for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
-                {
-                    if (!littles.Contains(((Brother)(Selected[i])).ToString()))
-                    {
-                        SelectedEdits |= FieldEdit.LITTLES;
-                    }
-                }
-            }
-
-            if (dtpSelectedYear.Value.Year != Selected.IniYear)
-            {
-                SelectedEdits |= FieldEdit.INI_YEAR;
-            }
-
-            if (cbSelectedTerm.Text != Selected.IniMonth)
-            {
-                SelectedEdits |= FieldEdit.INI_MONTH;
-            }
-
-            if (chbActive.Checked != Selected.IsActive)
-            {
-                SelectedEdits |= FieldEdit.ACTIVE;
-            }
-            
-
-            return ((SelectedEdits & FieldEdit.ALL_MASK) != 0);
-        }
-
-        #endregion
-
         #region MySql-Specific Methods
 
         private bool ConnectDB(string server, int port, string dbName, string uName, string pWord)
@@ -692,6 +590,181 @@ namespace FraterniTree
 
         #endregion
 
+        #region Screenshot Methods
+
+        private void TakeScreenshot(Panel panel, string filePath)
+        {
+            if (panel == null)
+                throw new ArgumentNullException("panel");
+
+            if (filePath == null)
+                throw new ArgumentNullException("filePath");
+
+            // get parent form (may not be a direct parent)
+            Form form = panel.FindForm();
+            if (form == null)
+                throw new ArgumentException(null, "panel");
+
+            // remember form position
+            int w = form.Width;
+            int h = form.Height;
+            int l = form.Left;
+            int t = form.Top;
+
+            // get panel virtual size
+            Rectangle display = panel.DisplayRectangle;
+
+            // get panel position relative to parent form
+            Point panelLocation = panel.PointToScreen(panel.Location);
+            Size panelPosition = new Size(panelLocation.X - form.Location.X, panelLocation.Y - form.Location.Y);
+
+            // resize form and move it outside the screen
+            int neededWidth = panelPosition.Width + display.Width;
+            int neededHeight = panelPosition.Height + display.Height;
+            form.SetBounds(0, -neededHeight, neededWidth, neededHeight, BoundsSpecified.All);
+
+            // resize panel (useless if panel has a dock)
+            int pw = panel.Width;
+            int ph = panel.Height;
+            panel.SetBounds(0, 0, display.Width, display.Height, BoundsSpecified.Size);
+
+            // render the panel on a bitmap
+            try
+            {
+                Bitmap bmp = new Bitmap(display.Width, display.Height);
+                panel.DrawToBitmap(bmp, display);
+                bmp.Save(filePath);
+            }
+            finally
+            {
+                // restore
+                panel.SetBounds(0, 0, pw, ph, BoundsSpecified.Size);
+                form.SetBounds(l, t, w, h, BoundsSpecified.All);
+            }
+        }
+
+        private Image CaptureScreen()
+        {
+            // ------------- OLD WAY, KEEP FOR NOW ------------- //
+            //Graphics myGraphics = pnlTree.CreateGraphics();
+            //Image panelImage = new Bitmap(pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, myGraphics);
+            //Graphics memoryGraphics = Graphics.FromImage(panelImage);
+            //IntPtr dc1 = myGraphics.GetHdc();
+            //IntPtr dc2 = memoryGraphics.GetHdc();
+            //BitBlt(dc2, 0, 0, pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, dc1, 0, 0, 13369376);
+            //myGraphics.ReleaseHdc(dc1);
+            //memoryGraphics.ReleaseHdc(dc2);
+            Point old = pnlTree.Location;
+            pnlTree.Location = new Point(0, 0);
+            Bitmap panelImage = new Bitmap(pnlTree.Width, pnlTree.Height);
+            pnlTree.DrawToBitmap(panelImage, new Rectangle(pnlTree.Location.X, pnlTree.Location.Y, pnlTree.Width, pnlTree.Height));
+            pnlTree.Location = old;
+            return panelImage;
+        }
+
+        #endregion
+
+        #region Selected Member Information Edit
+
+        private void PopulateBrotherEdit(Brother b)
+        {
+            SelectedEdits = FieldEdit.NONE;
+
+            splitTreeInfo.Panel2Collapsed = false;
+
+            cbSelectedTerm.Enabled = false;
+            dtpSelectedYear.Enabled = false;
+            tbSelectedFirst.Enabled = false;
+            tbSelectedLast.Enabled = false;
+            tbSelectedBig.Enabled = false;
+            tbSelectedLittles.Enabled = false;
+            btnApplySelected.Enabled = false;
+            btnCancelSelected.Enabled = false;
+            chbActive.Enabled = false;
+
+            Selected = b;
+
+            tbSelectedFirst.Text = b.First;
+            tbSelectedLast.Text = b.Last;
+            tbSelectedBig.Text = b.HasParent() ? ((Brother)(b.Parent())).ToString() : "";
+            tbSelectedLittles.Text = "";
+            for (int i = 0; i < b.GetNumberOfChildren(); i++)
+            {
+                Brother l = (Brother)(b[i]);
+                tbSelectedLittles.Text += (i == 0 ? "" : Environment.NewLine) + l.ToString();
+            }
+
+            dtpSelectedYear.Value = new DateTime(b.IniYear, 1, 1);
+            if (b.IniMonth != "")
+            {
+                cbSelectedTerm.SelectedItem = b.IniMonth;
+            }
+
+            chbActive.Checked = b.IsActive;
+
+            btnEditSelected.Enabled = true;
+        }
+
+        private void HideSelectedEdit()
+        {
+            splitTreeInfo.Panel2Collapsed = true;
+        }
+
+        private bool IsSelectedDataEdited()
+        {
+            SelectedEdits = FieldEdit.NONE;
+            if (tbSelectedFirst.Text != Selected.First)
+            {
+                SelectedEdits |= FieldEdit.FIRST_NAME;
+            }
+
+            if (tbSelectedLast.Text != Selected.Last)
+            {
+                SelectedEdits |= FieldEdit.LAST_NAME;
+            }
+
+            if (tbSelectedBig.Text != ((Brother)(Selected.Parent())).ToString())
+            {
+                SelectedEdits |= FieldEdit.BIG;
+            }
+
+            string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            if (littles.Length != Selected.GetNumberOfChildren())
+            {
+                SelectedEdits |= FieldEdit.LITTLES;
+            }
+            else
+            {
+                for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+                    if (!littles.Contains(((Brother)(Selected[i])).ToString()))
+                    {
+                        SelectedEdits |= FieldEdit.LITTLES;
+                    }
+                }
+            }
+
+            if (dtpSelectedYear.Value.Year != Selected.IniYear)
+            {
+                SelectedEdits |= FieldEdit.INI_YEAR;
+            }
+
+            if (cbSelectedTerm.Text != Selected.IniMonth)
+            {
+                SelectedEdits |= FieldEdit.INI_MONTH;
+            }
+
+            if (chbActive.Checked != Selected.IsActive)
+            {
+                SelectedEdits |= FieldEdit.ACTIVE;
+            }
+
+
+            return ((SelectedEdits & FieldEdit.ALL_MASK) != 0);
+        }
+
+        #endregion
+
         #region XML-Specific Methods
 
         private string ConvertTreeToXml(Brother B)
@@ -718,7 +791,7 @@ namespace FraterniTree
 
             return xmlData;
         }
-        
+
         private Brother ConvertXmlToTree(XmlNode currentParent)
         {
             Brother big = new Brother(currentParent.Attributes["Last"].Value,
@@ -867,80 +940,6 @@ namespace FraterniTree
             {
                 throw new Exception("More than one root node, please check your XML and try again.");
             }
-        }
-
-        #endregion
-
-        #region Screenshot Methods
-
-        private void TakeScreenshot(Panel panel, string filePath)
-        {
-            if (panel == null)
-                throw new ArgumentNullException("panel");
-
-            if (filePath == null)
-                throw new ArgumentNullException("filePath");
-
-            // get parent form (may not be a direct parent)
-            Form form = panel.FindForm();
-            if (form == null)
-                throw new ArgumentException(null, "panel");
-
-            // remember form position
-            int w = form.Width;
-            int h = form.Height;
-            int l = form.Left;
-            int t = form.Top;
-
-            // get panel virtual size
-            Rectangle display = panel.DisplayRectangle;
-
-            // get panel position relative to parent form
-            Point panelLocation = panel.PointToScreen(panel.Location);
-            Size panelPosition = new Size(panelLocation.X - form.Location.X, panelLocation.Y - form.Location.Y);
-
-            // resize form and move it outside the screen
-            int neededWidth = panelPosition.Width + display.Width;
-            int neededHeight = panelPosition.Height + display.Height;
-            form.SetBounds(0, -neededHeight, neededWidth, neededHeight, BoundsSpecified.All);
-
-            // resize panel (useless if panel has a dock)
-            int pw = panel.Width;
-            int ph = panel.Height;
-            panel.SetBounds(0, 0, display.Width, display.Height, BoundsSpecified.Size);
-
-            // render the panel on a bitmap
-            try
-            {
-                Bitmap bmp = new Bitmap(display.Width, display.Height);
-                panel.DrawToBitmap(bmp, display);
-                bmp.Save(filePath);
-            }
-            finally
-            {
-                // restore
-                panel.SetBounds(0, 0, pw, ph, BoundsSpecified.Size);
-                form.SetBounds(l, t, w, h, BoundsSpecified.All);
-            }
-        }
-
-        private Image CaptureScreen()
-        {
-            // ------------- OLD WAY, KEEP FOR NOW ------------- //
-            //Graphics myGraphics = pnlTree.CreateGraphics();
-            //Image panelImage = new Bitmap(pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, myGraphics);
-            //Graphics memoryGraphics = Graphics.FromImage(panelImage);
-            //IntPtr dc1 = myGraphics.GetHdc();
-            //IntPtr dc2 = memoryGraphics.GetHdc();
-            //BitBlt(dc2, 0, 0, pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, dc1, 0, 0, 13369376);
-            //myGraphics.ReleaseHdc(dc1);
-            //memoryGraphics.ReleaseHdc(dc2);
-            Point old = pnlTree.Location;
-            pnlTree.Location = new Point(0, 0);
-            Bitmap panelImage = new Bitmap(pnlTree.Width, pnlTree.Height);
-            pnlTree.DrawToBitmap(panelImage, new Rectangle(pnlTree.Location.X, pnlTree.Location.Y, pnlTree.Width, pnlTree.Height));
-            pnlTree.Location = old;
-            return panelImage;
         }
 
         #endregion
@@ -1361,10 +1360,23 @@ namespace FraterniTree
         {
             //Brother b = root.FindBrotherByName(lbNoRelation.SelectedItem.ToString());
             Brother b = (Brother)lbNoRelation.SelectedItem;
-            EditBrotherNoBig EditB = new EditBrotherNoBig(b);
+            InputBox EditB = new InputBox("Please enter the full name of " + b.ToString() + "\'s Big:",
+                                          "Edit A Brother",
+                                          CurrentBrothers);
             EditB.ShowDialog();
             if (EditB.DialogResult == DialogResult.OK)
             {
+                Brother tmp = root.FindBrotherByName(EditB.UserResponse);
+                if (tmp == null)
+                {
+                    int space = EditB.UserResponse.LastIndexOf(' ');
+                    tmp = new Brother(EditB.UserResponse.Substring(space + 1), EditB.UserResponse.Substring(0, space), "Fall", 1920);
+                    tmp.m_Label.ContextMenuStrip = cmNodeActions;
+                    root.AddChild(tmp);
+                }
+
+                tmp.AddChild(b);
+
                 RefreshNoBigListBox(root);
             }
         }
@@ -1401,6 +1413,10 @@ namespace FraterniTree
                 }
                 CreateTree();
                 PostCreationShift();
+            }
+            else
+            {
+                pnlTree.Controls.Clear();
             }
         }
 
@@ -1474,6 +1490,10 @@ namespace FraterniTree
                 if (Selected == clicked)
                 {
                     Selected = null;
+                }
+                if (cbTreeParent.SelectedItem == clicked)
+                {
+                    cbTreeParent.SelectedIndex = -1;
                 }
                 clicked.RemoveNode();
                 clicked.m_Label.Dispose();
@@ -1826,13 +1846,13 @@ namespace FraterniTree
             DialogResult res = sfd.ShowDialog();
             if (res == DialogResult.OK)
             {
-                string parentNodeName = Interaction.InputBox("Please enter a name for the parent XML node...\n" +
-                                                             "Example: \"DeltaSigmaPhi-AlphaEta\"",
-                                                             "Parent Node Name",
-                                                             XmlParentNodeName != "" ? XmlParentNodeName : "MyTree");
-                if (parentNodeName != "")
+                InputBox parentNodeName = new InputBox("Please enter a name for the parent XML node...\n" +
+                                                       "Example: \"DeltaSigmaPhi-AlphaEta\"",
+                                                       "Parent Node Name");
+                res = parentNodeName.ShowDialog();
+                if (res == DialogResult.OK)
                 {
-                    ExportToXml(sfd.FileName, parentNodeName);
+                    ExportToXml(sfd.FileName, parentNodeName.UserResponse);
                 }
             }
         }

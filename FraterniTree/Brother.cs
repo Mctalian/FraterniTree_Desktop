@@ -327,6 +327,20 @@ namespace FraterniTree
             RefreshLittleOrder();
         }
 
+        public new void RemoveNode()
+        {
+            for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                if (this[i] == null)
+                {
+                    continue;
+                }
+                ((Brother)this.Parent()).AddChild((Brother)this[i]);
+            }
+
+            base.RemoveNode();
+        }
+
         #region GUI Label Methods
 
         private void ApplyNodeLocationsToLabel()

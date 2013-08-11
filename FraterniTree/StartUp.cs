@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.VisualBasic;
 using System.IO;
 using System.Xml;
 
@@ -294,17 +293,25 @@ namespace FraterniTree
             ofd.Filter = "XML Document|*.xml|All Files|*.*";
             ofd.DefaultExt = ".xml";
             ofd.AddExtension = true;
-            ofd.CheckFileExists = true;
+            ofd.CheckFileExists = false;
             DialogResult res = ofd.ShowDialog();
             if (res == DialogResult.OK)
             {
                 m_FilePath = ofd.FileName;
                 if (!File.Exists(ofd.FileName))
                 {
-                    m_ParentNode = Interaction.InputBox("Please enter a name for the parent XML node...\n" +
-                                                        "Example: \"DeltaSigmaPhi-AlphaEta\"",
-                                                        "Parent Node Name",
-                                                        "MyTree");
+                    InputBox parentNodeName = new InputBox("Please enter a name for the parent XML node...\n" +
+                                                           "Example: \"DeltaSigmaPhi-AlphaEta\"",
+                                                           "Parent Node Name");
+                    res = parentNodeName.ShowDialog();
+                    if (res == DialogResult.OK)
+                    {
+                        m_ParentNode = parentNodeName.UserResponse;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
                 else
                 {
