@@ -50,6 +50,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\MySQL\MySQL Connector Net 6.6.5\Assemblies\v4.0\MySql.Web.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Downloads\Applications and Installers\Standalones\Json50r6\Bin\Net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -128,6 +132,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataProviders\DataProviders.csproj">
+      <Project>{0873d43c-2dbe-469d-afcb-b9b636a155f5}</Project>
+      <Name>DataProviders</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TreeDisplay\TreeDisplay.csproj">
       <Project>{3130a3f4-fc7f-4d63-a3cf-2a5b65c662a6}</Project>
       <Name>TreeDisplay</Name>

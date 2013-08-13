@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using TreeDisplay;
 
 namespace FraterniTree
@@ -16,6 +18,7 @@ namespace FraterniTree
     public class Brother : Node
     {
         #region Private Data
+        private int             m_ID;
         private string          m_Last;
         private string          m_First;
         private InitiationTerm  m_IniMonth;
@@ -41,6 +44,20 @@ namespace FraterniTree
         };
 
         #region Properties
+
+        public int ID
+        {
+            get
+            {
+                return m_ID;
+            }
+
+            set
+            {
+                m_ID = value;
+            }
+        }
+
         public string Last
         {
             get
@@ -75,7 +92,7 @@ namespace FraterniTree
             }
         }
 
-        public string IniMonth
+        public string IniTerm
         {
             get
             {
@@ -166,8 +183,8 @@ namespace FraterniTree
             // Initialize Brother object
             Last                = strLast;
             First               = strFirst;
-            IniMonth            = strMonth;
-            IniYear           = iYear;            
+            IniTerm            = strMonth;
+            IniYear             = iYear;            
 
             // Initialize the label
             m_Label.Text        = ToString();
@@ -181,6 +198,35 @@ namespace FraterniTree
             m_Label.MouseMove  += m_Label_MouseMove;
             m_Label.MouseUp    += m_Label_MouseUp;
             m_Label.Paint      += m_Label_Paint;
+            m_Label.LocationChanged += m_Label_LocationChanged;
+            m_Label.ParentChanged += m_Label_ParentChanged;
+
+            SetWidth(m_Label.Width);
+            SetHeight(m_Label.Height);
+            SetCallback(ApplyNodeLocationsToLabel);
+        }
+
+        public Brother(int iID, string strLast, string strFirst, string strMonth, int iYear)
+        {
+            // Initialize Brother object
+            ID      = iID;
+            Last    = strLast;
+            First   = strFirst;
+            IniTerm = strMonth;
+            IniYear = iYear;
+
+            // Initialize the label
+            m_Label.Text = ToString();
+            m_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            m_Label.Padding = new Padding(4);
+            m_Label.AutoSize = true;
+            m_Label.BorderStyle = BorderStyle.FixedSingle;
+            m_Label.Tag = this;
+            m_Label.MouseClick += m_Label_MouseClick;
+            m_Label.MouseDown += m_Label_MouseDown;
+            m_Label.MouseMove += m_Label_MouseMove;
+            m_Label.MouseUp += m_Label_MouseUp;
+            m_Label.Paint += m_Label_Paint;
             m_Label.LocationChanged += m_Label_LocationChanged;
             m_Label.ParentChanged += m_Label_ParentChanged;
 
@@ -488,6 +534,5 @@ namespace FraterniTree
         #endregion
 
         #endregion
-
     }
 }

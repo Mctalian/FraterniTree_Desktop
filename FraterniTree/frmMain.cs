@@ -1,4 +1,6 @@
-﻿using MySql.Data.MySqlClient;
+﻿using DataProviders;
+using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -125,9 +127,13 @@ namespace FraterniTree
 
         private void PopulateBrothers(bool IsXml)
         {
+            iDataProvider provider;
+            string json;
             if (IsXml)
             {
                 XmlDoc = new XmlDocument();
+                provider = new XmlProvider(OpenedXmlFilePath);
+                json =  provider.GetData();
                 ImportFromXml();
                 RefreshNoBigListBox(root);
             }
@@ -179,7 +185,7 @@ namespace FraterniTree
                         {
                             tmpBig.AddChild(newB);
                         }
-                        newB.IniMonth = month;
+                        newB.IniTerm = month;
                         newB.IniYear = year;
                     }
                     else
@@ -273,6 +279,8 @@ namespace FraterniTree
                 parent.m_Prelim = 0;
                 parent.m_Modifier = 0;
                 parent.m_Label.AutoSize = !FixedWidth;
+                parent.m_Label.ContextMenuStrip = cmNodeActions;
+                ttTree.SetToolTip(parent.m_Label, "Left click to select and edit");
                 if (!parent.IsIgnored())
                 {
                     pnlTree.Controls.Add(parent.m_Label);
@@ -550,7 +558,7 @@ namespace FraterniTree
                         cmd.Prepare();
                         cmd.Parameters.AddWithValue("@Last", currentParent.Last);
                         cmd.Parameters.AddWithValue("@First", currentParent.First);
-                        cmd.Parameters.AddWithValue("@IniMonth", currentParent.IniMonth);
+                        cmd.Parameters.AddWithValue("@IniMonth", currentParent.IniTerm);
                         cmd.Parameters.AddWithValue("@IniYear", currentParent.IniYear);
 
                         if (currentParent.HasParent())
@@ -695,9 +703,9 @@ namespace FraterniTree
             }
 
             dtpSelectedYear.Value = new DateTime(b.IniYear, 1, 1);
-            if (b.IniMonth != "")
+            if (b.IniTerm != "")
             {
-                cbSelectedTerm.SelectedItem = b.IniMonth;
+                cbSelectedTerm.SelectedItem = b.IniTerm;
             }
 
             chbActive.Checked = b.IsActive;
@@ -749,7 +757,7 @@ namespace FraterniTree
                 SelectedEdits |= FieldEdit.INI_YEAR;
             }
 
-            if (cbSelectedTerm.Text != Selected.IniMonth)
+            if (cbSelectedTerm.Text != Selected.IniTerm)
             {
                 SelectedEdits |= FieldEdit.INI_MONTH;
             }
@@ -773,21 +781,40 @@ namespace FraterniTree
             string xmlData = "<Brother ";
 
             // Attributes
+            xmlData += "ID=\"" + B.ID + "\" ";
             xmlData += "Last=\"" + B.Last + "\" ";
             xmlData += "First=\"" + B.First + "\" ";
-            xmlData += "IniTerm=\"" + B.IniMonth + "\" ";
+            xmlData += "IniTerm=\"" + B.IniTerm + "\" ";
             xmlData += "IniYear=\"" + B.IniYear + "\" ";
-            xmlData += "Active=\"" + B.IsActive.ToString() + "\" ";
+            xmlData += "IsActive=\"" + B.IsActive.ToString() + "\" ";
 
-            xmlData += ">";
+            if (B.HasChild())
+            {
+                xmlData += ">";
+
+
+                xmlData += "<Children>";
+
+                for (int i = B.GetNumberOfChildren() - 1; i >= 0; i--)
+                {
+                    xmlData += "<BrotherID>";
+                    xmlData += ((Brother)B[i]).ID;
+                    xmlData += "</BrotherID>";
+                }
+
+                xmlData += "</Children>";
+                xmlData += "</Brother>";
+            }
+            else
+            {
+                xmlData += "/>";
+            }
+            
 
             for (int i = B.GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 xmlData += ConvertTreeToXml((Brother)B[i]);
             }
-
-            // End the Tag
-            xmlData += "</Brother>";
 
             return xmlData;
         }
@@ -798,6 +825,8 @@ namespace FraterniTree
                                         currentParent.Attributes["First"].Value,
                                         currentParent.Attributes["IniTerm"].Value,
                                         Int32.Parse(currentParent.Attributes["IniYear"].Value));
+
+            big.ID = Int32.Parse(currentParent.Attributes["ID"].Value);
 
             if (currentParent.Attributes["Active"] != null)
             {
@@ -845,7 +874,7 @@ namespace FraterniTree
             XmlDocument tmp = new XmlDocument();
             tmp.LoadXml(xmlDoc);
             XmlTextWriter xWriter = new XmlTextWriter(filePath, Encoding.UTF8);
-            xWriter.Formatting = Formatting.Indented;
+            xWriter.Formatting = System.Xml.Formatting.Indented;
             tmp.Save(xWriter);
             xWriter.Close();
 
@@ -874,7 +903,7 @@ namespace FraterniTree
                 xmlData += "First=\"Charles A.\" ";
                 xmlData += "IniTerm=\"Winter\" ";
                 xmlData += "IniYear=\"1899\" ";
-                xmlData += "Active=\"" + false.ToString() + "\" ";
+                xmlData += "IsActive=\"" + false.ToString() + "\" ";
                 xmlData += ">\n";
 
                 // End the Tag
@@ -889,57 +918,116 @@ namespace FraterniTree
             // Load XML Document
             XmlDoc.Load(OpenedXmlFilePath);
 
-            if (XmlDoc.DocumentElement.ChildNodes.Count == 1)
+            //if (XmlDoc.DocumentElement.ChildNodes.Count == 1)
+            //{
+            Brother[] Brothers = new Brother[XmlDoc.DocumentElement.ChildNodes.Count];
+            // Should only be one, the root
+            XmlNode currentParent = XmlDoc.DocumentElement.FirstChild;
+            XmlNode rootXNode = currentParent;
+            if (root == null)
             {
-                // Should only be one, the root
-                XmlNode currentParent = XmlDoc.DocumentElement.FirstChild;
-                if (root == null)
+                root = new Brother(Int32.Parse(rootXNode.Attributes["ID"].Value),
+                                    rootXNode.Attributes["Last"].Value,
+                                    rootXNode.Attributes["First"].Value,
+                                    rootXNode.Attributes["IniTerm"].Value,
+                                    Int32.Parse(rootXNode.Attributes["IniYear"].Value));
+                if (rootXNode.Attributes["Active"] != null)
                 {
-                    root = new Brother(currentParent.Attributes["Last"].Value,
-                                        currentParent.Attributes["First"].Value,
-                                        currentParent.Attributes["IniTerm"].Value,
-                                        Int32.Parse(currentParent.Attributes["IniYear"].Value));
-                    if (currentParent.Attributes["Active"] != null)
+                    string val = rootXNode.Attributes["Active"].Value;
+                    switch (val.ToUpper())
                     {
-                        string val = currentParent.Attributes["Active"].Value;
-                        switch (val.ToUpper())
+                        case "yes":
+                        case "y":
+                        case "true":
+                        case "t":
+                        case "1":
+                            root.IsActive = true;
+                            break;
+                        default:
+                            root.IsActive = false;
+                            break;
+                    }
+                }
+                else
+                {
+                    root.IsActive = false;
+                }
+                root.m_Label.ContextMenuStrip = cmNodeActions;
+                Brothers[root.ID] = root;
+            }
+
+            XmlNode currSib = currentParent.NextSibling;
+
+            while (currSib != null)
+            {
+                Brother tmp = new Brother(Int32.Parse(currSib.Attributes["ID"].Value),
+                                    currSib.Attributes["Last"].Value,
+                                    currSib.Attributes["First"].Value,
+                                    currSib.Attributes["IniTerm"].Value,
+                                    Int32.Parse(currSib.Attributes["IniYear"].Value));
+                if (currSib.Attributes["Active"] != null)
+                {
+                    string val = currSib.Attributes["Active"].Value;
+                    switch (val.ToUpper())
+                    {
+                        case "yes":
+                        case "y":
+                        case "true":
+                        case "t":
+                        case "1":
+                            tmp.IsActive = true;
+                            break;
+                        default:
+                            tmp.IsActive = false;
+                            break;
+                    }
+                }
+                else
+                {
+                    tmp.IsActive = false;
+                }
+                tmp.m_Label.ContextMenuStrip = cmNodeActions;
+                Brothers[Int32.Parse(currSib.Attributes["ID"].Value)] = tmp;
+                currSib = currSib.NextSibling;
+            }
+
+            currSib = currentParent;
+
+            while (currSib != null)
+            {
+
+                XmlNode Children;
+
+                if (currSib.HasChildNodes)
+                {
+                    Children = currSib.FirstChild;
+                    if (Children.HasChildNodes)
+                    {
+                        foreach (XmlNode child in Children.ChildNodes)
                         {
-                            case "yes":
-                            case "y":
-                            case "true":
-                            case "t":
-                            case "1":
-                                root.IsActive = true;
-                                break;
-                            default:
-                                root.IsActive = false;
-                                break;
+                            ((Brother)Brothers[Int32.Parse(currSib.Attributes["ID"].Value)]).AddChild((Brother)Brothers[Int32.Parse(child.FirstChild.Value)]);
                         }
+                        ((Brother)Brothers[Int32.Parse(currSib.Attributes["ID"].Value)]).RefreshLittleOrder();
                     }
-                    else
-                    {
-                        root.IsActive = false;
-                    }
-                    root.m_Label.ContextMenuStrip = cmNodeActions;
                 }
-                foreach (XmlNode child in currentParent.ChildNodes)
-                {
-                    root.AddChild(ConvertXmlToTree(child));
-                }
-                saveXmlToolStripMenuItem.Enabled = true;
-
-                if (XmlParentNodeName == null)
-                {
-                    XmlParentNodeName = XmlDoc.DocumentElement.Name;
-                }
-
-                ExportToXml(OpenedXmlFilePath + ".BAK", XmlParentNodeName);
-                AutoSave.Start();
+                
+                currSib = currSib.NextSibling;
             }
-            else
+                
+            saveXmlToolStripMenuItem.Enabled = true;
+
+            if (XmlParentNodeName == null)
             {
-                throw new Exception("More than one root node, please check your XML and try again.");
+                XmlParentNodeName = XmlDoc.DocumentElement.Name;
             }
+
+            //ExportToXml(OpenedXmlFilePath + ".BAK", XmlParentNodeName);
+            //AutoSave.Start();
+            //}
+            //else
+            //{
+            //    throw new Exception("More than one root node, please check your XML and try again.");
+            //}
         }
 
         #endregion
@@ -1183,7 +1271,7 @@ namespace FraterniTree
         {
             if (cbSelectedTerm.SelectedIndex != -1 && ((SelectedEdits & FieldEdit.INI_MONTH) != 0))
             {
-                Selected.IniMonth = cbSelectedTerm.SelectedItem.ToString();
+                Selected.IniTerm = cbSelectedTerm.SelectedItem.ToString();
             }
 
             if ((SelectedEdits & FieldEdit.INI_YEAR) != 0)
@@ -1923,6 +2011,24 @@ namespace FraterniTree
         }
 
         #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int i = 1;
+            foreach (Object item in cbTreeParent.Items)
+            {
+                if (item.ToString() == "*All*" || item.ToString() == "*Active Only*")
+                {
+                    continue;
+                }
+                else
+                {
+                    Brother tmp = item as Brother;
+                    tmp.ID = i++;
+                }
+
+            }
+        }
 
         #endregion
 
