@@ -85,6 +85,7 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="JsonHandler.cs" />
     <Compile Include="NoFlickerPanel.cs">
       <SubType>Component</SubType>
     </Compile>

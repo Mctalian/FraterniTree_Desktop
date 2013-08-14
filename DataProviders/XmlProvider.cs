@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Xml;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace DataProviders
 {
@@ -27,11 +28,22 @@ namespace DataProviders
             {
                 throw new Exception("XmlProvider was not initialized properly");
             }
-            return JsonConvert.SerializeXmlNode(m_XmlDoc);
+            if (m_XmlDoc.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
+            {
+                XmlDeclaration declaration = m_XmlDoc.FirstChild as XmlDeclaration;
+                m_XmlDoc.RemoveChild(declaration);
+            }
+            return Regex.Replace(JsonConvert.SerializeXmlNode(m_XmlDoc, Newtonsoft.Json.Formatting.Indented), "(?<=\")(@)(?!.*\":\\s )", string.Empty, RegexOptions.IgnoreCase);
         }
 
         public void SaveData(string JSON)
         {
+            if (m_XmlDoc.FirstChild.NodeType != XmlNodeType.XmlDeclaration)
+            {
+                XmlDeclaration declaration = m_XmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+                XmlElement root = m_XmlDoc.DocumentElement;
+                m_XmlDoc.InsertBefore(declaration, root);
+            }
             m_XmlDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(JSON);
             m_XmlDoc.Save(m_FilePath);
         }

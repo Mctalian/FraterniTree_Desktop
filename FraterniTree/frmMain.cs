@@ -21,15 +21,11 @@ namespace FraterniTree
 {
     public partial class frmMain : Form
     {
-
-        #region Public Data
-        public static Brother root;
-        public static AutoCompleteStringCollection CurrentBrothers = new AutoCompleteStringCollection();
-        #endregion
-
         #region Private Data
 
         static System.Timers.Timer AutoSave = new System.Timers.Timer();
+        static Brother root;
+        static AutoCompleteStringCollection CurrentBrothers = new AutoCompleteStringCollection();
 
         #region Mysql-Specific Data
         private const string INSERT_INTO_STM = "INSERT INTO Brothers (Last, First, IniMonth, IniYear, Big, NextSibling, FirstLittle)" +
@@ -134,8 +130,11 @@ namespace FraterniTree
                 XmlDoc = new XmlDocument();
                 provider = new XmlProvider(OpenedXmlFilePath);
                 json =  provider.GetData();
-                ImportFromXml();
+                JsonHandler.Json = json;
+                Brother[] BrotherList = JsonHandler.GetFullTree();
+                root = BrotherList[0];//ImportFromXml();
                 RefreshNoBigListBox(root);
+                XmlParentNodeName = JsonHandler.GetName();
             }
             else if (DbConnect != null)
             {

@@ -15,6 +15,7 @@ namespace FraterniTree
     /// <summary>
     /// Represents a Fraternity Brother in a Fraternity Family Tree.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class Brother : Node
     {
         #region Private Data
@@ -33,6 +34,7 @@ namespace FraterniTree
         #endregion
 
         #region Public Data
+        [JsonIgnore()]
         public Label                    m_Label = new Label();
         #endregion
 
@@ -45,6 +47,7 @@ namespace FraterniTree
 
         #region Properties
 
+        [JsonProperty]
         public int ID
         {
             get
@@ -57,7 +60,7 @@ namespace FraterniTree
                 m_ID = value;
             }
         }
-
+        [JsonProperty]
         public string Last
         {
             get
@@ -74,7 +77,7 @@ namespace FraterniTree
                 m_Label.Location = new Point(m_Label.Location.X + (width - m_Label.Width) / 2, m_Label.Location.Y);
             }
         }
-
+        [JsonProperty]
         public string First
         {
             get
@@ -91,7 +94,7 @@ namespace FraterniTree
                 m_Label.Location = new Point(m_Label.Location.X + (width - m_Label.Width) / 2, m_Label.Location.Y);
             }
         }
-
+        [JsonProperty]
         public string IniTerm
         {
             get
@@ -104,7 +107,7 @@ namespace FraterniTree
                 m_IniMonth = (InitiationTerm)Enum.Parse(typeof(InitiationTerm), value);
             }
         }
-
+        [JsonProperty]
         public int IniYear
         {
             get
@@ -117,7 +120,7 @@ namespace FraterniTree
                 m_IniYear = value;
             }
         }
-
+        [JsonProperty]
         public bool IsActive
         {
             get
