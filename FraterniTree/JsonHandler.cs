@@ -35,9 +35,33 @@ namespace FraterniTree
             return m_Name;
         }
 
-        public static Brother[] GetFullTree()
+        public static Brother[] GetBrotherTree()
         {
             return JsonToBrother();
+        }
+
+        public static string GetJsonTree(Brother[] BList, string Name)
+        {
+            m_Name = Name;
+            m_Json = "";
+            m_Json += "{ \"" + m_Name + "\": { \"Brother\": [";
+
+            bool first = true;
+            foreach (Brother b in BList)
+            {
+                if (first)
+                {
+                    first = !first;
+                }
+                else
+                {
+                    m_Json += ",";
+                }
+                m_Json += BrotherToJson(b);
+            }
+
+            m_Json += "] } }";
+            return m_Json;
         }
 
         private static Brother[] JsonToBrother()
@@ -77,11 +101,29 @@ namespace FraterniTree
             return Brothers;
         }
 
-        private static string BrotherToJson()
+        private static string BrotherToJson(Brother b)
         {
             string jsonData = "";
 
+            jsonData += JsonConvert.SerializeObject(b);
 
+            if (b.HasChild())
+            {
+                jsonData = jsonData.Replace("}", ",\"Children\": {\"BrotherID\": [");
+
+                for (int i = 0; i < b.GetNumberOfChildren(); i++)
+                {
+                    if (i > 0)
+                    {
+                        jsonData += ",";
+                    }
+
+                    jsonData += "\"" + ((Brother)b[i]).ID + "\"";
+                    
+                }
+
+                jsonData += "] } }";
+            }
 
             return jsonData;
         }

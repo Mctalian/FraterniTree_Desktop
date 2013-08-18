@@ -19,7 +19,14 @@ namespace DataProviders
         public XmlProvider(string filePath)
         {
             m_FilePath = filePath;
-            m_XmlDoc.Load(m_FilePath);
+            if (!File.Exists(m_FilePath))
+            {
+                m_XmlDoc = new XmlDocument();
+            }
+            else
+            {
+                m_XmlDoc.Load(m_FilePath);
+            }
         }
 
         public string GetData()
@@ -38,13 +45,16 @@ namespace DataProviders
 
         public void SaveData(string JSON)
         {
-            if (m_XmlDoc.FirstChild.NodeType != XmlNodeType.XmlDeclaration)
-            {
-                XmlDeclaration declaration = m_XmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
-                XmlElement root = m_XmlDoc.DocumentElement;
-                m_XmlDoc.InsertBefore(declaration, root);
-            }
             m_XmlDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(JSON);
+            if (m_XmlDoc.FirstChild != null)
+            {
+                if (m_XmlDoc.FirstChild.NodeType != XmlNodeType.XmlDeclaration)
+                {
+                    XmlDeclaration declaration = m_XmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+                    XmlElement root = m_XmlDoc.DocumentElement;
+                    m_XmlDoc.InsertBefore(declaration, root);
+                }
+            }
             m_XmlDoc.Save(m_FilePath);
         }
 

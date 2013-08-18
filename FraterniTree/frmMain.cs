@@ -131,7 +131,7 @@ namespace FraterniTree
                 provider = new XmlProvider(OpenedXmlFilePath);
                 json =  provider.GetData();
                 JsonHandler.Json = json;
-                Brother[] BrotherList = JsonHandler.GetFullTree();
+                Brother[] BrotherList = JsonHandler.GetBrotherTree();
                 root = BrotherList[0];//ImportFromXml();
                 RefreshNoBigListBox(root);
                 XmlParentNodeName = JsonHandler.GetName();
@@ -1939,7 +1939,20 @@ namespace FraterniTree
                 res = parentNodeName.ShowDialog();
                 if (res == DialogResult.OK)
                 {
-                    ExportToXml(sfd.FileName, parentNodeName.UserResponse);
+                    Brother[] BrotherList = new Brother[cbTreeParent.Items.Count - 1];
+                    BrotherList[0] = root;
+                    foreach (object o in cbTreeParent.Items)
+                    {
+                        if (o.ToString() == "*All*" || o.ToString() == "*Active Only*")
+                        {
+                            continue;
+                        }
+                        Brother b = o as Brother;
+                        BrotherList[b.ID] = b;
+                    }
+                    XmlProvider saveToXml = new XmlProvider(sfd.FileName);
+                    saveToXml.SaveData(JsonHandler.GetJsonTree(BrotherList, parentNodeName.UserResponse));
+                    //ExportToXml(sfd.FileName, parentNodeName.UserResponse);
                 }
             }
         }
