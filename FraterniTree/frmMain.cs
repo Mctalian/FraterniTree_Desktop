@@ -26,6 +26,7 @@ namespace FraterniTree
         static System.Timers.Timer AutoSave = new System.Timers.Timer();
         static Brother root;
         static AutoCompleteStringCollection CurrentBrothers = new AutoCompleteStringCollection();
+        static iDataProvider m_Provider;
 
         #region Mysql-Specific Data
         private const string INSERT_INTO_STM = "INSERT INTO Brothers (Last, First, IniMonth, IniYear, Big, NextSibling, FirstLittle)" +
@@ -123,18 +124,17 @@ namespace FraterniTree
 
         private void PopulateBrothers(bool IsXml)
         {
-            iDataProvider provider;
             string json;
             if (IsXml)
             {
                 XmlDoc = new XmlDocument();
-                provider = new XmlProvider(OpenedXmlFilePath);
-                json =  provider.GetData();
-                JsonHandler.Json = json;
-                Brother[] BrotherList = JsonHandler.GetBrotherTree();
-                root = BrotherList[0];//ImportFromXml();
-                RefreshNoBigListBox(root);
-                XmlParentNodeName = JsonHandler.GetName();
+                m_Provider = new XmlProvider(OpenedXmlFilePath);
+                //json =  m_Provider.GetData();
+                //JsonHandler.Json = json;
+                //Brother[] BrotherList = JsonHandler.GetBrotherTree();
+                //root = BrotherList[0];//ImportFromXml();
+                //RefreshNoBigListBox(root);
+                //XmlParentNodeName = JsonHandler.GetName();
             }
             else if (DbConnect != null)
             {
@@ -200,6 +200,25 @@ namespace FraterniTree
                 while (!rdr.IsClosed) ;
                 DbConnect.Close();
             }
+
+            json = m_Provider.GetData();
+            JsonHandler.Json = json;
+            Brother[] BrotherList = JsonHandler.GetBrotherTree();
+            root = BrotherList[0];//ImportFromXml();
+            RefreshNoBigListBox(root);
+
+            if (bIsXml)
+            {
+                XmlParentNodeName = JsonHandler.GetName();
+                m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
+                SaveToProvider(XmlParentNodeName);
+            }
+            else
+            {
+                m_Provider = new XmlProvider("BACKUP" + ".sav");
+                SaveToProvider("BACKUP");
+            }
+
             if (root.HasChild())
             {
                 updwnNumGen.Enabled = true;
@@ -244,6 +263,22 @@ namespace FraterniTree
             CurrentBrothers.Remove(name);
             RefreshNoBigListBox(root);
             DisplayTree(true);
+        }
+        
+        private void SaveToProvider(string parentNodeName)
+        {
+            Brother[] BrotherList = new Brother[cbTreeParent.Items.Count - 1];
+            BrotherList[0] = root;
+            foreach (object o in cbTreeParent.Items)
+            {
+                if (o.ToString() == "*All*" || o.ToString() == "*Active Only*")
+                {
+                    continue;
+                }
+                Brother b = o as Brother;
+                BrotherList[b.ID] = b;
+            }
+            m_Provider.SaveData(JsonHandler.GetJsonTree(BrotherList, parentNodeName));
         }
 
         #region Graphical Tree Display
@@ -1759,7 +1794,9 @@ namespace FraterniTree
         void AutoSave_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             AutoSave.Stop();
-            ExportToXml(OpenedXmlFilePath + ".sav", XmlParentNodeName);
+            m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
+            SaveToProvider(XmlParentNodeName);
+            //ExportToXml(OpenedXmlFilePath + ".sav", XmlParentNodeName);
             AutoSave.Start();
         }
 
@@ -1939,20 +1976,8 @@ namespace FraterniTree
                 res = parentNodeName.ShowDialog();
                 if (res == DialogResult.OK)
                 {
-                    Brother[] BrotherList = new Brother[cbTreeParent.Items.Count - 1];
-                    BrotherList[0] = root;
-                    foreach (object o in cbTreeParent.Items)
-                    {
-                        if (o.ToString() == "*All*" || o.ToString() == "*Active Only*")
-                        {
-                            continue;
-                        }
-                        Brother b = o as Brother;
-                        BrotherList[b.ID] = b;
-                    }
-                    XmlProvider saveToXml = new XmlProvider(sfd.FileName);
-                    saveToXml.SaveData(JsonHandler.GetJsonTree(BrotherList, parentNodeName.UserResponse));
-                    //ExportToXml(sfd.FileName, parentNodeName.UserResponse);
+                    m_Provider = new XmlProvider(sfd.FileName);
+                    SaveToProvider(parentNodeName.UserResponse);
                 }
             }
         }
@@ -2019,28 +2044,12 @@ namespace FraterniTree
 
         private void saveXmlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExportToXml(OpenedXmlFilePath, XmlParentNodeName);
+            m_Provider = new XmlProvider(OpenedXmlFilePath);
+            SaveToProvider(XmlParentNodeName);
+            //ExportToXml(OpenedXmlFilePath, XmlParentNodeName);
         }
 
         #endregion
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int i = 1;
-            foreach (Object item in cbTreeParent.Items)
-            {
-                if (item.ToString() == "*All*" || item.ToString() == "*Active Only*")
-                {
-                    continue;
-                }
-                else
-                {
-                    Brother tmp = item as Brother;
-                    tmp.ID = i++;
-                }
-
-            }
-        }
 
         #endregion
 
