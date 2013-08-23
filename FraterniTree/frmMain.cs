@@ -129,12 +129,6 @@ namespace FraterniTree
             {
                 XmlDoc = new XmlDocument();
                 m_Provider = new XmlProvider(OpenedXmlFilePath);
-                //json =  m_Provider.GetData();
-                //JsonHandler.Json = json;
-                //Brother[] BrotherList = JsonHandler.GetBrotherTree();
-                //root = BrotherList[0];//ImportFromXml();
-                //RefreshNoBigListBox(root);
-                //XmlParentNodeName = JsonHandler.GetName();
             }
             else if (DbConnect != null)
             {
@@ -204,18 +198,19 @@ namespace FraterniTree
             json = m_Provider.GetData();
             JsonHandler.Json = json;
             Brother[] BrotherList = JsonHandler.GetBrotherTree();
-            root = BrotherList[0];//ImportFromXml();
+            root = BrotherList[0];
             RefreshNoBigListBox(root);
 
             if (bIsXml)
             {
                 XmlParentNodeName = JsonHandler.GetName();
-                m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
+                m_Provider = new XmlProvider(OpenedXmlFilePath + ".BAK");
                 SaveToProvider(XmlParentNodeName);
+                AutoSave.Start();
             }
             else
             {
-                m_Provider = new XmlProvider("BACKUP" + ".sav");
+                m_Provider = new XmlProvider("BACKUP" + ".BAK");
                 SaveToProvider("BACKUP");
             }
 
@@ -687,15 +682,6 @@ namespace FraterniTree
 
         private Image CaptureScreen()
         {
-            // ------------- OLD WAY, KEEP FOR NOW ------------- //
-            //Graphics myGraphics = pnlTree.CreateGraphics();
-            //Image panelImage = new Bitmap(pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, myGraphics);
-            //Graphics memoryGraphics = Graphics.FromImage(panelImage);
-            //IntPtr dc1 = myGraphics.GetHdc();
-            //IntPtr dc2 = memoryGraphics.GetHdc();
-            //BitBlt(dc2, 0, 0, pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, dc1, 0, 0, 13369376);
-            //myGraphics.ReleaseHdc(dc1);
-            //memoryGraphics.ReleaseHdc(dc2);
             Point old = pnlTree.Location;
             pnlTree.Location = new Point(0, 0);
             Bitmap panelImage = new Bitmap(pnlTree.Width, pnlTree.Height);
@@ -803,265 +789,6 @@ namespace FraterniTree
 
 
             return ((SelectedEdits & FieldEdit.ALL_MASK) != 0);
-        }
-
-        #endregion
-
-        #region XML-Specific Methods
-
-        private string ConvertTreeToXml(Brother B)
-        {
-            // Begin the Tag
-            string xmlData = "<Brother ";
-
-            // Attributes
-            xmlData += "ID=\"" + B.ID + "\" ";
-            xmlData += "Last=\"" + B.Last + "\" ";
-            xmlData += "First=\"" + B.First + "\" ";
-            xmlData += "IniTerm=\"" + B.IniTerm + "\" ";
-            xmlData += "IniYear=\"" + B.IniYear + "\" ";
-            xmlData += "IsActive=\"" + B.IsActive.ToString() + "\" ";
-
-            if (B.HasChild())
-            {
-                xmlData += ">";
-
-
-                xmlData += "<Children>";
-
-                for (int i = B.GetNumberOfChildren() - 1; i >= 0; i--)
-                {
-                    xmlData += "<BrotherID>";
-                    xmlData += ((Brother)B[i]).ID;
-                    xmlData += "</BrotherID>";
-                }
-
-                xmlData += "</Children>";
-                xmlData += "</Brother>";
-            }
-            else
-            {
-                xmlData += "/>";
-            }
-            
-
-            for (int i = B.GetNumberOfChildren() - 1; i >= 0; i--)
-            {
-                xmlData += ConvertTreeToXml((Brother)B[i]);
-            }
-
-            return xmlData;
-        }
-
-        private Brother ConvertXmlToTree(XmlNode currentParent)
-        {
-            Brother big = new Brother(currentParent.Attributes["Last"].Value,
-                                        currentParent.Attributes["First"].Value,
-                                        currentParent.Attributes["IniTerm"].Value,
-                                        Int32.Parse(currentParent.Attributes["IniYear"].Value));
-
-            big.ID = Int32.Parse(currentParent.Attributes["ID"].Value);
-
-            if (currentParent.Attributes["Active"] != null)
-            {
-                string val = currentParent.Attributes["Active"].Value;
-                switch (val.ToUpper())
-                {
-                    case "YES":
-                    case "Y":
-                    case "TRUE":
-                    case "T":
-                    case "1":
-                        big.IsActive = true;
-                        break;
-                    default:
-                        big.IsActive = false;
-                        break;
-                }
-            }
-            else
-            {
-                big.IsActive = false;
-            }
-
-            big.m_Label.ContextMenuStrip = cmNodeActions;
-            ttTree.SetToolTip(big.m_Label, "Left click to select and edit");
-
-            foreach (XmlNode child in currentParent.ChildNodes)
-            {
-                big.AddChild(ConvertXmlToTree(child));
-            }
-            return big;
-        }
-
-        private void ExportToXml(string filePath, string parentNodeName)
-        {
-            // Xml Document Header
-            string xmlDoc = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-                               "<" + parentNodeName + ">";
-            // Fill it with all the nodes
-            xmlDoc += ConvertTreeToXml(root);
-
-            // Close the Document Parent Node
-            xmlDoc += "</" + parentNodeName + ">";
-
-            XmlDocument tmp = new XmlDocument();
-            tmp.LoadXml(xmlDoc);
-            XmlTextWriter xWriter = new XmlTextWriter(filePath, Encoding.UTF8);
-            xWriter.Formatting = System.Xml.Formatting.Indented;
-            tmp.Save(xWriter);
-            xWriter.Close();
-
-            if (filePath == OpenedXmlFilePath)
-            {
-                if (File.Exists(OpenedXmlFilePath + ".sav"))
-                {
-                    File.Delete(OpenedXmlFilePath + ".sav");
-                }
-            }
-        }
-
-        private void ImportFromXml()
-        {
-            if (!File.Exists(OpenedXmlFilePath))
-            {
-                // Xml Document Header
-                string xmlData = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                                    "<" + XmlParentNodeName + ">\n";
-
-                // Begin the Root Tag
-                xmlData += "<Brother ";
-
-                // Attributes
-                xmlData += "Last=\"Tonsor Jr.\" ";
-                xmlData += "First=\"Charles A.\" ";
-                xmlData += "IniTerm=\"Winter\" ";
-                xmlData += "IniYear=\"1899\" ";
-                xmlData += "IsActive=\"" + false.ToString() + "\" ";
-                xmlData += ">\n";
-
-                // End the Tag
-                xmlData += "</Brother>\n";
-
-                // Close the Document Parent Node
-                xmlData += "</" + XmlParentNodeName + ">";
-
-                File.WriteAllText(OpenedXmlFilePath, xmlData);
-            }
-
-            // Load XML Document
-            XmlDoc.Load(OpenedXmlFilePath);
-
-            //if (XmlDoc.DocumentElement.ChildNodes.Count == 1)
-            //{
-            Brother[] Brothers = new Brother[XmlDoc.DocumentElement.ChildNodes.Count];
-            // Should only be one, the root
-            XmlNode currentParent = XmlDoc.DocumentElement.FirstChild;
-            XmlNode rootXNode = currentParent;
-            if (root == null)
-            {
-                root = new Brother(Int32.Parse(rootXNode.Attributes["ID"].Value),
-                                    rootXNode.Attributes["Last"].Value,
-                                    rootXNode.Attributes["First"].Value,
-                                    rootXNode.Attributes["IniTerm"].Value,
-                                    Int32.Parse(rootXNode.Attributes["IniYear"].Value));
-                if (rootXNode.Attributes["Active"] != null)
-                {
-                    string val = rootXNode.Attributes["Active"].Value;
-                    switch (val.ToUpper())
-                    {
-                        case "yes":
-                        case "y":
-                        case "true":
-                        case "t":
-                        case "1":
-                            root.IsActive = true;
-                            break;
-                        default:
-                            root.IsActive = false;
-                            break;
-                    }
-                }
-                else
-                {
-                    root.IsActive = false;
-                }
-                root.m_Label.ContextMenuStrip = cmNodeActions;
-                Brothers[root.ID] = root;
-            }
-
-            XmlNode currSib = currentParent.NextSibling;
-
-            while (currSib != null)
-            {
-                Brother tmp = new Brother(Int32.Parse(currSib.Attributes["ID"].Value),
-                                    currSib.Attributes["Last"].Value,
-                                    currSib.Attributes["First"].Value,
-                                    currSib.Attributes["IniTerm"].Value,
-                                    Int32.Parse(currSib.Attributes["IniYear"].Value));
-                if (currSib.Attributes["Active"] != null)
-                {
-                    string val = currSib.Attributes["Active"].Value;
-                    switch (val.ToUpper())
-                    {
-                        case "yes":
-                        case "y":
-                        case "true":
-                        case "t":
-                        case "1":
-                            tmp.IsActive = true;
-                            break;
-                        default:
-                            tmp.IsActive = false;
-                            break;
-                    }
-                }
-                else
-                {
-                    tmp.IsActive = false;
-                }
-                tmp.m_Label.ContextMenuStrip = cmNodeActions;
-                Brothers[Int32.Parse(currSib.Attributes["ID"].Value)] = tmp;
-                currSib = currSib.NextSibling;
-            }
-
-            currSib = currentParent;
-
-            while (currSib != null)
-            {
-
-                XmlNode Children;
-
-                if (currSib.HasChildNodes)
-                {
-                    Children = currSib.FirstChild;
-                    if (Children.HasChildNodes)
-                    {
-                        foreach (XmlNode child in Children.ChildNodes)
-                        {
-                            ((Brother)Brothers[Int32.Parse(currSib.Attributes["ID"].Value)]).AddChild((Brother)Brothers[Int32.Parse(child.FirstChild.Value)]);
-                        }
-                        ((Brother)Brothers[Int32.Parse(currSib.Attributes["ID"].Value)]).RefreshLittleOrder();
-                    }
-                }
-                
-                currSib = currSib.NextSibling;
-            }
-                
-            saveXmlToolStripMenuItem.Enabled = true;
-
-            if (XmlParentNodeName == null)
-            {
-                XmlParentNodeName = XmlDoc.DocumentElement.Name;
-            }
-
-            //ExportToXml(OpenedXmlFilePath + ".BAK", XmlParentNodeName);
-            //AutoSave.Start();
-            //}
-            //else
-            //{
-            //    throw new Exception("More than one root node, please check your XML and try again.");
-            //}
         }
 
         #endregion
@@ -1480,7 +1207,6 @@ namespace FraterniTree
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            //Brother b = root.FindBrotherByName(lbNoRelation.SelectedItem.ToString());
             Brother b = (Brother)lbNoRelation.SelectedItem;
             InputBox EditB = new InputBox("Please enter the full name of " + b.ToString() + "\'s Big:",
                                           "Edit A Brother",
@@ -1550,7 +1276,6 @@ namespace FraterniTree
         {
             if (lbNoRelation.SelectedIndex != -1)
             {
-                //cbTreeParent.Text = root.FindBrotherByName(lbNoRelationToString().ToString()).ToString();
                 cbTreeParent.Text = ((Brother)lbNoRelation.SelectedItem).ToString();
             }
         }
@@ -1673,8 +1398,6 @@ namespace FraterniTree
             Brother clicked = (Brother)lbl.Tag;
 
             clicked.IsActive = !clicked.IsActive;
-
-            //DisplayTree(true);
         }
 
         #endregion
@@ -1796,7 +1519,6 @@ namespace FraterniTree
             AutoSave.Stop();
             m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
             SaveToProvider(XmlParentNodeName);
-            //ExportToXml(OpenedXmlFilePath + ".sav", XmlParentNodeName);
             AutoSave.Start();
         }
 
@@ -2046,7 +1768,6 @@ namespace FraterniTree
         {
             m_Provider = new XmlProvider(OpenedXmlFilePath);
             SaveToProvider(XmlParentNodeName);
-            //ExportToXml(OpenedXmlFilePath, XmlParentNodeName);
         }
 
         #endregion

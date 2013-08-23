@@ -34,6 +34,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitTreeAdd = new System.Windows.Forms.SplitContainer();
             this.splitTreeInfo = new System.Windows.Forms.SplitContainer();
+            this.pnlTree = new FraterniTree.NoFlickerPanel();
             this.chbActive = new System.Windows.Forms.CheckBox();
             this.tbSelectedLittles = new System.Windows.Forms.TextBox();
             this.lblSelectedLittles = new System.Windows.Forms.Label();
@@ -113,7 +114,6 @@
             this.toggleHideDescendantsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleActiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pnlTree = new FraterniTree.NoFlickerPanel();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -242,6 +242,20 @@
             this.splitTreeInfo.Size = new System.Drawing.Size(561, 576);
             this.splitTreeInfo.SplitterDistance = 395;
             this.splitTreeInfo.TabIndex = 0;
+            // 
+            // pnlTree
+            // 
+            this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
+            this.pnlTree.AutoSize = true;
+            this.pnlTree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlTree.Location = new System.Drawing.Point(0, 0);
+            this.pnlTree.Name = "pnlTree";
+            this.pnlTree.Size = new System.Drawing.Size(0, 0);
+            this.pnlTree.TabIndex = 0;
+            this.ttTree.SetToolTip(this.pnlTree, "Double click to toggle tree view.");
+            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
+            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
+            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
             // 
             // chbActive
             // 
@@ -407,7 +421,6 @@
             // 
             this.cbNewActive.AutoSize = true;
             this.cbNewActive.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.cbNewActive.Enabled = false;
             this.cbNewActive.Location = new System.Drawing.Point(22, 153);
             this.cbNewActive.Name = "cbNewActive";
             this.cbNewActive.Size = new System.Drawing.Size(106, 17);
@@ -1102,20 +1115,6 @@
             this.toggleActiveToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.toggleActiveToolStripMenuItem.Text = "Toggle Active";
             this.toggleActiveToolStripMenuItem.Click += new System.EventHandler(this.toggleActiveToolStripMenuItem_Click);
-            // 
-            // pnlTree
-            // 
-            this.pnlTree.AutoScrollMargin = new System.Drawing.Size(50, 50);
-            this.pnlTree.AutoSize = true;
-            this.pnlTree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pnlTree.Location = new System.Drawing.Point(0, 0);
-            this.pnlTree.Name = "pnlTree";
-            this.pnlTree.Size = new System.Drawing.Size(0, 0);
-            this.pnlTree.TabIndex = 0;
-            this.ttTree.SetToolTip(this.pnlTree, "Double click to toggle tree view.");
-            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
-            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
-            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
             // 
             // frmMain
             // 
