@@ -159,7 +159,7 @@ namespace FraterniTree
                     }
                     else
                     {
-                        tmpBig = new Brother(bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
+                        tmpBig = new Brother(cbTreeParent.Items.Count - 1, bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
                         tmpBig.m_Label.ContextMenuStrip = cmNodeActions;
                         root.AddChild(tmpBig);
                         RefreshNoBigListBox(root);
@@ -183,9 +183,10 @@ namespace FraterniTree
                     }
                     else
                     {
-                        newB = new Brother(last, first, month, year);
+                        newB = new Brother(cbTreeParent.Items.Count - 1, last, first, month, year);
                         newB.m_Label.ContextMenuStrip = cmNodeActions;
                         tmpBig.AddChild(newB);
+                        RefreshNoBigListBox(root);
                     }
 
                     RefreshNoBigListBox(root);
@@ -824,7 +825,7 @@ namespace FraterniTree
             else
             {
 
-                root = new Brother("Tonsor Jr.", "Charles A", "Winter", 1899);
+                root = new Brother(0, "Tonsor Jr.", "Charles A", "Winter", 1899);
 
                 bIsMale = start.m_bIsMale;
 
@@ -913,9 +914,10 @@ namespace FraterniTree
             }
             else
             {
-                tmpBig = new Brother(bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
+                tmpBig = new Brother(cbTreeParent.Items.Count - 1, bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
                 tmpBig.m_Label.ContextMenuStrip = cmNodeActions;
                 root.AddChild(tmpBig);
+                RefreshNoBigListBox(root);
             }
 
             Brother newB = null;
@@ -927,10 +929,11 @@ namespace FraterniTree
             }
             else
             {
-                newB = new Brother(last, first, month, year);
+                newB = new Brother(cbTreeParent.Items.Count - 1, last, first, month, year);
                 newB.m_Label.ContextMenuStrip = cmNodeActions;
                 tmpBig.AddChild(newB);
                 newB.IsActive = cbNewActive.Checked;
+                RefreshNoBigListBox(root);
             }
 
             Brother litt = null;
@@ -945,10 +948,11 @@ namespace FraterniTree
                 }
                 else
                 {
-                    litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", newB.IniYear + 1);
+                    litt = new Brother(cbTreeParent.Items.Count - 1, littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", newB.IniYear + 1);
                     litt.m_Label.ContextMenuStrip = cmNodeActions;
                     litt.m_Label.ContextMenuStrip = cmNodeActions;
                     newB.AddChild(litt);
+                    RefreshNoBigListBox(root);
                 }
             }
 
@@ -1077,7 +1081,7 @@ namespace FraterniTree
                     if (tmp == null)
                     {
                         int space = tbSelectedBig.Text.LastIndexOf(' ');
-                        tmp = new Brother(tbSelectedBig.Text.Substring(space + 1), tbSelectedBig.Text.Substring(0, space), "Fall", 1920);
+                        tmp = new Brother(cbTreeParent.Items.Count - 1, tbSelectedBig.Text.Substring(space + 1), tbSelectedBig.Text.Substring(0, space), "Fall", 1920);
                         tmp.m_Label.ContextMenuStrip = cmNodeActions;
                         root.AddChild(tmp);
                         tmp.AddChild(Selected);
@@ -1135,9 +1139,10 @@ namespace FraterniTree
                         }
                         else
                         {
-                            litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", Selected.IniYear + 1);
+                            litt = new Brother(cbTreeParent.Items.Count - 1, littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", Selected.IniYear + 1);
                             litt.m_Label.ContextMenuStrip = cmNodeActions;
                             Selected.AddChild(litt);
+                            RefreshNoBigListBox(root);
                         }
                     }
                 }
@@ -1218,9 +1223,10 @@ namespace FraterniTree
                 if (tmp == null)
                 {
                     int space = EditB.UserResponse.LastIndexOf(' ');
-                    tmp = new Brother(EditB.UserResponse.Substring(space + 1), EditB.UserResponse.Substring(0, space), "Fall", 1920);
+                    tmp = new Brother(cbTreeParent.Items.Count - 1, EditB.UserResponse.Substring(space + 1), EditB.UserResponse.Substring(0, space), "Fall", 1920);
                     tmp.m_Label.ContextMenuStrip = cmNodeActions;
                     root.AddChild(tmp);
+                    RefreshNoBigListBox(root);
                 }
 
                 tmp.AddChild(b);
@@ -1517,8 +1523,8 @@ namespace FraterniTree
         void AutoSave_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             AutoSave.Stop();
-            m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
-            SaveToProvider(XmlParentNodeName);
+            //m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
+            //SaveToProvider(XmlParentNodeName);
             AutoSave.Start();
         }
 
