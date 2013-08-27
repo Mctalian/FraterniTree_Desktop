@@ -1523,8 +1523,8 @@ namespace FraterniTree
         void AutoSave_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             AutoSave.Stop();
-            //m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
-            //SaveToProvider(XmlParentNodeName);
+            m_Provider = new XmlProvider(OpenedXmlFilePath + ".sav");
+            SaveToProvider(XmlParentNodeName);
             AutoSave.Start();
         }
 
