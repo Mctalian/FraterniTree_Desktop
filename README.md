@@ -6,7 +6,7 @@ display an aesthetically pleasing tree that efficiently utilizes horizontal spac
 Perfect for Greek Organizations, can be adapted for Businesses. Can be adapted to hook 
 into existing databases that provide the desired information.
 
-Now being migrated to a web application using the MEAN stack. Current progress can be found at http://www.yitbosoft.com. A Lite version of the MEAN stack web app can be found at [FraterniTree-Lite](https://github.com/Mctalian/FraterniTree-Lite).
+Now being migrated to a web application using the MEAN stack. Current progress can be found at http://www.fraternitree.io.
 
 ### Prerequisites:  
 -  Install [MySQL Connector/NET][mysqlnet] which is a fully-managed ADO.NET driver for MySQL.
