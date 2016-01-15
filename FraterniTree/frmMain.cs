@@ -243,8 +243,8 @@ namespace FraterniTree
             if (g >= 0)
             {
                 int count = parent.GetNumberOfChildren();
-                parent.m_Prelim = 0;
-                parent.m_Modifier = 0;
+                parent.Prelim = 0;
+                parent.Modifier = 0;
                 parent.m_Label.AutoSize = !FixedWidth;
                 if (!parent.IsIgnored())
                 {

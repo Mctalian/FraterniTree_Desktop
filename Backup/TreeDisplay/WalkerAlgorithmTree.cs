@@ -42,7 +42,7 @@ namespace TreeDisplay
 
                 // Determine how to adjust all the nodes with respect to
                 // the location of the root.
-                xTopAdjustment = ApexNode.GetXCoord() - (int)(ApexNode.Prelim);
+                xTopAdjustment = ApexNode.GetXCoord() - (int)(ApexNode.m_Prelim);
                 yTopAdjustment = ApexNode.GetYCoord();
 
                 // Do the final positioning with a preorder walk.
@@ -64,9 +64,9 @@ namespace TreeDisplay
         /// <summary>
         /// In this first postorder walk, every node of the tree is
         /// assigned a preliminary x-coordinate (held in field
-        /// Node.Prelim). In addition, internal nodes are given
+        /// Node.m_Prelim). In addition, internal nodes are given
         /// modifiers, which will be used to move their offspring
-        /// to the right (held in field Node.Modifier).
+        /// to the right (held in field Node.m_Modifier).
         /// </summary>
         /// <param name="ThisNode">Node to begin walk</param>
         /// <param name="CurrentLevel">Level of the tree</param>
@@ -76,23 +76,23 @@ namespace TreeDisplay
             Node RightMost;
             float Midpoint;
 
-            ThisNode.Prev = GetPrevNodeAtLevel(CurrentLevel);
+            ThisNode.m_Prev = GetPrevNodeAtLevel(CurrentLevel);
 
             SetPrevNodeAtLevel(CurrentLevel, ThisNode);
 
-            ThisNode.Modifier = 0;
+            ThisNode.m_Modifier = 0;
 
             if (ThisNode.IsLeaf() || (CurrentLevel == MaxDepth))
             {
                 if (ThisNode.HasLeftSibling())
                 {
-                    ThisNode.Prelim = ThisNode.LeftSibling().Prelim +
+                    ThisNode.m_Prelim = ThisNode.LeftSibling().m_Prelim +
                                     (float)SiblingSeparation +
                                     MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
                 }
                 else
                 {
-                    ThisNode.Prelim = 0;
+                    ThisNode.m_Prelim = 0;
                 }
             }
             else
@@ -107,19 +107,19 @@ namespace TreeDisplay
                     FirstWalk(RightMost, CurrentLevel + 1);
                 }
 
-                Midpoint = ((float)(LeftMost.Prelim + RightMost.Prelim) / (float)(2));
+                Midpoint = ((float)(LeftMost.m_Prelim + RightMost.m_Prelim) / (float)(2));
 
                 if (ThisNode.HasLeftSibling())
                 {
-                    ThisNode.Prelim = ThisNode.LeftSibling().Prelim +
+                    ThisNode.m_Prelim = ThisNode.LeftSibling().m_Prelim +
                                     (float)SiblingSeparation +
                                     MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
-                    ThisNode.Modifier = ThisNode.Prelim - Midpoint;
+                    ThisNode.m_Modifier = ThisNode.m_Prelim - Midpoint;
                     Apportion(ThisNode, CurrentLevel);
                 }
                 else
                 {
-                    ThisNode.Prelim = Midpoint;
+                    ThisNode.m_Prelim = Midpoint;
                 }
             }
         }
@@ -135,7 +135,7 @@ namespace TreeDisplay
         /// sons around the father. Rather than immediately
         /// readjust all the nodes in the subtree, each node
         /// remembers the distance to the provisional place in a
-        /// modifier field (Node.Modifier). In this second pass
+        /// modifier field (Node.m_Modifier). In this second pass
         /// down the tree, modifiers are accumulated and applied
         /// to every node.
         /// </summary>
@@ -157,7 +157,7 @@ namespace TreeDisplay
             {
                 NewModsum = Modsum;
 
-                xTemp = (long)xTopAdjustment + (long)(ThisNode.Prelim + Modsum);
+                xTemp = (long)xTopAdjustment + (long)(ThisNode.m_Prelim + Modsum);
                 yTemp = (long)yTopAdjustment + (long)(CurrentLevel * (LevelSeparation + ThisNode.GetHeight()));
             }
             if (CheckExtentRange((int)xTemp, (int)yTemp))
@@ -167,7 +167,7 @@ namespace TreeDisplay
 
                 if (ThisNode.HasChild())
                 {
-                    result = SecondWalk(ThisNode.FirstChild(), CurrentLevel + 1, (int)(Modsum + ThisNode.Modifier));
+                    result = SecondWalk(ThisNode.FirstChild(), CurrentLevel + 1, (int)(Modsum + ThisNode.m_Modifier));
                 }
 
                 if (result && ThisNode.HasRightSibling())
@@ -229,15 +229,15 @@ namespace TreeDisplay
                 {
                     AncestorLeftMost = AncestorLeftMost.Parent();
                     AncestorNeighbor = AncestorNeighbor.Parent();
-                    RightModsum += AncestorLeftMost.Modifier;
-                    LeftModsum += AncestorNeighbor.Modifier;
+                    RightModsum += AncestorLeftMost.m_Modifier;
+                    LeftModsum += AncestorNeighbor.m_Modifier;
                 }
 
-                Distance = Neighbor.Prelim +
+                Distance = Neighbor.m_Prelim +
                            LeftModsum +
                            SubtreeSeparation +
                            MeanNodeSize(LeftMost, Neighbor) -
-                           (LeftMost.Prelim + RightModsum);
+                           (LeftMost.m_Prelim + RightModsum);
 
                 if (Distance > 0)
                 {
@@ -252,8 +252,8 @@ namespace TreeDisplay
                         Portion = Distance / (float)(NumLeftSiblings);
                         for (tmp = ThisNode; tmp != AncestorNeighbor; tmp = tmp.LeftSibling())
                         {
-                            tmp.Prelim = tmp.Prelim + Distance;
-                            tmp.Modifier = tmp.Modifier + Distance;
+                            tmp.m_Prelim = tmp.m_Prelim + Distance;
+                            tmp.m_Modifier = tmp.m_Modifier + Distance;
                             Distance -= Portion;
                         }
                     }
@@ -370,9 +370,9 @@ namespace TreeDisplay
         private static void InitPrevNodeList()
         {
             PreviousNode tmp;
-            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
+            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.m_NextLevel)
             {
-                tmp.PrevNode = null;
+                tmp.m_PrevNode = null;
             }
         }
 
@@ -386,11 +386,11 @@ namespace TreeDisplay
             PreviousNode tmp = LevelZeroPtr;
             uint i = 0;
 
-            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
+            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.m_NextLevel)
             {
                 if (i++ == LevelNumber)
                 {
-                    return tmp.PrevNode;
+                    return tmp.m_PrevNode;
                 }
             }
             return null;
@@ -407,25 +407,25 @@ namespace TreeDisplay
             PreviousNode NewNode;
             uint i = 0;
 
-            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
+            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.m_NextLevel)
             {
                 if (i++ == LevelNumber)
                 {
-                    tmp.PrevNode = ThisNode;
+                    tmp.m_PrevNode = ThisNode;
                     return;
                 }
-                else if (tmp.NextLevel == null)
+                else if (tmp.m_NextLevel == null)
                 {
                     NewNode = new PreviousNode();
-                    NewNode.PrevNode = null;
-                    NewNode.NextLevel = null;
-                    tmp.NextLevel = NewNode;
+                    NewNode.m_PrevNode = null;
+                    NewNode.m_NextLevel = null;
+                    tmp.m_NextLevel = NewNode;
                 }
             }
 
             LevelZeroPtr = new PreviousNode();
-            LevelZeroPtr.PrevNode = ThisNode;
-            LevelZeroPtr.NextLevel = null;
+            LevelZeroPtr.m_PrevNode = ThisNode;
+            LevelZeroPtr.m_NextLevel = null;
         }
     }
 }

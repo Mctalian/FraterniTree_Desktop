@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeDisplay", "TreeDisplay\TreeDisplay.csproj", "{3130A3F4-FC7F-4D63-A3CF-2A5B65C662A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraterniTree", "FraterniTree\FraterniTree.csproj", "{D39BEDA2-B520-4251-AA42-6097365F8BB8}"
