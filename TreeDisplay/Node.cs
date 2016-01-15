@@ -18,19 +18,19 @@ namespace TreeDisplay
         /// <summary>
         /// Parent Node of this Node.
         /// </summary>
-        private Node m_Parent;
+        private Node _parent;
         /// <summary>
         /// Offspring, or First Child of this Node.
         /// </summary>
-        private Node m_Offspring;
+        private Node _offspring;
         /// <summary>
         /// Left Sibling Node of this Node.
         /// </summary>
-        private Node m_LeftSibling;
+        private Node _leftSibling;
         /// <summary>
         /// Right Sibling Node of this Node.
         /// </summary>
-        private Node m_RightSibling;
+        private Node _rightSibling;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace TreeDisplay
         /// <summary>
         /// Number of children nodes of this Node.
         /// </summary>
-        private int m_NumChildren;
+        private int _numChildren;
 
         #endregion
 
@@ -48,19 +48,19 @@ namespace TreeDisplay
         /// <summary>
         /// Node X Location
         /// </summary>
-        private int m_XCoord;
+        private int _xCoord;
         /// <summary>
         /// Node Y Location
         /// </summary>
-        private int m_YCoord;
+        private int _yCoord;
         /// <summary>
         /// Node Width
         /// </summary>
-        private int m_Width;
+        private int _width;
         /// <summary>
         /// Node Height
         /// </summary>
-        private int m_Height;
+        private int _height;
 
         #endregion
 
@@ -68,11 +68,11 @@ namespace TreeDisplay
         /// <summary>
         /// If a callback is needed based on user implementation
         /// </summary>
-        private Action m_Callback = null;
+        private Action _callback;
         /// <summary>
         /// Ignore this node and consequently all descendants
         /// </summary>
-        private bool m_IgnoreNode;
+        private bool _ignoreNode;
 
         #endregion
 
@@ -83,15 +83,15 @@ namespace TreeDisplay
         /// <summary>
         /// Left Neigbor to this node.
         /// </summary>
-        public Node m_Prev;
+        public Node Prev;
         /// <summary>
         /// Preliminary location value
         /// </summary>
-        public float m_Prelim;
+        public float Prelim;
         /// <summary>
         /// Modifier used to determine final location
         /// </summary>
-        public float m_Modifier;
+        public float Modifier;
 
         #endregion
 
@@ -101,18 +101,18 @@ namespace TreeDisplay
                     int nC, int x, int y, int w, int h,
                     Node prev, float prelim, float mod)
         {
-            m_Parent = p;
-            m_Offspring = o;
-            m_LeftSibling = l;
-            m_RightSibling = r;
-            m_NumChildren = nC;
-            m_XCoord = x;
-            m_YCoord = y;
-            m_Width = w;
-            m_Height = h;
-            m_Prev = prev;
-            m_Prelim = prelim;
-            m_Modifier = mod;
+            _parent = p;
+            _offspring = o;
+            _leftSibling = l;
+            _rightSibling = r;
+            _numChildren = nC;
+            _xCoord = x;
+            _yCoord = y;
+            _width = w;
+            _height = h;
+            Prev = prev;
+            Prelim = prelim;
+            Modifier = mod;
         }
 
         public Node() : this(null, null, null, null, 0, 0, 0, 0, 0, null, 0, 0)
@@ -121,7 +121,7 @@ namespace TreeDisplay
 
         public Node(Node duplicate)
         {
-
+            //TODO
         }
 
         #endregion
@@ -130,227 +130,221 @@ namespace TreeDisplay
 
         public Node FirstChild(bool isIndex = false)
         {
-            Node UnignoredChild = m_Offspring;
-            if (UnignoredChild == null)
+            var unignoredChild = _offspring;
+            if (unignoredChild == null)
             {
                 return null;
             }
 
-            if (!UnignoredChild.IsIgnored() || isIndex)
+            if (!unignoredChild.IsIgnored() || isIndex)
             {
-                return m_Offspring;
+                return _offspring;
             }
-            else
+
+            while (unignoredChild.HasRightSibling())
             {
-                while (UnignoredChild.HasRightSibling())
+                unignoredChild = unignoredChild.RightSibling();
+
+                if (!unignoredChild.IsIgnored())
                 {
-                    UnignoredChild = UnignoredChild.RightSibling();
-
-                    if (!UnignoredChild.IsIgnored())
-                    {
-                        return UnignoredChild;
-                    }
-                }
-                return null;
-            }
-        }
-
-        protected void FirstChild(Node Child)
-        {
-            m_Offspring = Child;
-        }
-
-        public void AddChild(Node Child)
-        {
-            if (Child.HasParent())
-            {
-                Child.Parent().RemoveChild(Child);
-            }
-            if (this.IsLeaf())
-            {
-                this.FirstChild(Child);
-                Child.LeftSibling(null);
-            }
-            else
-            {
-                Node SiblingIter;
-                for (SiblingIter = this.m_Offspring; SiblingIter != null && SiblingIter.HasRightSibling(); SiblingIter = SiblingIter.RightSibling())
-                {
-                    // Nothing to do here
-                }
-                if (SiblingIter != null)
-                {
-                    SiblingIter.RightSibling(Child);
-                    Child.LeftSibling(SiblingIter);
-                }
-            }
-            Child.Parent(this);
-            this.m_NumChildren++;
-        }
-
-        public void RemoveNode()
-        {
-            for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
-            {
-                if (this[i] == null)
-                {
-                    continue;
-                }
-                this.Parent().AddChild(this[i]);
-            }
-
-            this.Parent().RemoveChild(this);
-        }
-
-        protected void RemoveChild(Node Child)
-        {
-            if (Child == this.FirstChild())
-            {
-                this.m_Offspring = Child.RightSibling();
-                if (this.m_Offspring != null)
-                {
-                    this.m_Offspring.LeftSibling(null);
-                }
-            }
-            else
-            {
-                Node SiblingIter;
-                for (SiblingIter = this.m_Offspring; SiblingIter != Child && SiblingIter != null; SiblingIter = SiblingIter.RightSibling())
-                {
-                    // Nothing to do here
-                }
-                if (SiblingIter == Child)
-                {
-                    if (Child.HasLeftSibling())
-                    {
-                        Child.LeftSibling().RightSibling(Child.RightSibling());
-                    }
-                    if (Child.HasRightSibling())
-                    {
-                        Child.RightSibling().LeftSibling(Child.LeftSibling());
-                    }
-                }
-            }
-            Child.Parent(null);
-            Child.LeftSibling(null);
-            Child.RightSibling(null);
-            this.m_NumChildren--;
-        }
-
-        //public void RemoveAllChildren()
-        //{
-        //    for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
-        //    {
-        //        RemoveChild(this[i]);
-        //    }
-        //}
-
-        public Node LeftSibling(bool isIndex = false)
-        {
-            Node UnignoredLeftSib = m_LeftSibling;
-            if (UnignoredLeftSib == null)
-            {
-                return null;
-            }
-
-            if (!UnignoredLeftSib.IsIgnored() || isIndex)
-            {
-                return m_LeftSibling;
-            }
-            else
-            {
-                while (UnignoredLeftSib.HasLeftSibling())
-                {
-                    UnignoredLeftSib = UnignoredLeftSib.LeftSibling();
-
-                    if (!UnignoredLeftSib.IsIgnored())
-                    {
-                        return UnignoredLeftSib;
-                    }
-                }
-                return null;
-            }
-        }
-
-        protected void LeftSibling(Node Sibling)
-        {
-            m_LeftSibling = Sibling;
-        }
-
-        public Node RightSibling(bool IsIndex = false)
-        {
-            Node UnignoredRightSib = m_RightSibling;
-            if (UnignoredRightSib == null)
-            {
-                return null;
-            }
-
-            if (!UnignoredRightSib.IsIgnored() || IsIndex)
-            {
-                return m_RightSibling;
-            }
-            else
-            {
-                while (UnignoredRightSib.HasRightSibling())
-                {
-                    UnignoredRightSib = UnignoredRightSib.RightSibling();
-
-                    if (!UnignoredRightSib.IsIgnored())
-                    {
-                        return UnignoredRightSib;
-                    }
-                }
-                return null;
-            }
-        }
-
-        protected void RightSibling(Node Sibling)
-        {
-            m_RightSibling = Sibling;
-        }
-
-        public Node Parent(bool isIndex = false)
-        {
-            if (m_Parent != null)
-            {
-                if (!m_Parent.IsIgnored() || isIndex)
-                {
-                    return m_Parent;
+                    return unignoredChild;
                 }
             }
             return null;
         }
 
-        protected void Parent(Node Parent)
+        protected void FirstChild(Node child)
         {
-            m_Parent = Parent;
+            _offspring = child;
+        }
+
+        public void AddChild(Node child)
+        {
+            if (child.HasParent())
+            {
+                child.Parent().RemoveChild(child);
+            }
+
+            if (IsLeaf())
+            {
+                FirstChild(child);
+                child.LeftSibling(null);
+            }
+            else
+            {
+                Node siblingIter;
+                for (siblingIter = _offspring; siblingIter != null && siblingIter.HasRightSibling(); siblingIter = siblingIter.RightSibling())
+                {
+                    // Nothing to do here
+                    // TODO - why are we looping for no reason?
+                }
+                if (siblingIter != null)
+                {
+                    siblingIter.RightSibling(child);
+                    child.LeftSibling(siblingIter);
+                }
+            }
+
+            child.Parent(this);
+            _numChildren++;
+        }
+
+        public void RemoveNode()
+        {
+            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+            {
+                if (this[i] == null)
+                {
+                    continue;
+                }
+
+                Parent().AddChild(this[i]);
+            }
+
+            Parent().RemoveChild(this);
+        }
+
+        protected void RemoveChild(Node child)
+        {
+            if (child == FirstChild())
+            {
+                _offspring = child.RightSibling();
+                if (_offspring != null)
+                {
+                    _offspring.LeftSibling(null);
+                }
+            }
+            else
+            {
+                Node siblingIter;
+                for (siblingIter = _offspring; siblingIter != child && siblingIter != null; siblingIter = siblingIter.RightSibling())
+                {
+                    // Nothing to do here
+                    // TODO
+                }
+                if (siblingIter == child)
+                {
+                    if (child.HasLeftSibling()) //TODO
+                    {
+                        child.LeftSibling().RightSibling(child.RightSibling());
+                    }
+                    if (child.HasRightSibling())
+                    {
+                        child.RightSibling().LeftSibling(child.LeftSibling());
+                    }
+                }
+            }
+
+            child.Parent(null);
+            child.LeftSibling(null);
+            child.RightSibling(null);
+            _numChildren--;
+        }
+
+        public Node LeftSibling(bool isIndex = false) //TODO can this be merged with right?
+        {
+            var unignoredLeftSib = _leftSibling;
+            if (unignoredLeftSib == null)
+            {
+                return null;
+            }
+
+            if (!unignoredLeftSib.IsIgnored() || isIndex)
+            {
+                return _leftSibling;
+            }
+
+            while (unignoredLeftSib.HasLeftSibling())
+            {
+                unignoredLeftSib = unignoredLeftSib.LeftSibling();
+
+                if (!unignoredLeftSib.IsIgnored())
+                {
+                    return unignoredLeftSib;
+                }
+            }
+            return null;
+        }
+
+        protected void LeftSibling(Node sibling)
+        {
+            _leftSibling = sibling;
+        }
+
+        public Node RightSibling(bool IsIndex = false)
+        {
+            var unignoredRightSib = _rightSibling; //TODO change name
+            if (unignoredRightSib == null)
+            {
+                return null;
+            }
+
+            if (!unignoredRightSib.IsIgnored() || IsIndex)
+            {
+                return _rightSibling;
+            }
+
+            while (unignoredRightSib.HasRightSibling())
+            {
+                unignoredRightSib = unignoredRightSib.RightSibling();
+
+                if (!unignoredRightSib.IsIgnored())
+                {
+                    return unignoredRightSib;
+                }
+            }
+            return null;
+        }
+
+        protected void RightSibling(Node sibling) //TODO change names to add more detail
+        {
+            _rightSibling = sibling;
+        }
+
+        public Node Parent(bool isIndex = false)
+        {
+            if (_parent == null)
+            {
+                return null;
+            }
+
+            if (!_parent.IsIgnored() || isIndex)
+            {
+                return _parent;
+            }
+
+            return null;
+            //TODO two return null
+        }
+
+        protected void Parent(Node parent)
+        {
+            _parent = parent;
         }
 
         public Node LeftNeighbor()
         {
-            Node UnignoredLeftNeighbor = m_Prev;
-            if (UnignoredLeftNeighbor == null)
+            var unignoredLeftNeighbor = Prev;
+            if (unignoredLeftNeighbor == null)
             {
                 return null;
             }
 
-            if (!UnignoredLeftNeighbor.IsIgnored())
+            if (!unignoredLeftNeighbor.IsIgnored())
             {
-                return m_Prev;
+                return Prev;
             }
-            else
+            
+            while (unignoredLeftNeighbor.LeftNeighbor() != null)
             {
-                while (UnignoredLeftNeighbor.LeftNeighbor() != null)
+                unignoredLeftNeighbor = unignoredLeftNeighbor.LeftNeighbor();
+
+                if (!unignoredLeftNeighbor.IsIgnored())
                 {
-                    UnignoredLeftNeighbor = UnignoredLeftNeighbor.LeftNeighbor();
-
-                    if (!UnignoredLeftNeighbor.IsIgnored())
-                    {
-                        return UnignoredLeftNeighbor;
-                    }
+                    return unignoredLeftNeighbor;
                 }
-                return null;
             }
+            return null;
         }
 
         #endregion
@@ -359,37 +353,34 @@ namespace TreeDisplay
 
         public bool IsLeaf()
         {
-            if (this != null && this.m_Offspring == null)
+            if (_offspring == null)
             {
                 return true;
             }
-            else
+
+            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
             {
-                for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
+                if (this[i] == null)
                 {
-                    if (this[i] == null)
-                    {
-                        continue;
-                    }
-                    if (this[i].IsIgnored())
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    continue;
                 }
 
-                return true;
+                if (this[i].IsIgnored())
+                {
+                    continue;
+                }
+
+                return false;
             }
+
+            return true;
         }
 
         public bool HasParent(bool isIndex = false)
         {
-            if (this != null && this.m_Parent != null)
+            if (_parent != null)
             {
-                if (!m_Parent.IsIgnored() || isIndex)
+                if (!_parent.IsIgnored() || isIndex)
                 {
                     return true;
                 }
@@ -399,91 +390,78 @@ namespace TreeDisplay
 
         public bool HasChild()
         {
-            if (this != null && this.m_Offspring != null)
+            if (_offspring != null)
             {
-                for (int i = GetNumberOfChildren() - 1; i >= 0; i--)
+                for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
                 {
-                    if (this[i] == null)
+                    if (this[i] == null || this[i].IsIgnored())
                     {
                         continue;
                     }
-                    if (this[i].IsIgnored())
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        return true;
-                    }
+
+                    return true;
                 }
                 return false;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
+
         }
 
         public bool HasLeftSibling(bool isIndex = false)
         {
-            if (this != null && this.m_LeftSibling != null)
+            if (_leftSibling != null)
             {
-                Node tempLeftSib = m_LeftSibling;
+                var tempLeftSib = _leftSibling;
                 if (!tempLeftSib.IsIgnored() || isIndex)
                 {
                     return true;
                 }
-                else
+
+                while (tempLeftSib.IsIgnored())
                 {
-                    while (tempLeftSib.IsIgnored())
+                    if (tempLeftSib.HasLeftSibling())
                     {
-                        if (tempLeftSib.HasLeftSibling())
-                        {
-                            tempLeftSib = tempLeftSib.LeftSibling();
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        tempLeftSib = tempLeftSib.LeftSibling();
                     }
-                    return true;
+                    else
+                    {
+                        return false;
+                    }
                 }
+
+                return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public bool HasRightSibling(bool isIndex = false)
         {
-            if (this != null && this.m_RightSibling != null)
+            if (_rightSibling != null)
             {
-                Node tempRightSib = m_RightSibling;
+                var tempRightSib = _rightSibling;
                 if (!tempRightSib.IsIgnored() || isIndex)
                 {
                     return true;
                 }
-                else
+
+                while (tempRightSib.IsIgnored())
                 {
-                    while (tempRightSib.IsIgnored())
+                    if (tempRightSib.HasRightSibling())
                     {
-                        if (tempRightSib.HasRightSibling())
-                        {
-                            tempRightSib = tempRightSib.RightSibling();
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        tempRightSib = tempRightSib.RightSibling();
                     }
-                    return true;
+                    else
+                    {
+                        return false;
+                    }
                 }
+
+                return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         #endregion
@@ -492,13 +470,13 @@ namespace TreeDisplay
 
         public void SetCallback(Action cb)
         {
-            m_Callback = cb;
+            _callback = cb;
         }
 
         public void ExecuteCallback()
         {
-            m_Callback();
-            for (int i = 0; i < m_NumChildren; i++)
+            _callback();
+            for (var i = 0; i < _numChildren; i++)
             {
                 if (this[i] != null)
                 {
@@ -509,61 +487,61 @@ namespace TreeDisplay
 
         public void SetIgnore(bool b)
         {
-            m_IgnoreNode = b;
+            _ignoreNode = b;
         }
 
         public bool IsIgnored()
         {
-            return m_IgnoreNode;
+            return _ignoreNode;
         }
 
         #endregion
 
         #region Node Sizing and Appearance
 
-        public int GetXCoord()
+        public int GetXCoord() // gets and sets
         {
-            return m_XCoord;
+            return _xCoord;
         }
 
         public void SetXCoord(int x)
         {
-            m_XCoord = x;
+            _xCoord = x;
         }
 
         public int GetYCoord()
         {
-            return m_YCoord;
+            return _yCoord;
         }
 
         public void SetYCoord(int y)
         {
-            m_YCoord = y;
+            _yCoord = y;
         }
 
         public int GetWidth()
         {
-            return m_Width;
+            return _width;
         }
 
         public void SetWidth(int w)
         {
             if (w >= 0)
             {
-                m_Width = w;
+                _width = w;
             }
         }
 
         public int GetHeight()
         {
-            return m_Height;
+            return _height;
         }
 
         public void SetHeight(int h)
         {
             if (h >= 0)
             {
-                m_Height = h;
+                _height = h;
             }
         }
 
@@ -573,50 +551,48 @@ namespace TreeDisplay
 
         public int GetNumberOfChildren()
         {
-            return m_NumChildren;
+            return _numChildren;
         }
 
         public int GetNumGenerations()
         {
-            if (this.HasChild())
-            {
-                int gens = 0;
-                for (int i = 0; i < GetNumberOfChildren(); i++)
-                {
-                    if (this[i] != null)
-                    {
-                        gens = Math.Max(gens, this[i].GetNumGenerations());
-                    }
-                }
-                return gens + 1;
-            }
-            else
+            if (!HasChild())
             {
                 return 0;
             }
+
+            var gens = 0;
+            for (var i = 0; i < GetNumberOfChildren(); i++)
+            {
+                if (this[i] != null)
+                {
+                    gens = Math.Max(gens, this[i].GetNumGenerations());
+                }
+            }
+
+            return gens + 1;
         }
 
         #endregion
 
         #region Children Indexing
 
-        public int GetChildIndex(Node Child)
+        public int GetChildIndex(Node child)
         {
-            Node ChildIter;
+            Node childIter;
             uint i;
-            for (ChildIter = this.m_Offspring, i = 0;
-                 ChildIter != Child && ChildIter != null;
-                 ChildIter = ChildIter.RightSibling(), i++)
+            for (childIter = _offspring, i = 0; //TODO determine if this does anything
+                 childIter != child && childIter != null;
+                 childIter = childIter.RightSibling(), i++)
             {
             }
-            if (ChildIter != null)
+            
+            if (childIter != null)
             {
-                return (int)(i);
+                return (int)i;
             }
-            else
-            {
-                return -1;
-            }
+
+            return -1;
         }
 
         public Node this[int ind]
@@ -627,15 +603,15 @@ namespace TreeDisplay
                 {
                     return null;
                 }
-                Node ChildIter;
+                Node childIter;
                 uint i;
-                for (ChildIter = this.m_Offspring, i = 0;
-                     ChildIter != null && i < ind;
-                     ChildIter = ChildIter.RightSibling(true), i++)
+                for (childIter = _offspring, i = 0;
+                     childIter != null && i < ind;
+                     childIter = childIter.RightSibling(true), i++)
                 {
-                    // Nothing to do here
+                    // Nothing to do here //TODO
                 }
-                return ChildIter;
+                return childIter;
             }
         }
 
