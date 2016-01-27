@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FraterniTree
 {
     public partial class EditBrotherNoBig : Form
     {
-        private const string PRETEXT = "Please enter the full name of ";
+        private const string PRETEXT = "Please enter the full name of "; //TODO
         private const string POSTTEXT = "\'s Big:";
-        public Brother m_BrotherUnderEdit;
+        public Brother BrotherUnderEdit;
         public EditBrotherNoBig(Brother b)
         {
             InitializeComponent();
-            m_BrotherUnderEdit = b;
+            BrotherUnderEdit = b;
             lblEditBig.Text = PRETEXT + b + POSTTEXT;
             tbEditBig.AutoCompleteCustomSource = frmMain.CurrentBrothers;
             btnCancelEdit.Enabled = true;
@@ -26,7 +19,7 @@ namespace FraterniTree
 
         private void tbEditBig_TextChanged(object sender, EventArgs e)
         {
-            if (tbEditBig.Text == "")
+            if (tbEditBig.Text == string.Empty)
             {
                 btnOK.Enabled = false;
                 return;
@@ -48,7 +41,7 @@ namespace FraterniTree
                 b = new Brother(tbEditBig.Text.Substring(space + 1), tbEditBig.Text.Substring(0, space), "Fall", 1920);
                 frmMain.root.AddChild(b);
             }
-            b.AddChild(m_BrotherUnderEdit);
+            b.AddChild(BrotherUnderEdit);
         }
     }
 }

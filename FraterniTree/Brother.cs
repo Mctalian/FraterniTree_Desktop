@@ -13,12 +13,11 @@ namespace FraterniTree
         private string  _lastName;
         private string  _firstName;
         private InitiationTerm  _initiationTerm;
-        private int _initiationYear;
         public bool Active = false;
         public Label Label = new Label();
         public static Action<Brother> SelectCallback = null;
         public static Action ShiftCallback = null;
-        private bool _hiddenChildren = false;
+        private bool _hiddenChildren;
         private Point _lastPoint;
 
         private enum InitiationTerm
@@ -26,7 +25,7 @@ namespace FraterniTree
             Winter = 0,
             Spring = 1,
             Fall = 2
-        };
+        }
 
         #region Constructors
 
@@ -55,7 +54,7 @@ namespace FraterniTree
 
             // Initialize the label
             Label.Text        = ToString();
-            Label.TextAlign   = System.Drawing.ContentAlignment.MiddleCenter;
+            Label.TextAlign   = ContentAlignment.MiddleCenter;
             Label.Padding     = new Padding(4);
             Label.AutoSize    = true;
             Label.BorderStyle = BorderStyle.FixedSingle;
@@ -116,18 +115,7 @@ namespace FraterniTree
             }
         }
 
-        public int IniYear
-        {
-            get
-            {
-                return _initiationYear;
-            }
-
-            set
-            {
-                _initiationYear = value;
-            }
-        }
+        public int IniYear { get; set; }
 
         public override string ToString()
         {
@@ -138,12 +126,12 @@ namespace FraterniTree
         {
             Brother found = null;
 
-            if (this.ToString() == fullName)
+            if (ToString() == fullName)
             {
                 return this;
             }
 
-            for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
+            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 found = ((Brother)this[i]).FindBrotherByName(fullName);
                 if (found != null)
@@ -162,34 +150,34 @@ namespace FraterniTree
 
         public bool RecursiveSetIgnoreNode()
         {
-            bool isThisIgnored = !Active;
-            for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
+            var isThisIgnored = !Active;
+            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 if (isThisIgnored)
                 {
-                    isThisIgnored = ((Brother)(this[i])).RecursiveSetIgnoreNode();
+                    isThisIgnored = ((Brother)this[i]).RecursiveSetIgnoreNode();
                 }
                 else
                 {
                     // Ignore return, but set descendant nodes accordingly
-                    ((Brother)(this[i])).RecursiveSetIgnoreNode();
+                    ((Brother)this[i]).RecursiveSetIgnoreNode();
                 }
             }
 
-            this.SetIgnore(isThisIgnored);
+            SetIgnore(isThisIgnored);
             return isThisIgnored;
         }
 
         public void RecursiveClearIgnoreNode()
         {
-            this.SetIgnore(false);
-            for (int i = this.GetNumberOfChildren() - 1; i >= 0; i--)
+            SetIgnore(false);
+            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 if (this[i] == null)
                 {
                     continue;
                 }
-                ((Brother)(this[i])).RecursiveClearIgnoreNode();
+                ((Brother)this[i]).RecursiveClearIgnoreNode();
             }
         }
 
@@ -199,26 +187,22 @@ namespace FraterniTree
             do
             {
                 isSorted = true;
-                for (int i = 1; i < GetNumberOfChildren(); i++)
+                for (var i = 1; i < GetNumberOfChildren(); i++)
                 {
-                    Brother L = (Brother)this[i - 1];
-                    Brother R = (Brother)this[i];
-                    if (R._initiationYear < L._initiationYear)
+                    var L = (Brother)this[i - 1];
+                    var R = (Brother)this[i];
+                    if (R.IniYear < L.IniYear)
                     {
                         SwapLittles(L, R);
                         isSorted = false;
                     }
-                    else if (R._initiationYear == L._initiationYear)
+                    else if (R.IniYear == L.IniYear)
                     {
                         if (R._initiationTerm < L._initiationTerm)
                         {
                             SwapLittles(L, R);
                             isSorted = false;
                         }
-                    }
-                    else
-                    {
-                        // Do nothing
                     }
                 }
             } while (!isSorted);
@@ -234,9 +218,9 @@ namespace FraterniTree
                     {
                         if ((Brother)L.RightSibling(true) == R && (Brother)R.LeftSibling(true) == L)
                         {
-                            if (L == (Brother)this.FirstChild(true))
+                            if (L == (Brother)FirstChild(true))
                             {
-                                this.FirstChild(R);
+                                FirstChild(R);
                             }
 
                             R.LeftSibling(L.LeftSibling(true));
@@ -280,11 +264,11 @@ namespace FraterniTree
             }
             if (b.HasRightSibling())
             {
-                RecursiveLabelMove((Brother)(b.RightSibling()), dx, dy);
+                RecursiveLabelMove((Brother)b.RightSibling(), dx, dy);
             }
             if (b.HasChild())
             {
-                RecursiveLabelMove((Brother)(b.FirstChild()), dx, dy);
+                RecursiveLabelMove((Brother)b.FirstChild(), dx, dy);
             }
         }
 
@@ -296,11 +280,11 @@ namespace FraterniTree
                 b.Label.BringToFront();
                 if (b.HasRightSibling())
                 {
-                    RecursiveLabelCapture((Brother)(b.RightSibling()), e);
+                    RecursiveLabelCapture((Brother)b.RightSibling(), e);
                 }
                 if (b.HasChild())
                 {
-                    RecursiveLabelCapture((Brother)(b.FirstChild()), e);
+                    RecursiveLabelCapture((Brother)b.FirstChild(), e);
                 }
             }
         }
@@ -309,9 +293,9 @@ namespace FraterniTree
         {
             if (b.Label.Parent != null)
             {
-                if (((Brother)(b.Parent())).Label.Parent != null)
+                if (((Brother)b.Parent()).Label.Parent != null)
                 {
-                    b.Label.Visible = ((Brother)(b.Parent())).Label.Visible && !((Brother)(b.Parent()))._hiddenChildren;
+                    b.Label.Visible = ((Brother)b.Parent()).Label.Visible && !((Brother)b.Parent())._hiddenChildren;
                 }
                 else
                 {
@@ -320,13 +304,13 @@ namespace FraterniTree
             }
             else
             {
-                b.Label.Visible = !((Brother)(b.Parent()))._hiddenChildren;
+                b.Label.Visible = !((Brother)b.Parent())._hiddenChildren;
             }
             if (!b._hiddenChildren)
             {
-                for (int i = b.GetNumberOfChildren() - 1; i >= 0; i--)
+                for (var i = b.GetNumberOfChildren() - 1; i >= 0; i--)
                 {
-                    RecursiveLabelVisibleToggle((Brother)(b[i]));
+                    RecursiveLabelVisibleToggle((Brother)b[i]);
                 }
             }
         }
@@ -356,7 +340,7 @@ namespace FraterniTree
                 Label.BackColor = Color.Empty;
             }
 
-            Brother parent = ((Brother)(this.Parent()));
+            var parent = (Brother)Parent();
 
             if (parent.Label.Parent != null && !parent.Label.Visible)
             {
@@ -381,12 +365,12 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                int dx = e.X - _lastPoint.X;
-                int dy = e.Y - _lastPoint.Y;
+                var dx = e.X - _lastPoint.X;
+                var dy = e.Y - _lastPoint.Y;
                 Label.Location = new Point(Label.Left + dx, Label.Top + dy);
-                if (this.HasChild())
+                if (HasChild())
                 {
-                    RecursiveLabelMove((Brother)this.FirstChild(), dx, dy);
+                    RecursiveLabelMove((Brother)FirstChild(), dx, dy);
                 }
             }
         }
@@ -398,9 +382,9 @@ namespace FraterniTree
                 _lastPoint = e.Location;
                 Label.BringToFront();
                 Label.Capture = true;
-                if (this.HasChild())
+                if (HasChild())
                 {
-                    RecursiveLabelCapture((Brother)this.FirstChild(), e);
+                    RecursiveLabelCapture((Brother)FirstChild(), e);
                 }
             }
         }
@@ -409,7 +393,7 @@ namespace FraterniTree
         {
             if (e.Button == MouseButtons.Left)
             {
-                int oldWidth = Label.Width;
+                var oldWidth = Label.Width;
                 Label.Font = new Font(Label.Font, Label.Font.Style | FontStyle.Bold);
                 Label.Refresh();
                 Label.Location = new Point(Label.Location.X - (Label.Width - oldWidth) / 2, Label.Location.Y);
