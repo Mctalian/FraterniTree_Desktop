@@ -134,7 +134,7 @@ namespace FraterniTree
                     else
                     {
                         tmpBig = new Brother(bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
-                        tmpBig.m_Label.ContextMenuStrip = cmNodeActions;
+                        tmpBig.Label.ContextMenuStrip = cmNodeActions;
                         root.AddChild(tmpBig);
                         RefreshNoBigListBox(root);
                     }
@@ -158,7 +158,7 @@ namespace FraterniTree
                     else
                     {
                         newB = new Brother(last, first, month, year);
-                        newB.m_Label.ContextMenuStrip = cmNodeActions;
+                        newB.Label.ContextMenuStrip = cmNodeActions;
                         tmpBig.AddChild(newB);
                     }
 
@@ -182,30 +182,34 @@ namespace FraterniTree
             {
                 lbNoRelation.Items.Clear();
             }
-            for (int i = b.GetNumberOfChildren() - 1; i >= 0; i--)
+
+            for (var i = b.GetNumberOfChildren() - 1; i >= 0; i--)
             {
                 if (b == root)
                 {
-                    if (!lbNoRelation.Items.Contains(((Brother)b[i])))
+                    if (!lbNoRelation.Items.Contains( (Brother)b[i]) )
                     {
-                        lbNoRelation.Items.Add(((Brother)b[i]));
+                        lbNoRelation.Items.Add( (Brother)b[i] );
                     }
                 }
-                if (!cbTreeParent.Items.Contains(((Brother)b[i])))
+
+                if (!cbTreeParent.Items.Contains( (Brother)b[i]) )
                 {
-                    cbTreeParent.Items.Add(((Brother)b[i]));
+                    cbTreeParent.Items.Add( (Brother)b[i] );
                 }
-                if (!CurrentBrothers.Contains(((Brother)b[i]).ToString()))
+
+                if (!CurrentBrothers.Contains( ((Brother)b[i]).ToString()) )
                 {
-                    CurrentBrothers.Add(((Brother)b[i]).ToString());
+                    CurrentBrothers.Add( ((Brother)b[i]).ToString() );
                 }
-                RefreshNoBigListBox((Brother)(b[i]));
+
+                RefreshNoBigListBox( (Brother)b[i] );
             }            
         }
 
         private void RemoveBrotherFromTree(Brother b)
         {
-            string name = b.ToString();
+            var name = b.ToString();
             lbNoRelation.Items.Remove(b);
             cbTreeParent.Items.Remove(b);
             b = null;
@@ -220,14 +224,15 @@ namespace FraterniTree
         {
             if (cbTreeParent.SelectedIndex != -1 && cbTreeParent.Text != "")
             {
-
-                float horizPercentage = ((float)splitTreeInfo.Panel1.HorizontalScroll.Value) / ((float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
-                float vertPercentage = ((float)splitTreeInfo.Panel1.VerticalScroll.Value) / ((float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
+                var horizPercentage = splitTreeInfo.Panel1.HorizontalScroll.Value / (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum;
+                var vertPercentage = splitTreeInfo.Panel1.VerticalScroll.Value / (float)splitTreeInfo.Panel1.VerticalScroll.Maximum;
+                
                 CreateTree();
                 PostCreationShift();
+                
                 if (isScrollMaintained)
                 {
-                    splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum);
+                    splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * (float)splitTreeInfo.Panel1.HorizontalScroll.Maximum); //TODO
                     splitTreeInfo.Panel1.VerticalScroll.Value = (int)(vertPercentage * (float)splitTreeInfo.Panel1.VerticalScroll.Maximum);
                     splitTreeInfo.Panel1.PerformLayout();
                 }
@@ -242,28 +247,30 @@ namespace FraterniTree
         {
             if (g >= 0)
             {
-                int count = parent.GetNumberOfChildren();
+                var count = parent.GetNumberOfChildren();
                 parent.Prelim = 0;
                 parent.Modifier = 0;
-                parent.m_Label.AutoSize = !FixedWidth;
+                parent.Label.AutoSize = !FixedWidth;
+                
                 if (!parent.IsIgnored())
                 {
-                    pnlTree.Controls.Add(parent.m_Label);
+                    pnlTree.Controls.Add(parent.Label);
                 }
-                if (parent.m_Label.AutoSize)
+                
+                if (parent.Label.AutoSize)
                 {
-                    MaximumWidth = Math.Max(MaximumWidth, parent.m_Label.Width);
-                    parent.SetWidth(parent.m_Label.Width);
+                    MaximumWidth = Math.Max(MaximumWidth, parent.Label.Width);
+                    parent.SetWidth(parent.Label.Width);
                 }
                 else
                 {
-                    parent.m_Label.AutoSize = true;
-                    parent.m_Label.Parent.Refresh();
-                    MaximumWidth = Math.Max(MaximumWidth, parent.m_Label.Width);
-                    parent.m_Label.AutoSize = false;
+                    parent.Label.AutoSize = true;
+                    parent.Label.Parent.Refresh();
+                    MaximumWidth = Math.Max(MaximumWidth, parent.Label.Width);
+                    parent.Label.AutoSize = false;
                 }
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     if (!parent[i].IsIgnored())
                     {
@@ -275,8 +282,8 @@ namespace FraterniTree
 
         private void BoundsCheckShift()
         {
-            int leastPosX = 0;
-            int leastPosY = 0;
+            var leastPosX = 0;
+            var leastPosY = 0;
 
             foreach (Control c in pnlTree.Controls)
             {
@@ -284,6 +291,7 @@ namespace FraterniTree
                 {
                     leastPosX = Math.Max(leastPosX, -c.Location.X);
                 }
+
                 if (c.Location.Y < 0)
                 {
                     leastPosY = Math.Max(leastPosY, -c.Location.Y);
@@ -314,7 +322,7 @@ namespace FraterniTree
 
             if (Selected != null)
             {
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, Selected.m_Label.Font.Style & ~FontStyle.Bold);
+                Selected.Label.Font = new Font(Selected.Label.Font, Selected.Label.Font.Style & ~FontStyle.Bold);
             }
 
             Selected = null;
@@ -345,11 +353,11 @@ namespace FraterniTree
                 generationDownToolStripMenuItem.Enabled = true;
                 generationUpToolStripMenuItem.Enabled = true;
 
-                Size s = TreeRoot.m_Label.Size;
-                Point p = new Point((splitTreeInfo.Panel1.Width / 2) - (s.Width / 2), 2);
+                var s = TreeRoot.Label.Size;
+                var p = new Point((splitTreeInfo.Panel1.Width / 2) - (s.Width / 2), 2);
                 TreeRoot.SetXCoord(p.X);
                 TreeRoot.SetYCoord(p.Y);
-                int gens = (TreeRoot.GetNumGenerations());
+                var gens = (TreeRoot.GetNumGenerations());
                 updwnNumGen.Maximum = gens;
 
                 MaximumWidth = 0;
@@ -373,17 +381,18 @@ namespace FraterniTree
 
         private void PostCreationShift()
         {
-            int leastPosX = 0;
-            int leastPosY = 0;
+            var leastPosX = 0;
+            var leastPosY = 0;
 
             foreach (Control c in pnlTree.Controls)
             {
-
                 c.Location = new Point(c.Location.X - (c.Width / 2), c.Location.Y);
+                
                 if (c.Location.X < 0)
                 {
                     leastPosX = Math.Max(leastPosX, -c.Location.X);
                 }
+
                 if (c.Location.Y < 0)
                 {
                     leastPosY = Math.Max(leastPosY, -c.Location.Y);
@@ -400,10 +409,10 @@ namespace FraterniTree
 
             if (!DisplayApex)
             {
-                if (root.m_Label.Parent != null)
+                if (root.Label.Parent != null)
                 {
-                    root.m_Label.Parent = null;
-                    leastPosY = root.m_Label.Height + (int)(updwnVertSpace.Value);
+                    root.Label.Parent = null;
+                    leastPosY = root.Label.Height + (int)updwnVertSpace.Value;
                     foreach (Control c in pnlTree.Controls)
                     {
                         c.Location = new Point(c.Location.X, c.Location.Y - leastPosY);
@@ -417,12 +426,12 @@ namespace FraterniTree
         {
             if (g >= 0)
             {
-                int count = parent.GetNumberOfChildren();
+                var count = parent.GetNumberOfChildren();
 
-                parent.m_Label.Width = MaximumWidth;
-                parent.SetWidth(parent.m_Label.Width);
+                parent.Label.Width = MaximumWidth;
+                parent.SetWidth(parent.Label.Width);
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     SetLabelWidths((Brother)parent[i], g - 1);
                 }
@@ -431,26 +440,29 @@ namespace FraterniTree
 
         private void UnzoomControls()
         {
-            float ZoomFactor = 1;
+            float zoomFactor = 1;
+            
             if (ZoomLevel < 0)
             {
-                ZoomFactor = (float)Math.Pow(ZOOM_FACTOR, (-ZoomLevel));
+                zoomFactor = (float)Math.Pow(ZOOM_FACTOR, (-ZoomLevel));
             }
             else if (ZoomLevel > 0)
             {
-                ZoomFactor = (float)Math.Pow(1 / ZOOM_FACTOR, ZoomLevel);
+                zoomFactor = (float)Math.Pow(1 / ZOOM_FACTOR, ZoomLevel);
             }
             else
             {
                 return;
             }
+
             foreach (Control c in pnlTree.Controls)
             {
-                Label l = (Label)(c);
-                l.Font = new Font(l.Font.FontFamily, l.Font.Size * ZoomFactor);
-                SizeF sf = new SizeF(ZoomFactor, ZoomFactor);
+                var l = (Label)c;
+                l.Font = new Font(l.Font.FontFamily, l.Font.Size * zoomFactor);
+                var sf = new SizeF(zoomFactor, zoomFactor);
                 c.Scale(sf);
             }
+
             ZoomLevel = 0;
         }
 
@@ -476,18 +488,19 @@ namespace FraterniTree
 
             if (Selected != null && Selected != b)
             {
-                int oldWidth = Selected.m_Label.Width;
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, Selected.m_Label.Font.Style & ~FontStyle.Bold);
-                Selected.m_Label.Refresh();
-                Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth- Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
+                int oldWidth = Selected.Label.Width;
+                Selected.Label.Font = new Font(Selected.Label.Font, Selected.Label.Font.Style & ~FontStyle.Bold);
+                Selected.Label.Refresh();
+                Selected.Label.Location = new Point(Selected.Label.Location.X + (oldWidth- Selected.Label.Width) / 2, Selected.Label.Location.Y);
             }
-            Selected = b;
 
+            Selected = b;
             tbSelectedFirst.Text = b.First;
             tbSelectedLast.Text = b.Last;
             tbSelectedBig.Text = b.HasParent() ? ((Brother)(b.Parent())).ToString() : "";
             tbSelectedLittles.Text = "";
-            for (int i = 0; i < b.GetNumberOfChildren(); i++)
+            
+            for (var i = 0; i < b.GetNumberOfChildren(); i++)
             {
                 Brother l = (Brother)(b[i]);
                 tbSelectedLittles.Text += (i == 0 ? "" : Environment.NewLine ) + l.ToString();
@@ -499,7 +512,7 @@ namespace FraterniTree
                 cbSelectedTerm.SelectedItem = b.IniMonth;
             }
 
-            chbActive.Checked = b.isActiveBrother;
+            chbActive.Checked = b.Active;
 
             btnEditSelected.Enabled = true;
         }
@@ -512,6 +525,7 @@ namespace FraterniTree
         private bool IsSelectedDataEdited()
         {
             SelectedEdits = FieldEdit.NONE;
+            
             if (tbSelectedFirst.Text != Selected.First)
             {
                 SelectedEdits |= FieldEdit.FIRST_NAME;
@@ -527,16 +541,16 @@ namespace FraterniTree
                 SelectedEdits |= FieldEdit.BIG;
             }
 
-            string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             if (littles.Length != Selected.GetNumberOfChildren())
             {
                 SelectedEdits |= FieldEdit.LITTLES;
             }
             else
             {
-                for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
+                for (var i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
                 {
-                    if (!littles.Contains(((Brother)(Selected[i])).ToString()))
+                    if (!littles.Contains(((Brother)Selected[i]).ToString()))
                     {
                         SelectedEdits |= FieldEdit.LITTLES;
                     }
@@ -553,7 +567,7 @@ namespace FraterniTree
                 SelectedEdits |= FieldEdit.INI_MONTH;
             }
 
-            if (chbActive.Checked != Selected.isActiveBrother)
+            if (chbActive.Checked != Selected.Active)
             {
                 SelectedEdits |= FieldEdit.ACTIVE;
             }
@@ -568,8 +582,9 @@ namespace FraterniTree
 
         private bool ConnectDB(string server, int port, string dbName, string uName, string pWord)
         {
-            bool ret = true;
-            string cs = @"server=" + server + ";port=" + port + ";userid=" + uName + ";password=" + pWord + ";database=" + dbName + ";allow user variables=true";
+            var ret = true;
+            var cs = @"server=" + server + ";port=" + port + ";userid=" + uName + ";password=" + pWord + ";database=" + dbName + ";allow user variables=true";
+            
             try
             {
                 DbConnect = new MySqlConnection(cs);
@@ -586,12 +601,13 @@ namespace FraterniTree
                 MessageBox.Show(ex.Message);
                 ret = false;
             }
+            
             return ret;
         }
 
         private bool ConnectDB(MySqlConnection conn)
         {
-            bool ret = true;
+            var ret = true;
             
             try
             {
@@ -609,6 +625,7 @@ namespace FraterniTree
                 MessageBox.Show(ex.Message);
                 ret = false;
             }
+
             return ret;
         }
 
@@ -647,6 +664,7 @@ namespace FraterniTree
                         {
                             cmd.Parameters.AddWithValue("@Big", "");
                         }
+
                         if (currentParent.HasRightSibling())
                         {
                             cmd.Parameters.AddWithValue("@NextSibling", ((Brother)(currentParent.RightSibling())).ToString());
@@ -655,6 +673,7 @@ namespace FraterniTree
                         {
                             cmd.Parameters.AddWithValue("@NextSibling", "");
                         }
+
                         if (currentParent.HasChild())
                         {
                             cmd.Parameters.AddWithValue("@FirstLittle", ((Brother)(currentParent.FirstChild())).ToString());
@@ -663,6 +682,7 @@ namespace FraterniTree
                         {
                             cmd.Parameters.AddWithValue("@FirstLittle", "");
                         }
+
                         cmd.ExecuteNonQuery();
                         DbConnect.Close();
                     }
@@ -678,17 +698,17 @@ namespace FraterniTree
 
         #region XML-Specific Methods
 
-        private string ConvertTreeToXml(Brother B)
+        private string ConvertTreeToXml(Brother B) //TODO
         {
             // Begin the Tag
-            string xmlData = "<Brother ";
+            var xmlData = "<Brother ";
 
             // Attributes
             xmlData += "Last=\"" + B.Last + "\" ";
             xmlData += "First=\"" + B.First + "\" ";
             xmlData += "IniTerm=\"" + B.IniMonth + "\" ";
             xmlData += "IniYear=\"" + B.IniYear + "\" ";
-            xmlData += "Active=\"" + B.isActiveBrother.ToString() + "\" ";
+            xmlData += "Active=\"" + B.Active.ToString() + "\" ";
 
             xmlData += ">";
 
@@ -705,47 +725,48 @@ namespace FraterniTree
         
         private Brother ConvertXmlToTree(XmlNode currentParent)
         {
-            Brother big = new Brother(currentParent.Attributes["Last"].Value,
+            var big = new Brother(currentParent.Attributes["Last"].Value,
                                         currentParent.Attributes["First"].Value,
                                         currentParent.Attributes["IniTerm"].Value,
                                         Int32.Parse(currentParent.Attributes["IniYear"].Value));
 
             if (currentParent.Attributes["Active"] != null)
             {
-                string val = currentParent.Attributes["Active"].Value;
+                var val = currentParent.Attributes["Active"].Value;
                 switch (val.ToUpper())
                 {
-                    case "YES":
+                    case "YES": //TODO
                     case "Y":
                     case "TRUE":
                     case "T":
                     case "1":
-                        big.isActiveBrother = true;
+                        big.Active = true;
                         break;
                     default:
-                        big.isActiveBrother = false;
+                        big.Active = false;
                         break;
                 }
             }
             else
             {
-                big.isActiveBrother = false;
+                big.Active = false;
             }
 
-            big.m_Label.ContextMenuStrip = cmNodeActions;
-            ttTree.SetToolTip(big.m_Label, "Left click to select and edit");
+            big.Label.ContextMenuStrip = cmNodeActions;
+            ttTree.SetToolTip(big.Label, "Left click to select and edit");
 
             foreach (XmlNode child in currentParent.ChildNodes)
             {
                 big.AddChild(ConvertXmlToTree(child));
             }
+            
             return big;
         }
 
-        private void ExportToXml(string filePath, string parentNodeName)
+        private void ExportToXml(string filePath, string parentNodeName) //TODO
         {
             // Xml Document Header
-            string xmlDoc = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+            var xmlDoc = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
                                "<" + parentNodeName + ">";
             // Fill it with all the nodes
             xmlDoc += ConvertTreeToXml(root);
@@ -753,9 +774,9 @@ namespace FraterniTree
             // Close the Document Parent Node
             xmlDoc += "</" + parentNodeName + ">";
 
-            XmlDocument tmp = new XmlDocument();
+            var tmp = new XmlDocument();
             tmp.LoadXml(xmlDoc);
-            XmlTextWriter xWriter = new XmlTextWriter(filePath, Encoding.UTF8);
+            var xWriter = new XmlTextWriter(filePath, Encoding.UTF8);
             xWriter.Formatting = Formatting.Indented;
             tmp.Save(xWriter);
             xWriter.Close();
@@ -774,7 +795,7 @@ namespace FraterniTree
             if (!File.Exists(OpenedXmlFilePath))
             {
                 // Xml Document Header
-                string xmlData = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                var xmlData = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                                     "<" + XmlParentNodeName + ">\n";
 
                 // Begin the Root Tag
@@ -812,7 +833,7 @@ namespace FraterniTree
                                         Int32.Parse(currentParent.Attributes["IniYear"].Value));
                     if (currentParent.Attributes["Active"] != null)
                     {
-                        string val = currentParent.Attributes["Active"].Value;
+                        var val = currentParent.Attributes["Active"].Value;
                         switch (val.ToUpper())
                         {
                             case "yes":
@@ -820,19 +841,21 @@ namespace FraterniTree
                             case "true":
                             case "t":
                             case "1":
-                                root.isActiveBrother = true;
+                                root.Active = true;
                                 break;
                             default:
-                                root.isActiveBrother = false;
+                                root.Active = false;
                                 break;
                         }
                     }
                     else
                     {
-                        root.isActiveBrother = false;
+                        root.Active = false;
                     }
-                    root.m_Label.ContextMenuStrip = cmNodeActions;
+
+                    root.Label.ContextMenuStrip = cmNodeActions;
                 }
+
                 foreach (XmlNode child in currentParent.ChildNodes)
                 {
                     root.AddChild(ConvertXmlToTree(child));
@@ -860,43 +883,47 @@ namespace FraterniTree
         private void TakeScreenshot(Panel panel, string filePath)
         {
             if (panel == null)
+            {
                 throw new ArgumentNullException("panel");
+            }
 
             if (filePath == null)
+            {
                 throw new ArgumentNullException("filePath");
+            }
 
             // get parent form (may not be a direct parent)
-            Form form = panel.FindForm();
+            var form = panel.FindForm();
             if (form == null)
                 throw new ArgumentException(null, "panel");
 
             // remember form position
-            int w = form.Width;
-            int h = form.Height;
-            int l = form.Left;
-            int t = form.Top;
+            var w = form.Width; //todo rename vars
+            var h = form.Height;
+            var l = form.Left;
+            var t = form.Top;
 
             // get panel virtual size
-            Rectangle display = panel.DisplayRectangle;
+            var display = panel.DisplayRectangle;
 
             // get panel position relative to parent form
-            Point panelLocation = panel.PointToScreen(panel.Location);
-            Size panelPosition = new Size(panelLocation.X - form.Location.X, panelLocation.Y - form.Location.Y);
+            var panelLocation = panel.PointToScreen(panel.Location);
+            var panelPosition = new Size(panelLocation.X - form.Location.X, panelLocation.Y - form.Location.Y);
 
             // resize form and move it outside the screen
-            int neededWidth = panelPosition.Width + display.Width;
-            int neededHeight = panelPosition.Height + display.Height;
+            var neededWidth = panelPosition.Width + display.Width;
+            var neededHeight = panelPosition.Height + display.Height;
             form.SetBounds(0, -neededHeight, neededWidth, neededHeight, BoundsSpecified.All);
 
             // resize panel (useless if panel has a dock)
-            int pw = panel.Width;
-            int ph = panel.Height;
+            var pw = panel.Width;
+            var ph = panel.Height;
             panel.SetBounds(0, 0, display.Width, display.Height, BoundsSpecified.Size);
 
             // render the panel on a bitmap
             try
             {
-                Bitmap bmp = new Bitmap(display.Width, display.Height);
+                var bmp = new Bitmap(display.Width, display.Height);
                 panel.DrawToBitmap(bmp, display);
                 bmp.Save(filePath);
             }
@@ -910,7 +937,7 @@ namespace FraterniTree
 
         private Image CaptureScreen()
         {
-            // ------------- OLD WAY, KEEP FOR NOW ------------- //
+            // ------------- OLD WAY, KEEP FOR NOW ------------- // //TODO
             //Graphics myGraphics = pnlTree.CreateGraphics();
             //Image panelImage = new Bitmap(pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, myGraphics);
             //Graphics memoryGraphics = Graphics.FromImage(panelImage);
@@ -919,9 +946,9 @@ namespace FraterniTree
             //BitBlt(dc2, 0, 0, pnlTree.DisplayRectangle.Width, pnlTree.DisplayRectangle.Height, dc1, 0, 0, 13369376);
             //myGraphics.ReleaseHdc(dc1);
             //memoryGraphics.ReleaseHdc(dc2);
-            Point old = pnlTree.Location;
+            var old = pnlTree.Location;
             pnlTree.Location = new Point(0, 0);
-            Bitmap panelImage = new Bitmap(pnlTree.Width, pnlTree.Height);
+            var panelImage = new Bitmap(pnlTree.Width, pnlTree.Height);
             pnlTree.DrawToBitmap(panelImage, new Rectangle(pnlTree.Location.X, pnlTree.Location.Y, pnlTree.Width, pnlTree.Height));
             pnlTree.Location = old;
             return panelImage;
@@ -935,20 +962,20 @@ namespace FraterniTree
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            Brother.m_SelectCallback = PopulateBrotherEdit;
-            Brother.m_ShiftCallback = BoundsCheckShift;
+            Brother.SelectCallback = PopulateBrotherEdit;
+            Brother.ShiftCallback = BoundsCheckShift;
 
-            StartUp start = new StartUp();
+            var start = new StartUp();
             start.ShowDialog();
             if (start.DialogResult != System.Windows.Forms.DialogResult.OK)
             {
-                this.Close();
+                Close();
                 return;
             }
 
             DisplayApex = displayRootOfAllTreeToolStripMenuItem.Checked;
-
             bIsXml = start.m_bXML;
+
             if (bIsXml)
             {
                 AutoSave.Elapsed += AutoSave_Elapsed;
@@ -959,7 +986,6 @@ namespace FraterniTree
             }
             else
             {
-
                 root = new Brother("Tonsor Jr.", "Charles A", "Winter", 1899);
 
                 bIsMale = start.m_bIsMale;
@@ -972,22 +998,18 @@ namespace FraterniTree
                 }
                 else
                 {
-                    string server = start.m_Server;
-                    string db = start.m_DBase;
-                    string user = start.m_UName;
-                    string pword = start.m_PWord;
-                    int portNum = start.m_Port;
+                    var server = start.m_Server;
+                    var db = start.m_DBase;
+                    var user = start.m_UName;
+                    var pword = start.m_PWord;
+                    var portNum = start.m_Port;
 
                     ret = ConnectDB(server, portNum, db, user, pword);
                 }
 
-                
-
-                
-
                 if (!ret)
                 {
-                    this.Close();
+                    Close();
                     return;
                 }
             }
@@ -1000,13 +1022,14 @@ namespace FraterniTree
             {
                 GenderDependentName = FEMALE_FRM_NAME;
             }
+
             PopulateBrothers(bIsXml);
             tbBig.AutoCompleteCustomSource = CurrentBrothers;
             tbSelectedBig.AutoCompleteCustomSource = CurrentBrothers;
             tbSelectedLittles.AutoCompleteCustomSource = CurrentBrothers;
             tbLittles.AutoCompleteCustomSource = CurrentBrothers;
-            this.Text = GenderDependentName + "Tree" + (XmlParentNodeName != "" ? " - " + XmlParentNodeName : "");
-            root.m_Label.ContextMenuStrip = cmNodeActions;
+            Text = GenderDependentName + "Tree" + (XmlParentNodeName != "" ? " - " + XmlParentNodeName : "");
+            root.Label.ContextMenuStrip = cmNodeActions;
 
             if (!bIsXml)
             {
@@ -1023,7 +1046,8 @@ namespace FraterniTree
             {
                 WriteBackToDB(root);
             }
-            this.Dispose();
+
+            Dispose();
         }
 
         #endregion
@@ -1034,19 +1058,21 @@ namespace FraterniTree
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            string bigName = tbBig.Text;
-            string[] littles = tbLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            string last = tbLastName.Text;
-            string first = tbFirstName.Text;
-            string month = cbIniMonth.Text;
-            int year = Int32.Parse(dtpIniYear.Text);
+            var bigName = tbBig.Text;
+            var littles = tbLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var last = tbLastName.Text;
+            var first = tbFirstName.Text;
+            var month = cbIniMonth.Text;
+            var year = Int32.Parse(dtpIniYear.Text);
+
             if (bigName == "")
             {
                 bigName = root.ToString();
             }
-            int space = bigName.LastIndexOf(' ');
+
+            var space = bigName.LastIndexOf(' ');
             Brother tmpBig = null;
-            Brother tmp = root.FindBrotherByName(bigName);
+            var tmp = root.FindBrotherByName(bigName);
             if (tmp != null)
             {
                 tmpBig = tmp;
@@ -1054,11 +1080,11 @@ namespace FraterniTree
             else
             {
                 tmpBig = new Brother(bigName.Substring(space + 1), bigName.Substring(0, space), "Fall", 1920);
-                tmpBig.m_Label.ContextMenuStrip = cmNodeActions;
+                tmpBig.Label.ContextMenuStrip = cmNodeActions;
                 root.AddChild(tmpBig);
             }
 
-            Brother newB = null;
+            Brother newB;
             tmp = root.FindBrotherByName(first + " " + last);
             if (tmp != null)
             {
@@ -1068,15 +1094,16 @@ namespace FraterniTree
             else
             {
                 newB = new Brother(last, first, month, year);
-                newB.m_Label.ContextMenuStrip = cmNodeActions;
+                newB.Label.ContextMenuStrip = cmNodeActions;
                 tmpBig.AddChild(newB);
             }
 
-            Brother litt = null;
-            for (int i = 0; i < littles.Count(); i++)
+            Brother litt;
+            for (var i = 0; i < littles.Count(); i++)
             {
                 space = littles[i].LastIndexOf(' ');
                 tmp = root.FindBrotherByName(littles[i]);
+                
                 if (tmp != null)
                 {
                     litt = tmp;
@@ -1085,8 +1112,8 @@ namespace FraterniTree
                 else
                 {
                     litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", newB.IniYear + 1);
-                    litt.m_Label.ContextMenuStrip = cmNodeActions;
-                    litt.m_Label.ContextMenuStrip = cmNodeActions;
+                    litt.Label.ContextMenuStrip = cmNodeActions;
+                    litt.Label.ContextMenuStrip = cmNodeActions;
                     newB.AddChild(litt);
                 }
             }
@@ -1102,38 +1129,39 @@ namespace FraterniTree
             DisplayTree(true);
             cbTreeParent.Sorted = true;
         }
-
+        
         private void CheckForValidBrother(object sender, EventArgs e)
         {
             btnClear.Enabled = true;
-            Panel parent = (Panel)((Control)(sender)).Parent;
+            var parent = (Panel)((Control)(sender)).Parent;
             foreach (Control child in parent.Controls)
             {
-                Type t = child.GetType();
+                var t = child.GetType();
                 if (t.Name == "Label")
                 {
                     continue;
                 }
-                else if (t.Name == "Button")
+                
+                if (t.Name == "Button")
                 {
                     continue;
                 }
-                else if (t.Name == "TextBox")
+                
+                if (t.Name == "TextBox")
                 {
-                    if (((TextBox)(child)).Multiline == true)
+                    if (((TextBox)child).Multiline == true) //TODO
                     {
                         continue;
                     }
-                    else
+
+                    if (child.Text == "")
                     {
-                        if (child.Text == "")
-                        {
-                            btnAdd.Enabled = false;
-                            return;
-                        }
+                        btnAdd.Enabled = false;
+                        return;
                     }
                 }
-                else if (t.Name == "ComboBox")
+                
+                if (t.Name == "ComboBox")
                 {
                     if (((ComboBox)(child)).SelectedIndex < 0)
                     {
@@ -1141,9 +1169,10 @@ namespace FraterniTree
                         return;
                     }
                 }
-                else if (t.Name == "DateTimePicker")
+                
+                if (t.Name == "DateTimePicker")
                 {
-                    if (((DateTimePicker)(child)).Text == "")
+                    if (((DateTimePicker)child).Text == "")
                     {
                         btnAdd.Enabled = false;
                         return;
@@ -1180,7 +1209,7 @@ namespace FraterniTree
             }
             if ((SelectedEdits & FieldEdit.ACTIVE) != 0)
             {
-                Selected.isActiveBrother = chbActive.Checked;
+                Selected.Active = chbActive.Checked;
             }
 
             if (tbSelectedFirst.Text != "" && ((SelectedEdits & FieldEdit.FIRST_NAME) != 0))
@@ -1217,7 +1246,7 @@ namespace FraterniTree
                     {
                         int space = tbSelectedBig.Text.LastIndexOf(' ');
                         tmp = new Brother(tbSelectedBig.Text.Substring(space + 1), tbSelectedBig.Text.Substring(0, space), "Fall", 1920);
-                        tmp.m_Label.ContextMenuStrip = cmNodeActions;
+                        tmp.Label.ContextMenuStrip = cmNodeActions;
                         root.AddChild(tmp);
                         tmp.AddChild(Selected);
                         RefreshNoBigListBox(root);
@@ -1247,15 +1276,15 @@ namespace FraterniTree
                 }
                 else
                 {
-                    for (int i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
+                    for (var i = Selected.GetNumberOfChildren() - 1; i >= 0; i--)
                     {
                         root.AddChild((Brother)Selected[i]);
                     }
                     int space;
-                    string[] littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                    var littles = tbSelectedLittles.Text.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                     Brother litt = null;
                     Brother tmp = null;
-                    for (int i = 0; i < littles.Count(); i++)
+                    for (var i = 0; i < littles.Count(); i++)
                     {
                         space = littles[i].LastIndexOf(' ');
                         tmp = root.FindBrotherByName(littles[i]);
@@ -1275,7 +1304,7 @@ namespace FraterniTree
                         else
                         {
                             litt = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), "Fall", Selected.IniYear + 1);
-                            litt.m_Label.ContextMenuStrip = cmNodeActions;
+                            litt.Label.ContextMenuStrip = cmNodeActions;
                             Selected.AddChild(litt);
                         }
                     }
@@ -1326,7 +1355,7 @@ namespace FraterniTree
 
         private void btnUp_Click(object sender, EventArgs e)
         {
-            Brother tmp = (Brother)((Brother)cbTreeParent.SelectedItem).Parent();
+            var tmp = (Brother)((Brother)cbTreeParent.SelectedItem).Parent();
             if (tmp == root)
             {
                 cbTreeParent.Text = "*All*";
@@ -1345,8 +1374,8 @@ namespace FraterniTree
         private void btnEdit_Click(object sender, EventArgs e)
         {
             //Brother b = root.FindBrotherByName(lbNoRelation.SelectedItem.ToString());
-            Brother b = (Brother)lbNoRelation.SelectedItem;
-            EditBrotherNoBig EditB = new EditBrotherNoBig(b);
+            var b = (Brother)lbNoRelation.SelectedItem;
+            var EditB = new EditBrotherNoBig(b);
             EditB.ShowDialog();
             if (EditB.DialogResult == DialogResult.OK)
             {
@@ -1457,8 +1486,8 @@ namespace FraterniTree
                     Selected = null;
                 }
                 clicked.RemoveNode();
-                clicked.m_Label.Dispose();
-                clicked.m_Label = null;
+                clicked.Label.Dispose();
+                clicked.Label = null;
                 RemoveBrotherFromTree(clicked);
             }
             else
@@ -1495,9 +1524,9 @@ namespace FraterniTree
                 return;
             }
             Brother firstChild = ((Brother)(clicked.FirstChild()));
-            if (firstChild.m_Label.Parent != null)
+            if (firstChild.Label.Parent != null)
             {
-                if (firstChild.m_Label.Visible)
+                if (firstChild.Label.Visible)
                 {
                     lbl.Font = new Font(lbl.Font, lbl.Font.Style | FontStyle.Italic);
                     clicked.SetDescendantsHidden(true);
@@ -1581,15 +1610,17 @@ namespace FraterniTree
 
         private void pnlTree_Click(object sender, EventArgs e)
         {
-            if (Selected != null)
+            if (Selected == null)
             {
-                HideSelectedEdit();
-                int oldWidth = Selected.m_Label.Width;
-                Selected.m_Label.Font = new Font(Selected.m_Label.Font, Selected.m_Label.Font.Style & ~FontStyle.Bold);
-                Selected.m_Label.Refresh();
-                Selected.m_Label.Location = new Point(Selected.m_Label.Location.X + (oldWidth - Selected.m_Label.Width) / 2, Selected.m_Label.Location.Y);
-                Selected = null;
+                return;
             }
+            
+            HideSelectedEdit();
+            var oldWidth = Selected.Label.Width;
+            Selected.Label.Font = new Font(Selected.Label.Font, Selected.Label.Font.Style & ~FontStyle.Bold);
+            Selected.Label.Refresh();
+            Selected.Label.Location = new Point(Selected.Label.Location.X + (oldWidth - Selected.Label.Width) / 2, Selected.Label.Location.Y);
+            Selected = null;
         }
 
         private void pnlTree_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -1625,20 +1656,20 @@ namespace FraterniTree
                     Brother b = root.FindBrotherByName(l.Text);
                     if (b.HasParent())
                     {
-                        if (((Brother)(b.Parent())).m_Label.Parent != null &&
-                        ((Brother)(b.Parent())).m_Label.Visible &&
-                        b.m_Label.Parent != null &&
-                        b.m_Label.Capture == false &&
-                        b.m_Label.Visible)
+                        if (((Brother)(b.Parent())).Label.Parent != null &&
+                        ((Brother)(b.Parent())).Label.Visible &&
+                        b.Label.Parent != null &&
+                        b.Label.Capture == false &&
+                        b.Label.Visible)
                         {
                             Pen blackP = new Pen(Color.Black, 1);
                             Point[] pt = 
                         {
-                            new Point(((Brother)(b.Parent())).m_Label.Location.X + 
-                                        ((Brother)(b.Parent())).m_Label.Width / 2,
-                                        ((Brother)(b.Parent())).m_Label.Location.Y +
-                                        ((Brother)(b.Parent())).m_Label.Height),
-                            new Point(b.m_Label.Location.X + b.m_Label.Width / 2, b.m_Label.Location.Y)
+                            new Point(((Brother)(b.Parent())).Label.Location.X + 
+                                        ((Brother)(b.Parent())).Label.Width / 2,
+                                        ((Brother)(b.Parent())).Label.Location.Y +
+                                        ((Brother)(b.Parent())).Label.Height),
+                            new Point(b.Label.Location.X + b.Label.Width / 2, b.Label.Location.Y)
                         };
                             e.Graphics.DrawCurve(blackP, pt, 0.00F);
                         }

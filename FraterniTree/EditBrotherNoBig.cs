@@ -19,7 +19,7 @@ namespace FraterniTree
         {
             InitializeComponent();
             m_BrotherUnderEdit = b;
-            lblEditBig.Text = PRETEXT + b.ToString() + POSTTEXT;
+            lblEditBig.Text = PRETEXT + b + POSTTEXT;
             tbEditBig.AutoCompleteCustomSource = frmMain.CurrentBrothers;
             btnCancelEdit.Enabled = true;
         }
@@ -36,15 +36,15 @@ namespace FraterniTree
 
         private void btnCancelEdit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            Brother b = frmMain.root.FindBrotherByName(tbEditBig.Text);
+            var b = frmMain.root.FindBrotherByName(tbEditBig.Text);
             if (b == null)
             {
-                int space = tbEditBig.Text.IndexOf(' ');
+                var space = tbEditBig.Text.IndexOf(' ');
                 b = new Brother(tbEditBig.Text.Substring(space + 1), tbEditBig.Text.Substring(0, space), "Fall", 1920);
                 frmMain.root.AddChild(b);
             }
