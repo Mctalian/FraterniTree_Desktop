@@ -208,35 +208,41 @@ namespace FraterniTree
             } while (!isSorted);
         }
 
-        private void SwapLittles(Brother L, Brother R)
+        private void SwapLittles(Brother left, Brother right)
         {
-            if (L.HasParent(true) && R.HasParent(true))
+            if (left.HasParent(false) || right.HasParent(false))
             {
-                if ((Brother)L.Parent(true) == (Brother)R.Parent(true) && (Brother)L.Parent(true) == this)
+                return;
+            }
+
+
+            if (left.HasParent(true) && right.HasParent(true))
+            {
+                if ((Brother)left.Parent(true) == (Brother)right.Parent(true) && (Brother)left.Parent(true) == this)
                 {
-                    if (L.HasRightSibling(true) && R.HasLeftSibling(true))
+                    if (left.HasRightSibling(true) && right.HasLeftSibling(true))
                     {
-                        if ((Brother)L.RightSibling(true) == R && (Brother)R.LeftSibling(true) == L)
+                        if ((Brother)left.GetRightSibling(true) == right && (Brother)right.GetLeftSibling(true) == left)
                         {
-                            if (L == (Brother)FirstChild(true))
+                            if (left == (Brother)GetFirstChild(true))
                             {
-                                FirstChild(R);
+                                SetFirstChild(right);
                             }
 
-                            R.LeftSibling(L.LeftSibling(true));
-                            L.RightSibling(R.RightSibling(true));
+                            right.SetLeftSibling(left.GetLeftSibling(true));
+                            left.SetRightSibling(right.GetRightSibling(true));
 
-                            if (R.HasRightSibling(true))
+                            if (right.HasRightSibling(true))
                             {
-                                ((Brother)R.RightSibling(true)).LeftSibling(L);
+                                ((Brother)right.GetRightSibling(true)).SetLeftSibling(left);
                             }
-                            if (L.HasLeftSibling(true))
+                            if (left.HasLeftSibling(true))
                             {
-                                ((Brother)L.LeftSibling(true)).RightSibling(R);
+                                ((Brother)left.GetLeftSibling(true)).SetRightSibling(right);
                             }
 
-                            L.LeftSibling(R);
-                            R.RightSibling(L);
+                            left.SetLeftSibling(right);
+                            right.SetRightSibling(left);
                         }
                     }
                 }
@@ -253,7 +259,7 @@ namespace FraterniTree
 
         private void ApplyNodeLocationsToLabel()
         {
-            Label.Location = new Point(GetXCoord(), GetYCoord());
+            Label.Location = new Point(CoordinateX, CoordinateY);
         }
 
         private void RecursiveLabelMove(Brother b, int dx, int dy)
@@ -264,11 +270,11 @@ namespace FraterniTree
             }
             if (b.HasRightSibling())
             {
-                RecursiveLabelMove((Brother)b.RightSibling(), dx, dy);
+                RecursiveLabelMove((Brother)b.GetRightSibling(), dx, dy);
             }
             if (b.HasChild())
             {
-                RecursiveLabelMove((Brother)b.FirstChild(), dx, dy);
+                RecursiveLabelMove((Brother)b.GetFirstChild(), dx, dy);
             }
         }
 
@@ -280,11 +286,11 @@ namespace FraterniTree
                 b.Label.BringToFront();
                 if (b.HasRightSibling())
                 {
-                    RecursiveLabelCapture((Brother)b.RightSibling(), e);
+                    RecursiveLabelCapture((Brother)b.GetRightSibling(), e);
                 }
                 if (b.HasChild())
                 {
-                    RecursiveLabelCapture((Brother)b.FirstChild(), e);
+                    RecursiveLabelCapture((Brother)b.GetFirstChild(), e);
                 }
             }
         }
@@ -370,7 +376,7 @@ namespace FraterniTree
                 Label.Location = new Point(Label.Left + dx, Label.Top + dy);
                 if (HasChild())
                 {
-                    RecursiveLabelMove((Brother)FirstChild(), dx, dy);
+                    RecursiveLabelMove((Brother)GetFirstChild(), dx, dy);
                 }
             }
         }
@@ -384,7 +390,7 @@ namespace FraterniTree
                 Label.Capture = true;
                 if (HasChild())
                 {
-                    RecursiveLabelCapture((Brother)FirstChild(), e);
+                    RecursiveLabelCapture((Brother)GetFirstChild(), e);
                 }
             }
         }

@@ -355,8 +355,10 @@ namespace FraterniTree
 
                 var s = TreeRoot.Label.Size;
                 var p = new Point((splitTreeInfo.Panel1.Width / 2) - (s.Width / 2), 2);
-                TreeRoot.SetXCoord(p.X);
-                TreeRoot.SetYCoord(p.Y);
+
+                TreeRoot.CoordinateX = p.X;
+                TreeRoot.CoordinateY = p.Y;
+
                 var gens = (TreeRoot.GetNumGenerations());
                 updwnNumGen.Maximum = gens;
 
@@ -638,12 +640,12 @@ namespace FraterniTree
                 {
                     if (currentParent.HasChild())
                     {
-                        WriteBackToDB((Brother)(currentParent.FirstChild()));
+                        WriteBackToDB((Brother)(currentParent.GetFirstChild()));
                     }
 
                     if (currentParent.HasRightSibling())
                     {
-                        WriteBackToDB((Brother)(currentParent.RightSibling()));
+                        WriteBackToDB((Brother)(currentParent.GetRightSibling()));
                     }
 
                     if (currentParent != root)
@@ -667,7 +669,7 @@ namespace FraterniTree
 
                         if (currentParent.HasRightSibling())
                         {
-                            cmd.Parameters.AddWithValue("@NextSibling", ((Brother)(currentParent.RightSibling())).ToString());
+                            cmd.Parameters.AddWithValue("@NextSibling", ((Brother)(currentParent.GetRightSibling())).ToString());
                         }
                         else
                         {
@@ -676,7 +678,7 @@ namespace FraterniTree
 
                         if (currentParent.HasChild())
                         {
-                            cmd.Parameters.AddWithValue("@FirstLittle", ((Brother)(currentParent.FirstChild())).ToString());
+                            cmd.Parameters.AddWithValue("@FirstLittle", ((Brother)(currentParent.GetFirstChild())).ToString());
                         }
                         else
                         {
@@ -1519,11 +1521,11 @@ namespace FraterniTree
             }
 
             Brother clicked = (Brother)lbl.Tag;
-            if (clicked.FirstChild() == null)
+            if (clicked.GetFirstChild() == null)
             {
                 return;
             }
-            Brother firstChild = ((Brother)(clicked.FirstChild()));
+            Brother firstChild = ((Brother)(clicked.GetFirstChild()));
             if (firstChild.Label.Parent != null)
             {
                 if (firstChild.Label.Visible)

@@ -12,7 +12,7 @@ namespace TreeDisplay
     /// </summary>
     public static class WalkerAlgorithmTree
     {
-        private static PreviousNode LevelZeroPtr = null;
+        private static PreviousNode LevelZeroPtr;
         private static int xTopAdjustment;
         private static int yTopAdjustment;
         public static int MaxDepth { get; set; } // Number of levels in the tree
@@ -42,11 +42,11 @@ namespace TreeDisplay
 
                 // Determine how to adjust all the nodes with respect to
                 // the location of the root.
-                xTopAdjustment = ApexNode.GetXCoord() - (int)(ApexNode.Prelim);
-                yTopAdjustment = ApexNode.GetYCoord();
+                xTopAdjustment = ApexNode.CoordinateX - (int)ApexNode.Prelim;
+                yTopAdjustment = ApexNode.CoordinateY;
 
                 // Do the final positioning with a preorder walk.
-                bool result = SecondWalk(ApexNode, 0, 0);
+                var result = SecondWalk(ApexNode, 0, 0);
                 if (result)
                 {
                     // User specific, if callbacks are needed.
@@ -54,11 +54,8 @@ namespace TreeDisplay
                 }
                 return result;
             }
-            else
-            {
-                // Trivial: Return true if a null pointer was passed.
-                return true;
-            }
+            // Trivial: Return true if a null pointer was passed.
+            return true;
         }
 
         /// <summary>
@@ -86,9 +83,9 @@ namespace TreeDisplay
             {
                 if (ThisNode.HasLeftSibling())
                 {
-                    ThisNode.Prelim = ThisNode.LeftSibling().Prelim +
-                                    (float)SiblingSeparation +
-                                    MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
+                    ThisNode.Prelim = ThisNode.GetLeftSibling().Prelim +
+                                    SiblingSeparation +
+                                    MeanNodeSize(ThisNode.GetLeftSibling(), ThisNode);
                 }
                 else
                 {
@@ -97,23 +94,23 @@ namespace TreeDisplay
             }
             else
             {
-                RightMost = ThisNode.FirstChild();
+                RightMost = ThisNode.GetFirstChild();
                 LeftMost = RightMost;
                 FirstWalk(LeftMost, CurrentLevel + 1);
 
                 while (RightMost.HasRightSibling())
                 {
-                    RightMost = RightMost.RightSibling();
+                    RightMost = RightMost.GetRightSibling();
                     FirstWalk(RightMost, CurrentLevel + 1);
                 }
 
-                Midpoint = ((float)(LeftMost.Prelim + RightMost.Prelim) / (float)(2));
+                Midpoint = (LeftMost.Prelim + RightMost.Prelim) / 2;
 
                 if (ThisNode.HasLeftSibling())
                 {
-                    ThisNode.Prelim = ThisNode.LeftSibling().Prelim +
-                                    (float)SiblingSeparation +
-                                    MeanNodeSize(ThisNode.LeftSibling(), ThisNode);
+                    ThisNode.Prelim = ThisNode.GetLeftSibling().Prelim +
+                                    SiblingSeparation +
+                                    MeanNodeSize(ThisNode.GetLeftSibling(), ThisNode);
                     ThisNode.Modifier = ThisNode.Prelim - Midpoint;
                     Apportion(ThisNode, CurrentLevel);
                 }
@@ -145,7 +142,7 @@ namespace TreeDisplay
         /// <returns></returns>
         private static bool SecondWalk(Node ThisNode, int CurrentLevel, int Modsum)
         {
-            bool result = true;
+            var result = true;
             long xTemp;
             long yTemp;
             float NewModsum;
@@ -157,22 +154,22 @@ namespace TreeDisplay
             {
                 NewModsum = Modsum;
 
-                xTemp = (long)xTopAdjustment + (long)(ThisNode.Prelim + Modsum);
-                yTemp = (long)yTopAdjustment + (long)(CurrentLevel * (LevelSeparation + ThisNode.GetHeight()));
+                xTemp = xTopAdjustment + (long)(ThisNode.Prelim + Modsum);
+                yTemp = yTopAdjustment + (long)(CurrentLevel * (LevelSeparation + ThisNode.GetHeight()));
             }
             if (CheckExtentRange((int)xTemp, (int)yTemp))
             {
-                ThisNode.SetXCoord((int)xTemp);
-                ThisNode.SetYCoord((int)yTemp);
+                ThisNode.CoordinateX = (int)xTemp;
+                ThisNode.CoordinateY = (int)yTemp;
 
                 if (ThisNode.HasChild())
                 {
-                    result = SecondWalk(ThisNode.FirstChild(), CurrentLevel + 1, (int)(Modsum + ThisNode.Modifier));
+                    result = SecondWalk(ThisNode.GetFirstChild(), CurrentLevel + 1, (int)(Modsum + ThisNode.Modifier));
                 }
 
                 if (result && ThisNode.HasRightSibling())
                 {
-                    result = SecondWalk(ThisNode.RightSibling(), CurrentLevel, Modsum);
+                    result = SecondWalk(ThisNode.GetRightSibling(), CurrentLevel, Modsum);
                 }
             }
             else
@@ -211,7 +208,7 @@ namespace TreeDisplay
             float Distance;
             float Portion;
 
-            LeftMost = ThisNode.FirstChild();
+            LeftMost = ThisNode.GetFirstChild();
             Neighbor = LeftMost.LeftNeighbor();
 
             CompareDepth = 1;
@@ -242,15 +239,15 @@ namespace TreeDisplay
                 if (Distance > 0)
                 {
                     NumLeftSiblings = 0;
-                    for (tmp = ThisNode; tmp != null && tmp != AncestorNeighbor; tmp = tmp.LeftSibling())
+                    for (tmp = ThisNode; tmp != null && tmp != AncestorNeighbor; tmp = tmp.GetLeftSibling())
                     {
                         NumLeftSiblings++;
                     }
 
                     if (tmp != null)
                     {
-                        Portion = Distance / (float)(NumLeftSiblings);
-                        for (tmp = ThisNode; tmp != AncestorNeighbor; tmp = tmp.LeftSibling())
+                        Portion = Distance / NumLeftSiblings;
+                        for (tmp = ThisNode; tmp != AncestorNeighbor; tmp = tmp.GetLeftSibling())
                         {
                             tmp.Prelim = tmp.Prelim + Distance;
                             tmp.Modifier = tmp.Modifier + Distance;
@@ -267,11 +264,11 @@ namespace TreeDisplay
                 CompareDepth++;
                 if (LeftMost.IsLeaf())
                 {
-                    LeftMost = GetLeftMost(ThisNode, 0, (int)(CompareDepth));
+                    LeftMost = GetLeftMost(ThisNode, 0, (int)CompareDepth);
                 }
                 else
                 {
-                    LeftMost = LeftMost.FirstChild();
+                    LeftMost = LeftMost.GetFirstChild();
                 }
                 if (LeftMost != null)
                 {
@@ -312,9 +309,9 @@ namespace TreeDisplay
             }
             else
             {
-                for (LeftMost = GetLeftMost(RightMost = ThisNode.FirstChild(), CurrentLevel + 1, SearchDepth);
+                for (LeftMost = GetLeftMost(RightMost = ThisNode.GetFirstChild(), CurrentLevel + 1, SearchDepth);
                      LeftMost == null && RightMost.HasRightSibling();
-                     LeftMost = GetLeftMost(RightMost = RightMost.RightSibling(), CurrentLevel + 1, SearchDepth))
+                     LeftMost = GetLeftMost(RightMost = RightMost.GetRightSibling(), CurrentLevel + 1, SearchDepth))
                 {
                     // Nothing to do
                 }
@@ -338,11 +335,11 @@ namespace TreeDisplay
 
             if (LeftNode != null)
             {
-                NodeSize += ((float)(LeftNode.GetWidth()) / 2);
+                NodeSize += (float)LeftNode.GetWidth() / 2;
             }
             if (RightNode != null)
             {
-                NodeSize += ((float)(RightNode.GetWidth()) / 2);
+                NodeSize += (float)RightNode.GetWidth() / 2;
             }
 
             return NodeSize;
@@ -383,7 +380,7 @@ namespace TreeDisplay
         /// <returns></returns>
         private static Node GetPrevNodeAtLevel(int LevelNumber)
         {
-            PreviousNode tmp = LevelZeroPtr;
+            var tmp = LevelZeroPtr;
             uint i = 0;
 
             for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
@@ -414,7 +411,7 @@ namespace TreeDisplay
                     tmp.PrevNode = ThisNode;
                     return;
                 }
-                else if (tmp.NextLevel == null)
+                if (tmp.NextLevel == null)
                 {
                     NewNode = new PreviousNode();
                     NewNode.PrevNode = null;
