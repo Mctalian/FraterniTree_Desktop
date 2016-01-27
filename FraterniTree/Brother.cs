@@ -131,7 +131,7 @@ namespace FraterniTree
                 return this;
             }
 
-            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+            for (var i = NumberOfChildren - 1; i >= 0; i--)
             {
                 found = ((Brother)this[i]).FindBrotherByName(fullName);
                 if (found != null)
@@ -151,7 +151,7 @@ namespace FraterniTree
         public bool RecursiveSetIgnoreNode()
         {
             var isThisIgnored = !Active;
-            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+            for (var i = NumberOfChildren - 1; i >= 0; i--)
             {
                 if (isThisIgnored)
                 {
@@ -171,7 +171,7 @@ namespace FraterniTree
         public void RecursiveClearIgnoreNode()
         {
             SetIgnore(false);
-            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+            for (var i = NumberOfChildren - 1; i >= 0; i--)
             {
                 if (this[i] == null)
                 {
@@ -187,7 +187,7 @@ namespace FraterniTree
             do
             {
                 isSorted = true;
-                for (var i = 1; i < GetNumberOfChildren(); i++)
+                for (var i = 1; i < NumberOfChildren; i++)
                 {
                     var L = (Brother)this[i - 1];
                     var R = (Brother)this[i];
@@ -249,9 +249,9 @@ namespace FraterniTree
             }
         }
 
-        public void AddChild(Brother Child)
+        public void AddChild(Brother child)
         {
-            base.AddChild(Child);
+            base.AddChild(child);
             RefreshLittleOrder();
         }
 
@@ -278,45 +278,50 @@ namespace FraterniTree
             }
         }
 
-        private void RecursiveLabelCapture(Brother b, MouseEventArgs e)
+        private void RecursiveLabelCapture(Brother brother, MouseEventArgs mouseEvent)
         {
-            if (b.Label.Parent != null)
+            if (brother.Label.Parent == null)
             {
-                b._lastPoint = e.Location;
-                b.Label.BringToFront();
-                if (b.HasRightSibling())
-                {
-                    RecursiveLabelCapture((Brother)b.GetRightSibling(), e);
-                }
-                if (b.HasChild())
-                {
-                    RecursiveLabelCapture((Brother)b.GetFirstChild(), e);
-                }
+                return;
+            }
+            
+            brother._lastPoint = mouseEvent.Location;
+            brother.Label.BringToFront();
+
+            if (brother.HasRightSibling())
+            {
+                RecursiveLabelCapture((Brother)brother.GetRightSibling(), mouseEvent);
+            }
+
+            if (brother.HasChild())
+            {
+                RecursiveLabelCapture((Brother)brother.GetFirstChild(), mouseEvent);
             }
         }
 
-        public void RecursiveLabelVisibleToggle(Brother b)
+        public void RecursiveLabelVisibleToggle(Brother brother)
         {
-            if (b.Label.Parent != null)
+            if (brother.Label.Parent != null)
             {
-                if (((Brother)b.Parent()).Label.Parent != null)
+                if (((Brother)brother.Parent()).Label.Parent != null)
                 {
-                    b.Label.Visible = ((Brother)b.Parent()).Label.Visible && !((Brother)b.Parent())._hiddenChildren;
+                    brother.Label.Visible = ((Brother)brother.Parent()).Label.Visible && !((Brother)brother.Parent())._hiddenChildren;
                 }
                 else
                 {
-                    b.Label.Visible = !b.Label.Visible;
+                    brother.Label.Visible = !brother.Label.Visible;
                 }
             }
             else
             {
-                b.Label.Visible = !((Brother)b.Parent())._hiddenChildren;
+                brother.Label.Visible = !((Brother)brother.Parent())._hiddenChildren;
             }
-            if (!b._hiddenChildren)
+
+            if (!brother._hiddenChildren)
             {
-                for (var i = b.GetNumberOfChildren() - 1; i >= 0; i--)
+                for (var i = brother.NumberOfChildren - 1; i >= 0; i--)
                 {
-                    RecursiveLabelVisibleToggle((Brother)b[i]);
+                    RecursiveLabelVisibleToggle((Brother)brother[i]);
                 }
             }
         }

@@ -40,7 +40,7 @@ namespace TreeDisplay
         /// <summary>
         /// Number of children nodes of this Node.
         /// </summary>
-        private int _numChildren;
+        public int NumberOfChildren { get; private set; }
 
         #endregion
 
@@ -112,7 +112,7 @@ namespace TreeDisplay
             _offspring = o;
             _leftSibling = l;
             _rightSibling = r;
-            _numChildren = nC;
+            NumberOfChildren = nC;
             CoordinateX = coordinateX;
             CoordinateY = coordinateY;
             _width = w;
@@ -193,12 +193,12 @@ namespace TreeDisplay
             }
 
             child.Parent(this);
-            _numChildren++;
+            NumberOfChildren++;
         }
 
         public void RemoveNode()
         {
-            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+            for (var i = NumberOfChildren - 1; i >= 0; i--)
             {
                 if (this[i] == null)
                 {
@@ -245,7 +245,7 @@ namespace TreeDisplay
             child.Parent(null);
             child.SetLeftSibling(null);
             child.SetRightSibling(null);
-            _numChildren--;
+            NumberOfChildren--;
         }
 
         public Node GetLeftSibling(bool isIndex = false) //TODO can this be merged with right?
@@ -365,7 +365,7 @@ namespace TreeDisplay
                 return true;
             }
 
-            for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+            for (var i = NumberOfChildren - 1; i >= 0; i--)
             {
                 if (this[i] == null)
                 {
@@ -402,7 +402,7 @@ namespace TreeDisplay
         {
             if (_offspring != null)
             {
-                for (var i = GetNumberOfChildren() - 1; i >= 0; i--)
+                for (var i = NumberOfChildren - 1; i >= 0; i--)
                 {
                     if (this[i] == null || this[i].IsIgnored())
                     {
@@ -485,7 +485,7 @@ namespace TreeDisplay
         public void ExecuteCallback()
         {
             _callback();
-            for (var i = 0; i < _numChildren; i++)
+            for (var i = 0; i < NumberOfChildren; i++)
             {
                 if (this[i] != null)
                 {
@@ -538,11 +538,6 @@ namespace TreeDisplay
 
         #region Descendent Counting
 
-        public int GetNumberOfChildren()
-        {
-            return _numChildren;
-        }
-
         public int GetNumGenerations()
         {
             if (!HasChild())
@@ -551,7 +546,7 @@ namespace TreeDisplay
             }
 
             var gens = 0;
-            for (var i = 0; i < GetNumberOfChildren(); i++)
+            for (var i = 0; i < NumberOfChildren; i++)
             {
                 if (this[i] != null)
                 {
@@ -588,7 +583,7 @@ namespace TreeDisplay
         {
             get
             {
-                if (ind > GetNumberOfChildren() - 1 || ind < 0)
+                if (ind > NumberOfChildren - 1 || ind < 0)
                 {
                     return null;
                 }
