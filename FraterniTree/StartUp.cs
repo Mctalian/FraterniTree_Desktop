@@ -16,42 +16,45 @@ namespace FraterniTree
 {
     public partial class StartUp : Form
     {
-        public int    m_Port       { get; set; }
-        public bool   m_bXML       { get; set; }
-        public bool   m_bIsMale    { get; set; }
-        public string m_Server     { get; set; }
-        public string m_DBase      { get; set; }
-        public string m_UName      { get; set; }
-        public string m_PWord      { get; set; }
-        public string m_FilePath   { get; set; }
+
+        public int m_Port { get; set; }
+        public bool m_bXML { get; set; }
+        public bool m_bIsMale { get; set; }
+        public string m_Server { get; set; }
+        public string m_DBase { get; set; }
+        public string m_UName { get; set; }
+        public string m_PWord { get; set; }
+        public string m_FilePath { get; set; }
         public string m_ParentNode { get; set; }
         public MySql.Data.MySqlClient.MySqlConnection Connection { get; set; }
 
-        public StartUp()
+        public StartUp( )
         {
             InitializeComponent();
 
-            m_Port     = 0;
-            m_bIsMale  = true;
-            m_Server   = "";
-            m_DBase    = "";
-            m_UName    = "";
-            m_PWord    = "";
+            m_Port = 0;
+            m_bIsMale = true;
+            m_Server = "";
+            m_DBase = "";
+            m_UName = "";
+            m_PWord = "";
             Connection = null;
 
-            if (Properties.Settings.Default.RecentMySqlConnection != null)
+            if( Properties.Settings.Default.RecentMySqlConnection != null )
             {
-                ToolStripMenuItem tmp = new ToolStripMenuItem(Properties.Settings.Default.RecentMySqlConnection.Database);
+                ToolStripMenuItem tmp =
+                    new ToolStripMenuItem( Properties.Settings.Default.RecentMySqlConnection.Database );
                 tmp.Click += genericToolStripMenuItem_Click;
-                connectToolStripMenuItem.DropDownItems.Add(tmp);
+                connectToolStripMenuItem.DropDownItems.Add( tmp );
                 connectToolStripMenuItem.Enabled = true;
             }
-            
-            if (Properties.Settings.Default.RecentXmlPath != "")
+
+            if( Properties.Settings.Default.RecentXmlPath != "" )
             {
-                ToolStripMenuItem tmp = new ToolStripMenuItem(Path.GetFileName(Properties.Settings.Default.RecentXmlPath));
+                ToolStripMenuItem tmp =
+                    new ToolStripMenuItem( Path.GetFileName( Properties.Settings.Default.RecentXmlPath ) );
                 tmp.Click += genericToolStripMenuItem_Click;
-                connectToolStripMenuItem.DropDownItems.Add(tmp);
+                connectToolStripMenuItem.DropDownItems.Add( tmp );
                 connectToolStripMenuItem.Enabled = true;
             }
 
@@ -72,18 +75,18 @@ namespace FraterniTree
 
         private bool[] m_bInputValid = new bool[5];
 
-        private void tbValidator()
+        private void tbValidator( )
         {
             bool ready = true;
-            foreach (bool b in m_bInputValid)
+            foreach ( bool b in m_bInputValid )
             {
-                if (!b)
+                if( !b )
                 {
                     ready = false;
                     return;
                 }
             }
-            if (ready)
+            if( ready )
             {
                 btnSubmit.Enabled = true;
             }
@@ -95,7 +98,7 @@ namespace FraterniTree
 
         private void tbServer_TextChanged(object sender, EventArgs e)
         {
-            if (tbServer.Text != "")
+            if( tbServer.Text != "" )
             {
                 m_bInputValid[0] = true;
             }
@@ -108,7 +111,7 @@ namespace FraterniTree
 
         private void tbPort_TextChanged(object sender, EventArgs e)
         {
-            if (tbPort.Text.IndexOfAny(new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}) >= 0)
+            if( tbPort.Text.IndexOfAny( new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 )
             {
                 m_bInputValid[1] = true;
             }
@@ -121,7 +124,7 @@ namespace FraterniTree
 
         private void tbDb_TextChanged(object sender, EventArgs e)
         {
-            if (tbDb.Text != "")
+            if( tbDb.Text != "" )
             {
                 m_bInputValid[2] = true;
             }
@@ -134,7 +137,7 @@ namespace FraterniTree
 
         private void tbUser_TextChanged(object sender, EventArgs e)
         {
-            if (tbUser.Text != "")
+            if( tbUser.Text != "" )
             {
                 m_bInputValid[3] = true;
             }
@@ -147,7 +150,7 @@ namespace FraterniTree
 
         private void tbPass_TextChanged(object sender, EventArgs e)
         {
-            if (tbPass.Text != "")
+            if( tbPass.Text != "" )
             {
                 m_bInputValid[4] = true;
             }
@@ -160,11 +163,11 @@ namespace FraterniTree
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
-            m_Port   = Int32.Parse(tbPort.Text);
+            m_Port = Int32.Parse( tbPort.Text );
             m_Server = tbServer.Text;
-            m_DBase  = tbDb.Text;
-            m_UName  = tbUser.Text;
-            m_PWord  = tbPass.Text;
+            m_DBase = tbDb.Text;
+            m_UName = tbUser.Text;
+            m_PWord = tbPass.Text;
             this.Close();
         }
 
@@ -175,7 +178,7 @@ namespace FraterniTree
 
         private void rbMale_CheckedChanged(object sender, EventArgs e)
         {
-            if (rbMale.Checked)
+            if( rbMale.Checked )
             {
                 m_bIsMale = true;
             }
@@ -187,25 +190,22 @@ namespace FraterniTree
 
         private void genericToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (((ToolStripMenuItem)(sender)).Text == Path.GetFileName(Properties.Settings.Default.RecentXmlPath))
+            if( ((ToolStripMenuItem) (sender)).Text == Path.GetFileName( Properties.Settings.Default.RecentXmlPath ) )
             {
                 m_FilePath = Properties.Settings.Default.RecentXmlPath;
                 m_bXML = true;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
-            else if (((ToolStripMenuItem)(sender)).Text == Properties.Settings.Default.RecentMySqlConnection.Database)
+            else if( ((ToolStripMenuItem) (sender)).Text == Properties.Settings.Default.RecentMySqlConnection.Database )
             {
                 Connection = Properties.Settings.Default.RecentMySqlConnection;
-
             }
             else
             {
                 this.DialogResult = DialogResult.Abort;
                 this.Close();
             }
-
-            
         }
 
         #region Assembly Attribute Accessors
@@ -214,37 +214,36 @@ namespace FraterniTree
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                if (attributes.Length > 0)
+                object[] attributes =
+                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyTitleAttribute), false );
+                if( attributes.Length > 0 )
                 {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    if (titleAttribute.Title != "")
+                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute) attributes[0];
+                    if( titleAttribute.Title != "" )
                     {
                         return titleAttribute.Title;
                     }
                 }
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                return System.IO.Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase );
             }
         }
 
         public string AssemblyVersion
         {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
+            get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
         }
 
         public string AssemblyDescription
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                if (attributes.Length == 0)
+                object[] attributes =
+                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyDescriptionAttribute), false );
+                if( attributes.Length == 0 )
                 {
                     return "";
                 }
-                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+                return ((AssemblyDescriptionAttribute) attributes[0]).Description;
             }
         }
 
@@ -252,12 +251,13 @@ namespace FraterniTree
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-                if (attributes.Length == 0)
+                object[] attributes =
+                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyProductAttribute), false );
+                if( attributes.Length == 0 )
                 {
                     return "";
                 }
-                return ((AssemblyProductAttribute)attributes[0]).Product;
+                return ((AssemblyProductAttribute) attributes[0]).Product;
             }
         }
 
@@ -265,12 +265,13 @@ namespace FraterniTree
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-                if (attributes.Length == 0)
+                object[] attributes =
+                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCopyrightAttribute), false );
+                if( attributes.Length == 0 )
                 {
                     return "";
                 }
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+                return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
             }
         }
 
@@ -278,14 +279,16 @@ namespace FraterniTree
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                if (attributes.Length == 0)
+                object[] attributes =
+                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCompanyAttribute), false );
+                if( attributes.Length == 0 )
                 {
                     return "";
                 }
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+                return ((AssemblyCompanyAttribute) attributes[0]).Company;
             }
         }
+
         #endregion
 
         private void btnXml_Click(object sender, EventArgs e)
@@ -296,20 +299,20 @@ namespace FraterniTree
             ofd.AddExtension = true;
             ofd.CheckFileExists = true;
             DialogResult res = ofd.ShowDialog();
-            if (res == DialogResult.OK)
+            if( res == DialogResult.OK )
             {
                 m_FilePath = ofd.FileName;
-                if (!File.Exists(ofd.FileName))
+                if( !File.Exists( ofd.FileName ) )
                 {
-                    m_ParentNode = Interaction.InputBox("Please enter a name for the parent XML node...\n" +
-                                                        "Example: \"DeltaSigmaPhi-AlphaEta\"",
-                                                        "Parent Node Name",
-                                                        "MyTree");
+                    m_ParentNode = Interaction.InputBox( "Please enter a name for the parent XML node...\n" +
+                                                         "Example: \"DeltaSigmaPhi-AlphaEta\"",
+                        "Parent Node Name",
+                        "MyTree" );
                 }
                 else
                 {
                     XmlDocument tmpDoc = new XmlDocument();
-                    tmpDoc.Load(ofd.FileName);
+                    tmpDoc.Load( ofd.FileName );
                     m_ParentNode = tmpDoc.DocumentElement.Name;
                 }
                 Properties.Settings.Default.RecentXmlPath = m_FilePath;
@@ -347,5 +350,6 @@ namespace FraterniTree
 
             m_bXML = false;
         }
+
     }
 }

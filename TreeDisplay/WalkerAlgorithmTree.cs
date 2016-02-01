@@ -12,6 +12,7 @@ namespace TreeDisplay
     /// </summary>
     public static class WalkerAlgorithmTree
     {
+
         private static PreviousNode LevelZeroPtr;
         private static int xTopAdjustment;
         private static int yTopAdjustment;
@@ -32,30 +33,31 @@ namespace TreeDisplay
         /// <returns>TRUE if no errors, otherwise returns FALSE</returns>
         public static bool PositionTree(Node ApexNode)
         {
-            if (ApexNode != null)
+            if( ApexNode == null )
             {
-                // Initialize the list of previous nodes at each level.
-                InitPrevNodeList();
-
-                // Do the preliminary positioning with postorder walk.
-                FirstWalk(ApexNode, 0);
-
-                // Determine how to adjust all the nodes with respect to
-                // the location of the root.
-                xTopAdjustment = ApexNode.CoordinateX - (int)ApexNode.Prelim;
-                yTopAdjustment = ApexNode.CoordinateY;
-
-                // Do the final positioning with a preorder walk.
-                var result = SecondWalk(ApexNode, 0, 0);
-                if (result)
-                {
-                    // User specific, if callbacks are needed.
-                    ApexNode.ExecuteCallback();
-                }
-                return result;
+                return true;
             }
-            // Trivial: Return true if a null pointer was passed.
-            return true;
+
+            // Initialize the list of previous nodes at each level.
+            InitListofPreviousNodes();
+
+            // Do the preliminary positioning with postorder walk.
+            FirstWalk( ApexNode, 0 );
+
+            // Determine how to adjust all the nodes with respect to
+            // the location of the root.
+            xTopAdjustment = ApexNode.CoordinateX - (int) ApexNode.Prelim;
+            yTopAdjustment = ApexNode.CoordinateY;
+
+            // Do the final positioning with a preorder walk.
+            var result = SecondWalk( ApexNode, 0, 0 );
+            if( result )
+            {
+                // User specific, if callbacks are needed.
+                ApexNode.ExecuteCallback();
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -65,58 +67,55 @@ namespace TreeDisplay
         /// modifiers, which will be used to move their offspring
         /// to the right (held in field Node.Modifier).
         /// </summary>
-        /// <param name="ThisNode">Node to begin walk</param>
-        /// <param name="CurrentLevel">Level of the tree</param>
-        private static void FirstWalk(Node ThisNode, int CurrentLevel)
+        /// <param name="currentNode">Node to begin walk</param>
+        /// <param name="currentLevel">Level of the tree</param>
+        private static void FirstWalk(Node currentNode, int currentLevel)
         {
-            Node LeftMost;
-            Node RightMost;
-            float Midpoint;
+            currentNode.Prev = GetPrevNodeAtLevel( currentLevel );
 
-            ThisNode.Prev = GetPrevNodeAtLevel(CurrentLevel);
+            SetPrevNodeAtLevel( currentLevel, currentNode );
 
-            SetPrevNodeAtLevel(CurrentLevel, ThisNode);
+            currentNode.Modifier = 0;
 
-            ThisNode.Modifier = 0;
-
-            if (ThisNode.IsLeaf() || (CurrentLevel == MaxDepth))
+            if( currentNode.IsLeaf()
+                || (currentLevel == MaxDepth) )
             {
-                if (ThisNode.HasLeftSibling())
+                if( currentNode.HasLeftSibling() )
                 {
-                    ThisNode.Prelim = ThisNode.GetLeftSibling().Prelim +
-                                    SiblingSeparation +
-                                    MeanNodeSize(ThisNode.GetLeftSibling(), ThisNode);
+                    currentNode.Prelim = currentNode.GetLeftSibling().Prelim +
+                                         SiblingSeparation +
+                                         MeanNodeSize( currentNode.GetLeftSibling(), currentNode );
                 }
                 else
                 {
-                    ThisNode.Prelim = 0;
+                    currentNode.Prelim = 0;
                 }
             }
             else
             {
-                RightMost = ThisNode.GetFirstChild();
-                LeftMost = RightMost;
-                FirstWalk(LeftMost, CurrentLevel + 1);
+                var rightMostNode = currentNode.GetFirstChild();
+                var leftMostNode = rightMostNode;
+                FirstWalk( leftMostNode, currentLevel + 1 );
 
-                while (RightMost.HasRightSibling())
+                while ( rightMostNode.HasRightSibling() )
                 {
-                    RightMost = RightMost.GetRightSibling();
-                    FirstWalk(RightMost, CurrentLevel + 1);
+                    rightMostNode = rightMostNode.GetRightSibling();
+                    FirstWalk( rightMostNode, currentLevel + 1 );
                 }
 
-                Midpoint = (LeftMost.Prelim + RightMost.Prelim) / 2;
+                var midpoint = (leftMostNode.Prelim + rightMostNode.Prelim)/2;
 
-                if (ThisNode.HasLeftSibling())
+                if( currentNode.HasLeftSibling() )
                 {
-                    ThisNode.Prelim = ThisNode.GetLeftSibling().Prelim +
-                                    SiblingSeparation +
-                                    MeanNodeSize(ThisNode.GetLeftSibling(), ThisNode);
-                    ThisNode.Modifier = ThisNode.Prelim - Midpoint;
-                    Apportion(ThisNode, CurrentLevel);
+                    currentNode.Prelim = currentNode.GetLeftSibling().Prelim +
+                                         SiblingSeparation +
+                                         MeanNodeSize( currentNode.GetLeftSibling(), currentNode );
+                    currentNode.Modifier = currentNode.Prelim - midpoint;
+                    Apportion( currentNode, currentLevel );
                 }
                 else
                 {
-                    ThisNode.Prelim = Midpoint;
+                    currentNode.Prelim = midpoint;
                 }
             }
         }
@@ -136,40 +135,36 @@ namespace TreeDisplay
         /// down the tree, modifiers are accumulated and applied
         /// to every node.
         /// </summary>
-        /// <param name="ThisNode">Root of the current subtree</param>
-        /// <param name="CurrentLevel">Level of the tree</param>
+        /// <param name="currentNode">Root of the current subtree</param>
+        /// <param name="currentLevel">Level of the tree</param>
         /// <param name="Modsum">Modifier sum from ancestors</param>
         /// <returns></returns>
-        private static bool SecondWalk(Node ThisNode, int CurrentLevel, int Modsum)
+        private static bool SecondWalk(Node currentNode, int currentLevel, int Modsum)
         {
             var result = true;
-            long xTemp;
-            long yTemp;
-            float NewModsum;
+            long xTemp = 0;
+            long yTemp = 0;
 
-            xTemp = 0;
-            yTemp = 0;
-
-            if (CurrentLevel <= MaxDepth)
+            if( currentLevel <= MaxDepth )
             {
-                NewModsum = Modsum;
-
-                xTemp = xTopAdjustment + (long)(ThisNode.Prelim + Modsum);
-                yTemp = yTopAdjustment + (long)(CurrentLevel * (LevelSeparation + ThisNode.GetHeight()));
+                xTemp = xTopAdjustment + (long) (currentNode.Prelim + Modsum);
+                yTemp = yTopAdjustment + (long) (currentLevel*(LevelSeparation + currentNode.GetHeight()));
             }
-            if (CheckExtentRange((int)xTemp, (int)yTemp))
-            {
-                ThisNode.CoordinateX = (int)xTemp;
-                ThisNode.CoordinateY = (int)yTemp;
 
-                if (ThisNode.HasChild())
+            if( CheckExtentRange( (int) xTemp, (int) yTemp ) )
+            {
+                currentNode.CoordinateX = (int) xTemp;
+                currentNode.CoordinateY = (int) yTemp;
+
+                if( currentNode.HasChild() )
                 {
-                    result = SecondWalk(ThisNode.GetFirstChild(), CurrentLevel + 1, (int)(Modsum + ThisNode.Modifier));
+                    result = SecondWalk( currentNode.GetFirstChild(), currentLevel + 1,
+                        (int) (Modsum + currentNode.Modifier) );
                 }
 
-                if (result && ThisNode.HasRightSibling())
+                if( result && currentNode.HasRightSibling() )
                 {
-                    result = SecondWalk(ThisNode.GetRightSibling(), CurrentLevel, Modsum);
+                    result = SecondWalk( currentNode.GetRightSibling(), currentLevel, Modsum );
                 }
             }
             else
@@ -190,95 +185,74 @@ namespace TreeDisplay
         /// it is moved is also apportioned to smaller, interior subtrees,
         /// creating a pleasing aesthetic placement.
         /// </summary>
-        /// <param name="ThisNode">Root node of subtree</param>
-        /// <param name="CurrentLevel">Level of the main tree</param>
-        private static void Apportion(Node ThisNode, int CurrentLevel)
+        /// <param name="currentNode">Root node of subtree</param>
+        /// <param name="currentLevel">Level of the main tree</param>
+        private static void Apportion(Node currentNode, int currentLevel)
         {
-            Node LeftMost;
-            Node Neighbor;
-            Node AncestorLeftMost;
-            Node AncestorNeighbor;
-            Node tmp;
-            uint i;
-            uint CompareDepth;
-            uint DepthToStop;
-            uint NumLeftSiblings;
-            float LeftModsum;
-            float RightModsum;
-            float Distance;
-            float Portion;
+            var leftMostNode = currentNode.GetFirstChild();
+            var neighbor = leftMostNode.LeftNeighbor();
+            uint compareDepth = 1;
+            var depthToStop = (uint) (MaxDepth - currentLevel);
 
-            LeftMost = ThisNode.GetFirstChild();
-            Neighbor = LeftMost.LeftNeighbor();
-
-            CompareDepth = 1;
-            DepthToStop = (uint)(MaxDepth - CurrentLevel);
-
-            while (LeftMost != null && Neighbor != null && CompareDepth <= DepthToStop)
+            while ( leftMostNode != null
+                    && neighbor != null
+                    && compareDepth <= depthToStop )
             {
-                LeftModsum = 0;
-                RightModsum = 0;
+                float leftModsum = 0;
+                float rightModsum = 0;
 
-                AncestorLeftMost = LeftMost;
-                AncestorNeighbor = Neighbor;
+                var ancestorLeftMost = leftMostNode;
+                var ancestorNeighbor = neighbor;
 
-                for (i = 0; i < CompareDepth; i++)
+                for ( var i = 0; i < compareDepth; i++ )
                 {
-                    AncestorLeftMost = AncestorLeftMost.Parent();
-                    AncestorNeighbor = AncestorNeighbor.Parent();
-                    RightModsum += AncestorLeftMost.Modifier;
-                    LeftModsum += AncestorNeighbor.Modifier;
+                    ancestorLeftMost = ancestorLeftMost.Parent();
+                    ancestorNeighbor = ancestorNeighbor.Parent();
+                    rightModsum += ancestorLeftMost.Modifier;
+                    leftModsum += ancestorNeighbor.Modifier;
                 }
 
-                Distance = Neighbor.Prelim +
-                           LeftModsum +
-                           SubtreeSeparation +
-                           MeanNodeSize(LeftMost, Neighbor) -
-                           (LeftMost.Prelim + RightModsum);
+                var distance = neighbor.Prelim +
+                               leftModsum +
+                               SubtreeSeparation +
+                               MeanNodeSize( leftMostNode, neighbor ) -
+                               (leftMostNode.Prelim + rightModsum);
 
-                if (Distance > 0)
+                if( distance > 0 )
                 {
-                    NumLeftSiblings = 0;
-                    for (tmp = ThisNode; tmp != null && tmp != AncestorNeighbor; tmp = tmp.GetLeftSibling())
+                    uint numLeftSiblings = 0;
+                    Node tmp;
+
+                    for ( tmp = currentNode; tmp != null && tmp != ancestorNeighbor; tmp = tmp.GetLeftSibling() )
                     {
-                        NumLeftSiblings++;
+                        numLeftSiblings++;
                     }
 
-                    if (tmp != null)
+                    if( tmp != null )
                     {
-                        Portion = Distance / NumLeftSiblings;
-                        for (tmp = ThisNode; tmp != AncestorNeighbor; tmp = tmp.GetLeftSibling())
+                        var portion = distance/numLeftSiblings;
+                        for ( tmp = currentNode; tmp != ancestorNeighbor; tmp = tmp.GetLeftSibling() )
                         {
-                            tmp.Prelim = tmp.Prelim + Distance;
-                            tmp.Modifier = tmp.Modifier + Distance;
-                            Distance -= Portion;
+                            tmp.Prelim = tmp.Prelim + distance;
+                            tmp.Modifier = tmp.Modifier + distance;
+                            distance -= portion;
                         }
                     }
                     else
                     {
                         return;
                     }
-
                 }
 
-                CompareDepth++;
-                if (LeftMost.IsLeaf())
-                {
-                    LeftMost = GetLeftMost(ThisNode, 0, (int)CompareDepth);
-                }
-                else
-                {
-                    LeftMost = LeftMost.GetFirstChild();
-                }
-                if (LeftMost != null)
-                {
-                    Neighbor = LeftMost.LeftNeighbor();
-                }
-                else
-                {
-                    Neighbor = null;
-                }
-            } // end of while
+                compareDepth++;
+                leftMostNode = leftMostNode.IsLeaf()
+                    ? GetLeftMost( currentNode, 0, (int) compareDepth )
+                    : leftMostNode.GetFirstChild();
+
+                neighbor = leftMostNode == null
+                    ? null
+                    : leftMostNode.LeftNeighbor();
+            }
         }
 
         /// <summary>
@@ -290,32 +264,33 @@ namespace TreeDisplay
         /// refers to the level below the node whose leftmost
         /// descendant is being found.
         /// </summary>
-        /// <param name="ThisNode">Root of current subtree</param>
-        /// <param name="CurrentLevel">Level below original node searching for leftmost descendant</param>
-        /// <param name="SearchDepth">Depth comparison</param>
+        /// <param name="currentNode">Root of current subtree</param>
+        /// <param name="currentLevel">Level below original node searching for leftmost descendant</param>
+        /// <param name="searchDepth">Depth comparison</param>
         /// <returns></returns>
-        private static Node GetLeftMost(Node ThisNode, int CurrentLevel, int SearchDepth)
+        private static Node GetLeftMost(Node currentNode, int currentLevel, int searchDepth)
         {
-            Node LeftMost;
-            Node RightMost;
+            if( currentLevel == searchDepth )
+            {
+                return currentNode;
+            }
 
-            if (CurrentLevel == SearchDepth)
+            if( currentNode.IsLeaf() )
             {
-                LeftMost = ThisNode;
+                return null;
             }
-            else if (ThisNode.IsLeaf())
+
+            Node LeftMost;
+            var rightMostNode = currentNode.GetFirstChild();
+
+            for ( LeftMost = GetLeftMost( rightMostNode, currentLevel + 1, searchDepth );
+                LeftMost == null && rightMostNode.HasRightSibling();
+                rightMostNode = rightMostNode.GetRightSibling() )
             {
-                LeftMost = null;
-            }
-            else
-            {
-                for (LeftMost = GetLeftMost(RightMost = ThisNode.GetFirstChild(), CurrentLevel + 1, SearchDepth);
-                     LeftMost == null && RightMost.HasRightSibling();
-                     LeftMost = GetLeftMost(RightMost = RightMost.GetRightSibling(), CurrentLevel + 1, SearchDepth))
-                {
-                    // Nothing to do
-                }
-            }
+                LeftMost = GetLeftMost( rightMostNode, currentLevel + 1, searchDepth );
+            } {}
+
+
             return LeftMost;
         }
 
@@ -333,13 +308,14 @@ namespace TreeDisplay
         {
             float NodeSize = 0;
 
-            if (LeftNode != null)
+            if( LeftNode != null )
             {
-                NodeSize += (float)LeftNode.GetWidth() / 2;
+                NodeSize += (float) LeftNode.GetWidth()/2;
             }
-            if (RightNode != null)
+
+            if( RightNode != null )
             {
-                NodeSize += (float)RightNode.GetWidth() / 2;
+                NodeSize += (float) RightNode.GetWidth()/2;
             }
 
             return NodeSize;
@@ -364,10 +340,10 @@ namespace TreeDisplay
         /// <summary>
         /// Initialize the list of previous nodes at each level.
         /// </summary>
-        private static void InitPrevNodeList()
+        private static void InitListofPreviousNodes( )
         {
             PreviousNode tmp;
-            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
+            for ( tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel )
             {
                 tmp.PrevNode = null;
             }
@@ -383,9 +359,9 @@ namespace TreeDisplay
             var tmp = LevelZeroPtr;
             uint i = 0;
 
-            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
+            for ( tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel )
             {
-                if (i++ == LevelNumber)
+                if( i++ == LevelNumber )
                 {
                     return tmp.PrevNode;
                 }
@@ -404,14 +380,14 @@ namespace TreeDisplay
             PreviousNode NewNode;
             uint i = 0;
 
-            for (tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel)
+            for ( tmp = LevelZeroPtr; tmp != null; tmp = tmp.NextLevel )
             {
-                if (i++ == LevelNumber)
+                if( i++ == LevelNumber )
                 {
                     tmp.PrevNode = ThisNode;
                     return;
                 }
-                if (tmp.NextLevel == null)
+                if( tmp.NextLevel == null )
                 {
                     NewNode = new PreviousNode();
                     NewNode.PrevNode = null;
@@ -424,5 +400,6 @@ namespace TreeDisplay
             LevelZeroPtr.PrevNode = ThisNode;
             LevelZeroPtr.NextLevel = null;
         }
+
     }
 }

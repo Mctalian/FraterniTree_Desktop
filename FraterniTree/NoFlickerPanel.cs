@@ -12,13 +12,15 @@ namespace FraterniTree
 {
     public partial class NoFlickerPanel : Panel
     {
-        public NoFlickerPanel()
+
+        public NoFlickerPanel( )
         {
             this.SetStyle(
                 ControlStyles.UserPaint |
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.OptimizedDoubleBuffer,
-                true);
+                true );
         }
+
     }
 }
