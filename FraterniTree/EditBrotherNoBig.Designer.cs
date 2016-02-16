@@ -2,9 +2,7 @@
 {
     partial class EditBrotherNoBig
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -22,10 +20,6 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.lblEditBig = new System.Windows.Forms.Label();
@@ -60,7 +54,7 @@
             this.btnCancelEdit.Name = "btnCancelEdit";
             this.btnCancelEdit.Size = new System.Drawing.Size(89, 40);
             this.btnCancelEdit.TabIndex = 40;
-            this.btnCancelEdit.Text = "Cancel";
+            this.btnCancelEdit.Text = Util.GetLocalizedString("Cancel");
             this.btnCancelEdit.UseVisualStyleBackColor = true;
             this.btnCancelEdit.Click += new System.EventHandler(this.btnCancelEdit_Click);
             // 
@@ -72,7 +66,7 @@
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(89, 40);
             this.btnOK.TabIndex = 39;
-            this.btnOK.Text = "OK";
+            this.btnOK.Text = Util.GetLocalizedString("Ok");
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
@@ -89,7 +83,7 @@
             this.MinimumSize = new System.Drawing.Size(282, 192);
             this.Name = "EditBrotherNoBig";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "Add a Big";
+            this.Text = Util.GetLocalizedString("AddBig");
             this.ResumeLayout(false);
             this.PerformLayout();
 

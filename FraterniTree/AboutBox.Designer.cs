@@ -2,9 +2,6 @@
 {
     partial class AboutBox
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -21,10 +18,6 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -73,7 +66,7 @@
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(408, 17);
             this.labelProductName.TabIndex = 19;
-            this.labelProductName.Text = "FraterniTree";
+            this.labelProductName.Text = Util.GetLocalizedString("ProductName");
             this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelVersion
@@ -85,7 +78,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(408, 17);
             this.labelVersion.TabIndex = 0;
-            this.labelVersion.Text = "v1.0";
+            this.labelVersion.Text = Util.GetLocalizedString("VersionNumber");
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelCopyright
@@ -97,7 +90,7 @@
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(408, 17);
             this.labelCopyright.TabIndex = 21;
-            this.labelCopyright.Text = "Copyright © 2013";
+            this.labelCopyright.Text = Util.GetLocalizedString("CopyRight");
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelCompanyName
@@ -109,7 +102,7 @@
             this.labelCompanyName.Name = "labelCompanyName";
             this.labelCompanyName.Size = new System.Drawing.Size(408, 17);
             this.labelCompanyName.TabIndex = 22;
-            this.labelCompanyName.Text = "YitboSoft";
+            this.labelCompanyName.Text = Util.GetLocalizedString("CompanyName");
             this.labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBoxDescription
@@ -133,7 +126,7 @@
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 25);
             this.okButton.TabIndex = 24;
-            this.okButton.Text = "&OK";
+            this.okButton.Text = Util.GetLocalizedString("AndOk");
             // 
             // pictureBox1
             // 
@@ -161,7 +154,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "AboutBox";
+            this.Text = Util.GetLocalizedString("AboutBox");
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

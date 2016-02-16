@@ -1,332 +1,218 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.VisualBasic;
-using System.IO;
 using System.Xml;
+using FraterniTree.Properties;
+using Microsoft.VisualBasic;
+using MySql.Data.MySqlClient;
 
 namespace FraterniTree
 {
+
     public partial class StartUp : Form
     {
-
-        public int m_Port { get; set; }
-        public bool m_bXML { get; set; }
-        public bool m_bIsMale { get; set; }
-        public string m_Server { get; set; }
-        public string m_DBase { get; set; }
-        public string m_UName { get; set; }
-        public string m_PWord { get; set; }
-        public string m_FilePath { get; set; }
-        public string m_ParentNode { get; set; }
-        public MySql.Data.MySqlClient.MySqlConnection Connection { get; set; }
+        private readonly bool[] inputValid = new bool[5];
 
         public StartUp( )
         {
             InitializeComponent();
 
-            m_Port = 0;
-            m_bIsMale = true;
-            m_Server = "";
-            m_DBase = "";
-            m_UName = "";
-            m_PWord = "";
+            Port = 0;
+            IsMale = true;
+            Server = string.Empty;
+            Base = string.Empty;
+            Username = string.Empty;
+            Password = string.Empty;
             Connection = null;
 
-            if( Properties.Settings.Default.RecentMySqlConnection != null )
+            if( Settings.Default.RecentMySqlConnection != null )
             {
-                ToolStripMenuItem tmp =
-                    new ToolStripMenuItem( Properties.Settings.Default.RecentMySqlConnection.Database );
-                tmp.Click += genericToolStripMenuItem_Click;
-                connectToolStripMenuItem.DropDownItems.Add( tmp );
+                var sqlToolStrip = new ToolStripMenuItem( Settings.Default.RecentMySqlConnection.Database );
+                sqlToolStrip.Click += genericToolStripMenuItem_Click;
+                connectToolStripMenuItem.DropDownItems.Add(sqlToolStrip);
                 connectToolStripMenuItem.Enabled = true;
             }
 
-            if( Properties.Settings.Default.RecentXmlPath != "" )
-            {
-                ToolStripMenuItem tmp =
-                    new ToolStripMenuItem( Path.GetFileName( Properties.Settings.Default.RecentXmlPath ) );
-                tmp.Click += genericToolStripMenuItem_Click;
-                connectToolStripMenuItem.DropDownItems.Add( tmp );
-                connectToolStripMenuItem.Enabled = true;
-            }
+            if( Settings.Default.RecentXmlPath == string.Empty ) return;
 
-            //RegAccess.APPLICATION_NAME = AssemblyProduct;
-            //RegAccess.COMPANY_NAME = AssemblyCompany;
-            //string[] dbs = RegAccess.GetAllSubKeys();
-
-            //if (dbs != null)
-            //{
-            //    foreach (string db in dbs)
-            //    {
-            //        ToolStripMenuItem tmp = new ToolStripMenuItem(db);
-            //        tmp.Click += genericToolStripMenuItem_Click;
-            //        connectToolStripMenuItem.DropDownItems.Add(tmp);
-            //    }
-            //}
+            var xmlToolStrip = new ToolStripMenuItem(Path.GetFileName(Settings.Default.RecentXmlPath));
+            xmlToolStrip.Click += genericToolStripMenuItem_Click;
+            connectToolStripMenuItem.DropDownItems.Add(xmlToolStrip);
+            connectToolStripMenuItem.Enabled = true;
         }
 
-        private bool[] m_bInputValid = new bool[5];
+        public int Port { get; private set; }
+        public bool IsXml { get; private set; }
+        public bool IsMale { get; private set; }
+        public string Server { get; private set; }
+        public string Base { get; private set; }
+        public string Username { get; private set; }
+        public string Password { get; private set; }
+        public string FilePath { get; private set; }
+        public string ParentNode { get; private set; }
+        public MySqlConnection Connection { get; private set; }
 
-        private void tbValidator( )
+        private void TbValidator( )
         {
-            bool ready = true;
-            foreach ( bool b in m_bInputValid )
-            {
-                if( !b )
-                {
-                    ready = false;
-                    return;
-                }
+            var ready = true;
+            
+            if( inputValid.Any( b => !b ) ) 
+            { //TODO
+                ready = false;
+                return; //TODO
             }
-            if( ready )
-            {
-                btnSubmit.Enabled = true;
-            }
-            else
-            {
-                btnSubmit.Enabled = false;
-            }
+
+            btnSubmit.Enabled = ready;
         }
 
         private void tbServer_TextChanged(object sender, EventArgs e)
         {
-            if( tbServer.Text != "" )
-            {
-                m_bInputValid[0] = true;
+            if( tbServer.Text != string.Empty ) {
+                inputValid[0] = true;
             }
             else
             {
-                m_bInputValid[0] = false;
+                inputValid[0] = false;
             }
-            tbValidator();
+
+            TbValidator();
         }
 
         private void tbPort_TextChanged(object sender, EventArgs e)
         {
-            if( tbPort.Text.IndexOfAny( new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 )
-            {
-                m_bInputValid[1] = true;
+            if( tbPort.Text.IndexOfAny( new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 ) {
+                inputValid[1] = true;
             }
             else
             {
-                m_bInputValid[1] = false;
+                inputValid[1] = false;
             }
-            tbValidator();
+
+            TbValidator();
         }
 
         private void tbDb_TextChanged(object sender, EventArgs e)
         {
-            if( tbDb.Text != "" )
+            if( tbDb.Text != string.Empty ) 
             {
-                m_bInputValid[2] = true;
+                inputValid[2] = true;
             }
             else
             {
-                m_bInputValid[2] = false;
+                inputValid[2] = false;
             }
-            tbValidator();
+
+            TbValidator();
         }
 
         private void tbUser_TextChanged(object sender, EventArgs e)
         {
-            if( tbUser.Text != "" )
+            if( tbUser.Text != string.Empty ) 
             {
-                m_bInputValid[3] = true;
+                inputValid[3] = true;
             }
             else
             {
-                m_bInputValid[3] = false;
+                inputValid[3] = false;
             }
-            tbValidator();
+
+            TbValidator();
         }
 
         private void tbPass_TextChanged(object sender, EventArgs e)
         {
-            if( tbPass.Text != "" )
+            if( tbPass.Text != string.Empty ) 
             {
-                m_bInputValid[4] = true;
+                inputValid[4] = true;
             }
             else
             {
-                m_bInputValid[4] = false;
+                inputValid[4] = false;
             }
-            tbValidator();
+
+            TbValidator();
         }
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
-            m_Port = Int32.Parse( tbPort.Text );
-            m_Server = tbServer.Text;
-            m_DBase = tbDb.Text;
-            m_UName = tbUser.Text;
-            m_PWord = tbPass.Text;
-            this.Close();
+            Port = int.Parse( tbPort.Text );
+            Server = tbServer.Text;
+            Base = tbDb.Text;
+            Username = tbUser.Text;
+            Password = tbPass.Text;
+            Close();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void rbMale_CheckedChanged(object sender, EventArgs e)
         {
-            if( rbMale.Checked )
-            {
-                m_bIsMale = true;
-            }
-            else
-            {
-                m_bIsMale = false;
-            }
+            IsMale = rbMale.Checked;
         }
 
         private void genericToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if( ((ToolStripMenuItem) (sender)).Text == Path.GetFileName( Properties.Settings.Default.RecentXmlPath ) )
+            if( ((ToolStripMenuItem) sender).Text == Path.GetFileName( Settings.Default.RecentXmlPath ) )
             {
-                m_FilePath = Properties.Settings.Default.RecentXmlPath;
-                m_bXML = true;
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                FilePath = Settings.Default.RecentXmlPath;
+                IsXml = true;
+                DialogResult = DialogResult.OK;
+                Close();
             }
-            else if( ((ToolStripMenuItem) (sender)).Text == Properties.Settings.Default.RecentMySqlConnection.Database )
+            else if( ((ToolStripMenuItem) sender).Text == Settings.Default.RecentMySqlConnection.Database ) 
             {
-                Connection = Properties.Settings.Default.RecentMySqlConnection;
+                Connection = Settings.Default.RecentMySqlConnection;
             }
             else
             {
-                this.DialogResult = DialogResult.Abort;
-                this.Close();
+                DialogResult = DialogResult.Abort;
+                Close();
             }
         }
 
-        #region Assembly Attribute Accessors
-
-        public string AssemblyTitle
+        private void btnXml_Click(object sender, EventArgs eventArgs)
         {
-            get
+            var ofd = new OpenFileDialog
             {
-                object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyTitleAttribute), false );
-                if( attributes.Length > 0 )
-                {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute) attributes[0];
-                    if( titleAttribute.Title != "" )
-                    {
-                        return titleAttribute.Title;
-                    }
-                }
-                return System.IO.Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase );
-            }
-        }
+                Filter = Util.GetLocalizedString( "XMLDocumentFilter" ),
+                DefaultExt = Util.GetLocalizedString( "DotXml" ),
+                AddExtension = true,
+                CheckFileExists = true
+            };
 
-        public string AssemblyVersion
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
-        }
-
-        public string AssemblyDescription
-        {
-            get
-            {
-                object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyDescriptionAttribute), false );
-                if( attributes.Length == 0 )
-                {
-                    return "";
-                }
-                return ((AssemblyDescriptionAttribute) attributes[0]).Description;
-            }
-        }
-
-        public string AssemblyProduct
-        {
-            get
-            {
-                object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyProductAttribute), false );
-                if( attributes.Length == 0 )
-                {
-                    return "";
-                }
-                return ((AssemblyProductAttribute) attributes[0]).Product;
-            }
-        }
-
-        public string AssemblyCopyright
-        {
-            get
-            {
-                object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCopyrightAttribute), false );
-                if( attributes.Length == 0 )
-                {
-                    return "";
-                }
-                return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
-            }
-        }
-
-        public string AssemblyCompany
-        {
-            get
-            {
-                object[] attributes =
-                    Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCompanyAttribute), false );
-                if( attributes.Length == 0 )
-                {
-                    return "";
-                }
-                return ((AssemblyCompanyAttribute) attributes[0]).Company;
-            }
-        }
-
-        #endregion
-
-        private void btnXml_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "XML Document|*.xml|All Files|*.*";
-            ofd.DefaultExt = ".xml";
-            ofd.AddExtension = true;
-            ofd.CheckFileExists = true;
-            DialogResult res = ofd.ShowDialog();
+            var res = ofd.ShowDialog();
             if( res == DialogResult.OK )
             {
-                m_FilePath = ofd.FileName;
+                FilePath = ofd.FileName;
                 if( !File.Exists( ofd.FileName ) )
                 {
-                    m_ParentNode = Interaction.InputBox( "Please enter a name for the parent XML node...\n" +
-                                                         "Example: \"DeltaSigmaPhi-AlphaEta\"",
-                        "Parent Node Name",
-                        "MyTree" );
+                    ParentNode = Interaction.InputBox(Util.GetLocalizedString("PromptUSerForParentNodeName"),
+                        Util.GetLocalizedString("ParentNodeName"),
+                        Util.GetLocalizedString("MyTree"));
                 }
                 else
                 {
-                    XmlDocument tmpDoc = new XmlDocument();
+                    var tmpDoc = new XmlDocument();
                     tmpDoc.Load( ofd.FileName );
-                    m_ParentNode = tmpDoc.DocumentElement.Name;
+                    ParentNode = tmpDoc.DocumentElement.Name;
                 }
-                Properties.Settings.Default.RecentXmlPath = m_FilePath;
+                Settings.Default.RecentXmlPath = FilePath;
             }
 
-            m_bXML = true;
+            IsXml = true;
 
-            this.DialogResult = res;
-            this.Close();
+            DialogResult = res;
+            Close();
         }
 
         private void btnMysql_Click(object sender, EventArgs e)
         {
-            this.Text = "Connect to Database";
+            Text = Util.GetLocalizedString("ConnectToDatabase");
             gbGender.Visible = true;
             rbFemale.Visible = true;
             rbMale.Visible = true;
@@ -348,8 +234,87 @@ namespace FraterniTree
             btnMysql.Visible = false;
             btnXml.Visible = false;
 
-            m_bXML = false;
+            IsXml = false;
         }
 
+        #region Assembly Attribute Accessors
+
+        public string AssemblyTitle
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyTitleAttribute), false );
+
+                if( attributes.Length > 0 )
+                {
+                    var titleAttribute = (AssemblyTitleAttribute) attributes[0];
+                    if( titleAttribute.Title != string.Empty )
+                    {
+                        return titleAttribute.Title;
+                    }
+                }
+
+                return Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase );
+            }
+        }
+
+        public string AssemblyVersion
+        {
+            get
+            {
+                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+        }
+
+        public string AssemblyDescription
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyDescriptionAttribute), false );
+                
+                if( attributes.Length == 0 ) return string.Empty; 
+
+                return ((AssemblyDescriptionAttribute) attributes[0]).Description;
+            }
+        }
+
+        public string AssemblyProduct
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyProductAttribute), false );
+                
+                if( attributes.Length == 0 ) return string.Empty; 
+
+                return ((AssemblyProductAttribute) attributes[0]).Product;
+            }
+        }
+
+        public string AssemblyCopyright
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCopyrightAttribute), false );
+                
+                if( attributes.Length == 0 ) { return string.Empty; }
+                
+                return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
+            }
+        }
+
+        public string AssemblyCompany
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCompanyAttribute), false );
+
+                if( attributes.Length == 0 ) { return string.Empty; }
+
+                return ((AssemblyCompanyAttribute) attributes[0]).Company;
+            }
+        }
+
+        #endregion
     }
+
 }
