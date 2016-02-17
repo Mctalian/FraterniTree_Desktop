@@ -70,7 +70,7 @@ namespace FraterniTree.UserInterface
 
         private void tbPort_TextChanged(object sender, EventArgs e)
         {
-            if( tbPort.Text.IndexOfAny( new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 ) 
+            if( tbPort.Text.IndexOfAny( new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 ) 
             {
                 inputValid[1] = true;
             }

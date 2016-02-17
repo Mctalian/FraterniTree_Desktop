@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Timers;
 using System.Windows.Forms;
 using System.Xml;
@@ -637,8 +636,6 @@ namespace FraterniTree.UserInterface
                 databaseConnection.Open();
                 sqlCommand = new MySqlCommand(Util.GetLocalizedString("SQLInsertIntoBrothers"), databaseConnection);
 
-                if( sqlCommand == null ) { throw new Exception( "Failed to create SQL Command." );}
-
                 sqlCommand.Prepare();
                 sqlCommand.Parameters.AddWithValue( "@Last", currentParent.LastName );
                 sqlCommand.Parameters.AddWithValue( "@First", currentParent.FirstName );
@@ -1040,15 +1037,14 @@ namespace FraterniTree.UserInterface
                 tmpBig.AddChild(newB);
             }
 
-            for ( var i = 0; i < littles.Length; i++ )
-            {
-                space = littles[i].LastIndexOf( ' ' );
-                tmp = Root.FindDescendant(littles[i]);
+            foreach ( var little in littles ) {
+                space = little.LastIndexOf( ' ' );
+                tmp = Root.FindDescendant(little);
 
                 Brother littleBrother;
                 if( tmp == null )
                 {
-                    littleBrother = new Brother( littles[i].Substring( space + 1 ), littles[i].Substring( 0, space ), Util.DefaultInitiationTerm, newB.InitiationYear + 1 )
+                    littleBrother = new Brother( little.Substring( space + 1 ), little.Substring( 0, space ), Util.DefaultInitiationTerm, newB.InitiationYear + 1 )
                     {
                         Label = {ContextMenuStrip = cmNodeActions}
                     };
@@ -1227,10 +1223,9 @@ namespace FraterniTree.UserInterface
                     var littles = tbSelectedLittles.Text.Split( new[] {'\n', '\r'},
                         StringSplitOptions.RemoveEmptyEntries );
 
-                    for ( var i = 0; i < littles.Length; i++ )
-                    {
-                        var space = littles[i].LastIndexOf( ' ' );
-                        var tmp = Root.FindDescendant( littles[i] );
+                    foreach ( var little in littles ) {
+                        var space = little.LastIndexOf( ' ' );
+                        var tmp = Root.FindDescendant( little );
                         Brother littleBrother;
                         if( tmp != null )
                         {
@@ -1247,8 +1242,8 @@ namespace FraterniTree.UserInterface
                         }
                         else
                         {
-                            littleBrother = new Brother( littles[i].Substring( space + 1 ),
-                                littles[i].Substring( 0, space ),
+                            littleBrother = new Brother( little.Substring( space + 1 ),
+                                little.Substring( 0, space ),
                                 Util.DefaultInitiationTerm, selected.InitiationYear + 1 )
                             {
                                 Label = {ContextMenuStrip = cmNodeActions}
@@ -1563,7 +1558,7 @@ namespace FraterniTree.UserInterface
                 if( ((Brother) brother.GetParent()).Label.Parent == null ) continue;
                 if( !((Brother) brother.GetParent()).Label.Visible ) continue;
                 if( brother.Label.Parent == null ) continue;
-                if( brother.Label.Capture != false ) continue;
+                if( !brother.Label.Capture ) continue;
                 if( !brother.Label.Visible ) continue;
                     
                 var blackP = new Pen( Color.Black, 1 );
