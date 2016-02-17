@@ -17,7 +17,7 @@ namespace TreeDisplay
             for ( var i = 0; i < ChildCount; i++ )
             {
                 var childObject = this[i];
-                if (childObject != null)
+                if( childObject != null )
                 {
                     generations = Math.Max(generations, childObject.GetGenerationsCount());
                 }
@@ -52,7 +52,7 @@ namespace TreeDisplay
 
             set
             {
-                if (value >= 0)
+                if( value >= 0 )
                 {
                     width = value;
                 }
@@ -136,7 +136,7 @@ namespace TreeDisplay
         {
             if( isIndex ) return child; 
             if( child == null ) return null;
-            if (!child.Ignored) return child; 
+            if( !child.Ignored ) return child; 
 
             var unignoredChild = child; 
             while ( unignoredChild.HasRightSibling() )
@@ -191,7 +191,7 @@ namespace TreeDisplay
             {
                 var childObject = this[i];
 
-                if ( childObject == null ) continue;
+                if( childObject == null ) continue;
 
                 GetParent().AddChild( childObject );
             }
@@ -277,7 +277,7 @@ namespace TreeDisplay
             {
                 rightmostSibling = rightmostSibling.GetRightSibling();
 
-                if (!rightmostSibling.Ignored) return rightmostSibling; 
+                if( !rightmostSibling.Ignored ) return rightmostSibling; 
             }
 
             return null;
@@ -326,8 +326,8 @@ namespace TreeDisplay
             {
                 var childObject = this[i];
 
-                if ( childObject == null ) continue;
-                if ( childObject.Ignored ) continue; 
+                if( childObject == null ) continue;
+                if( childObject.Ignored ) continue; 
 
                 return false;
             }
@@ -389,7 +389,7 @@ namespace TreeDisplay
             if( returnValueNoMatterWhat ) return true;
 
             var tempRightSib = rightSibling;
-            if ( !tempRightSib.Ignored ) return true; 
+            if( !tempRightSib.Ignored ) return true; 
 
             while ( tempRightSib.Ignored )
             {
@@ -443,8 +443,8 @@ namespace TreeDisplay
 
             for (index = 0; index < ChildCount; index++)
             {
-                if (childIter == null) return -1;
-                if (childIter == searchingFor) break;
+                if( childIter == null ) return -1;
+                if( childIter == searchingFor ) break;
 
                 childIter = childIter.GetRightSibling();
             }
@@ -456,7 +456,7 @@ namespace TreeDisplay
         {
             get
             {
-                if (index > ChildCount - 1 || index < 0) return null;
+                if( index > ChildCount - 1 || index < 0 ) return null;
 
                 var rightMostChildWithinIndex = child;
 

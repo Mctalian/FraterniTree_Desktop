@@ -58,15 +58,6 @@ namespace FraterniTree
 
         public override string ToString( )
         {
-            if (FirstName == null)
-            {
-                FirstName = string.Empty;
-            }
-
-            if (LastName == null)
-            {
-                LastName = string.Empty;
-            }
 
             return Util.FormatName(FirstName, LastName);
         }
@@ -78,7 +69,8 @@ namespace FraterniTree
 
             for ( var i = 0; i < ChildCount; i++ )
             {
-                var searchResult = ((Brother) this[i]).FindDescendant( fullName );
+                var brother = (Brother) this[i];
+                var searchResult = brother.FindDescendant(fullName);
                 
                 if( searchResult != null ) return searchResult; 
             }
@@ -103,7 +95,7 @@ namespace FraterniTree
             for ( var i = 0; i < ChildCount; i++ )
             {
                 var child = this[i];
-                if ( child == null ) continue;
+                if( child == null ) continue;
 
                 ((Brother)child).SetIgnoreFlagRecursivly( setTo );
             }
@@ -262,13 +254,13 @@ namespace FraterniTree
             var bigBrothersLabel = bigBrother.Label;
             var currentBrothersLabel = currentBrother.Label;
 
-            if (currentBrothersLabel.Parent == null) 
+            if( currentBrothersLabel.Parent == null ) 
             {
                 currentBrothersLabel.Visible = !bigBrother.HideChildren; 
             }
             else
             {
-                if ( bigBrothersLabel.Parent == null) 
+                if( bigBrothersLabel.Parent == null ) 
                 {
                     currentBrothersLabel.Visible = !currentBrothersLabel.Visible;
                 }
@@ -326,7 +318,7 @@ namespace FraterniTree
 
         private void MoveLeaf(object sender, MouseEventArgs eventArgs)
         {
-            if (eventArgs.Button != MouseButtons.Left) return;
+            if( eventArgs.Button != MouseButtons.Left ) return;
 
             var changeInX = eventArgs.X - lastPoint.X;
             var changeInY = eventArgs.Y - lastPoint.Y;
@@ -340,7 +332,7 @@ namespace FraterniTree
 
         private void GetCurrentLeafLocation(object sender, MouseEventArgs eventArgs)
         {
-            if (eventArgs.Button != MouseButtons.Left) return;
+            if( eventArgs.Button != MouseButtons.Left ) return;
 
             lastPoint = eventArgs.Location;
             Label.BringToFront();
@@ -361,7 +353,7 @@ namespace FraterniTree
             Label.Refresh();
             Label.Location = new Point( Label.Location.X - (Label.Width - oldWidth)/2, Label.Location.Y );
 
-            if (SelectCallback == null) throw new NotImplementedException();
+            if( SelectCallback == null ) throw new NotImplementedException();
 
             SelectCallback( this );
         }

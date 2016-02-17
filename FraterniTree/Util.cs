@@ -74,7 +74,8 @@ namespace FraterniTree
                 var formatedName = string.Format( "{0} {1}", firstName, secondName );
                 return formatedName;
             }
-            catch ( Exception e ) {
+            catch ( Exception) 
+            {
                 return "";
             }
         }

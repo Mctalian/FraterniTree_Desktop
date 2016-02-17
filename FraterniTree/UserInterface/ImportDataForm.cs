@@ -56,7 +56,7 @@ namespace FraterniTree.UserInterface
 
         private void TbValidator( )
         {
-            if (inputValid.Any(b => !b)) return; 
+            if( inputValid.Any(b => !b) ) return; 
 
             btnSubmit.Enabled = true;
         }

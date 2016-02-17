@@ -67,7 +67,7 @@ namespace FraterniTree.UserInterface
                     }
 
                     Brother newB;
-                    var name = string.Format( Util.GetLocalizedString( "NameConstructor" ), first, last );
+                    var name = Util.FormatName( first, last );
                     tmp = Root.FindDescendant(name);
                     if( tmp != null )
                     {
@@ -107,7 +107,7 @@ namespace FraterniTree.UserInterface
 
         private void RefreshNoBigListBox(Brother brother)
         {
-            if (brother == null) return;
+            if( brother == null ) return;
             
             if( brother == Root )
             {
@@ -121,18 +121,18 @@ namespace FraterniTree.UserInterface
                 
                 if( brother == Root ) 
                 {
-                    if (!lbNoRelation.Items.Contains( little ))
+                    if( !lbNoRelation.Items.Contains( little ) )
                     {
                         lbNoRelation.Items.Add( little );
                     }
                 }
 
-                if (!cbTreeParent.Items.Contains( little) )
+                if( !cbTreeParent.Items.Contains( little) )
                 {
                     cbTreeParent.Items.Add( little );
                 }
 
-                if (!CurrentBrothers.Contains( little.ToString() ))
+                if( !CurrentBrothers.Contains(little.ToString()) )
                 {
                     CurrentBrothers.Add( little.ToString() );
                 }
@@ -225,7 +225,7 @@ namespace FraterniTree.UserInterface
             CreateTree();
             PostCreationShift();
 
-            if (isScrollMaintained)
+            if( isScrollMaintained )
             {
                 splitTreeInfo.Panel1.HorizontalScroll.Value = (int)(horizPercentage * splitTreeInfo.Panel1.HorizontalScroll.Maximum);
                 splitTreeInfo.Panel1.VerticalScroll.Value = (int)(vertPercentage * splitTreeInfo.Panel1.VerticalScroll.Maximum);
@@ -319,7 +319,7 @@ namespace FraterniTree.UserInterface
 
             if( cbTreeParent.Text == string.Empty ) return;
 
-            if (cbTreeParent.Text != Util.GetLocalizedString("AllFilter") && cbTreeParent.Text != Util.GetLocalizedString("ActiveOnlyFilter"))
+            if( cbTreeParent.Text != Util.GetLocalizedString("AllFilter") && cbTreeParent.Text != Util.GetLocalizedString("ActiveOnlyFilter") )
             {
                 treeRoot = (Brother) cbTreeParent.SelectedItem;
             }
@@ -328,7 +328,7 @@ namespace FraterniTree.UserInterface
                 displayRootOfAllTreeToolStripMenuItem.Enabled = true;
                 treeRoot = Root;
 
-                if (cbTreeParent.Text == Util.GetLocalizedString("ActiveOnlyFilter"))
+                if( cbTreeParent.Text == Util.GetLocalizedString("ActiveOnlyFilter") )
                 {
                     displayRootOfAllTreeToolStripMenuItem.Enabled = false;
                     treeRoot.SetIgnoreFlag();
@@ -477,7 +477,7 @@ namespace FraterniTree.UserInterface
 
             selected = brother;
 
-            if ( selected != null )
+            if( selected != null )
             {
                 tbSelectedFirst.Text = brother.FirstName;
                 tbSelectedLast.Text = brother.LastName;
@@ -493,7 +493,7 @@ namespace FraterniTree.UserInterface
                 }
 
                 dtpSelectedYear.Value = new DateTime(brother.InitiationYear, 1, 1);
-                if (brother.InitiationTerm.ToString() != string.Empty)
+                if( brother.InitiationTerm.ToString() != string.Empty )
                 {
                     cbSelectedTerm.SelectedItem = brother.InitiationTerm.ToString();
                 }
@@ -664,7 +664,7 @@ namespace FraterniTree.UserInterface
             {
                 var message = exception.Message;
 
-                if (sqlCommand != null)
+                if( sqlCommand != null )
                 {
                     message += '\n';
                     message += sqlCommand.CommandText;
@@ -681,7 +681,7 @@ namespace FraterniTree.UserInterface
         private static XmlNode ConvertTreeToXml( XmlDocument xml, Brother brother) 
         {
             XmlNode node = xml.CreateElement("Brother");
-            if ( node.Attributes == null ) return null;
+            if( node.Attributes == null ) return null;
 
             var last = xml.CreateAttribute("Last");
             last.Value = brother.LastName;
@@ -715,7 +715,7 @@ namespace FraterniTree.UserInterface
         private Brother ConvertXmlToTree(XmlNode currentParent)
         {
             if( currentParent == null ) return null;
-            if (currentParent.Attributes == null) return null;
+            if( currentParent.Attributes == null ) return null;
             
             var big = new Brother( currentParent.Attributes["Last"].Value,
                 currentParent.Attributes["First"].Value,
@@ -751,7 +751,7 @@ namespace FraterniTree.UserInterface
             xmlDoc.Save( filePath );
 
             if( filePath != openXmlFilePath ) return;
-            if (File.Exists(openXmlFilePath + Util.GetLocalizedString("DotSav")))
+            if( File.Exists(openXmlFilePath + Util.GetLocalizedString("DotSav")) )
             {
                 File.Delete(openXmlFilePath + Util.GetLocalizedString("DotSav"));
             }
@@ -799,21 +799,23 @@ namespace FraterniTree.UserInterface
 
             xmlDocument.Load( openXmlFilePath );
 
-            if (xmlDocument.DocumentElement.ChildNodes.Count != 1) throw new Exception("More than one root node, please check your XML and try again.");
+            if( xmlDocument.DocumentElement.ChildNodes.Count != 1 ) throw new Exception("More than one root node, please check your XML and try again.");
 
             var currentParent = xmlDocument.DocumentElement.FirstChild;
-            if (Root == null)
+            if( Root == null )
             {
                 var last = currentParent.Attributes["Last"].Value;
                 var first = currentParent.Attributes["First"].Value;
                 var term = currentParent.Attributes["IniTerm"].Value;
                 var year = int.Parse( currentParent.Attributes["IniYear"].Value );
 
-                Root = new Brother( last, first,term, year);
-                Root.Active = Util.ConvertStringToBool( currentParent.Attributes["Active"].Value );
-                Root.Label = new Label()
+                Root = new Brother( last, first, term, year )
                 {
-                    ContextMenuStrip = cmNodeActions
+                    Active = Util.ConvertStringToBool( currentParent.Attributes["Active"].Value ),
+                    Label =
+                    {
+                        ContextMenuStrip = cmNodeActions
+                    }
                 };
             }
 
@@ -824,7 +826,7 @@ namespace FraterniTree.UserInterface
 
             saveXmlToolStripMenuItem.Enabled = true;
 
-            if (xmlParentNodeName == null)
+            if( xmlParentNodeName == null )
             {
                 xmlParentNodeName = xmlDocument.DocumentElement.Name;
             }
@@ -1145,7 +1147,7 @@ namespace FraterniTree.UserInterface
                 selected.Active = chbActive.Checked;
             }
 
-            if (tbSelectedFirst.Text != string.Empty && ((selectedEdits & FieldEdit.FirstName) != 0) )
+            if( tbSelectedFirst.Text != string.Empty && ((selectedEdits & FieldEdit.FirstName) != 0) )
             {
                 cbTreeParent.Items.Remove( selected );
                 selected.FirstName = tbSelectedFirst.Text;
@@ -1153,7 +1155,7 @@ namespace FraterniTree.UserInterface
                 cbTreeParent.Sorted = true;
             }
 
-            if (tbSelectedLast.Text != string.Empty && ((selectedEdits & FieldEdit.LastName) != 0) )
+            if( tbSelectedLast.Text != string.Empty && ((selectedEdits & FieldEdit.LastName) != 0) )
             {
                 cbTreeParent.Items.Remove( selected );
                 selected.LastName = tbSelectedLast.Text;
@@ -1163,7 +1165,7 @@ namespace FraterniTree.UserInterface
 
             if( (selectedEdits & FieldEdit.Big) != 0 )
             {
-                if (tbSelectedBig.Text == string.Empty)
+                if( tbSelectedBig.Text == string.Empty )
                 {
                     if( selected.HasParent() )
                     {
@@ -1258,7 +1260,7 @@ namespace FraterniTree.UserInterface
 
             if( (selectedEdits & (FieldEdit.IniMonth | FieldEdit.IniYear)) != 0 ) 
             {
-                if (selected !=null)
+                if( selected !=null )
                 {
                     ((Brother)selected.GetParent()).RecalculateChildOrder();
                 }
@@ -1342,7 +1344,7 @@ namespace FraterniTree.UserInterface
 
             if( cbTreeParent.SelectedIndex != -1 )
             {
-                if (cbTreeParent.Text != Util.GetLocalizedString("AllFilter") && cbTreeParent.Text != Util.GetLocalizedString("ActiveOnlyFilter")
+                if( cbTreeParent.Text != Util.GetLocalizedString("AllFilter") && cbTreeParent.Text != Util.GetLocalizedString("ActiveOnlyFilter")
                     && cbTreeParent.Text != string.Empty )
                 {
                     btnUp.Visible = ((Brother) cbTreeParent.SelectedItem).HasParent();
@@ -1394,8 +1396,8 @@ namespace FraterniTree.UserInterface
             if( toolStripItem == null ) return;
 
             var contextMenuStrip = toolStripItem.Owner as ContextMenuStrip;
-            if (contextMenuStrip == null) return;
-            
+            if( contextMenuStrip == null ) return;
+
             var label = contextMenuStrip.SourceControl as Label;
             if( label == null ) return;
 
@@ -1560,7 +1562,6 @@ namespace FraterniTree.UserInterface
                 if( ((Brother) brother.GetParent()).Label.Parent == null ) continue;
                 if( !((Brother) brother.GetParent()).Label.Visible ) continue;
                 if( brother.Label.Parent == null ) continue;
-                if( !brother.Label.Capture ) continue;
                 if( !brother.Label.Visible ) continue;
                     
                 var blackP = new Pen( Color.Black, 1 );

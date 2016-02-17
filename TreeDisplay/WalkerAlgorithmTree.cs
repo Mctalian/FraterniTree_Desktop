@@ -114,12 +114,12 @@
             currentNode.HorizontalCoordinate = (int)xTemp;
             currentNode.VerticalCoordinate = (int)yTemp;
 
-            if (currentNode.HasChild())
+            if( currentNode.HasChild() )
             {
                 result = SecondWalk(currentNode.GetFirstChild(), currentLevel + 1, (int)(modsum + currentNode.Modifier));
             }
 
-            if (result && currentNode.HasRightSibling())
+            if( result && currentNode.HasRightSibling() )
             {
                 result = SecondWalk(currentNode.GetRightSibling(), currentLevel, modsum);
             }
@@ -167,7 +167,7 @@
                         tmp = tmp.GetLeftSibling();
                     }
 
-                    if (tmp == null) return;
+                    if( tmp == null ) return;
 
                     var portion = distance / numLeftSiblings;
                     for (tmp = currentNode; tmp != ancestorNeighbor; tmp = tmp.GetLeftSibling())
