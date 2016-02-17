@@ -72,12 +72,13 @@ namespace FraterniTree
 
         public Brother FindBrotherByName(string fullName)
         {
-            if( ToString() == fullName ) { return this; }
+            if( ToString() == fullName ) return this; 
 
             for ( var i = NumberOfChildren - 1; i >= 0; i-- )
             {
                 var found = ((Brother) this[i]).FindBrotherByName( fullName );
-                if( found != null ) { return found; }
+                
+                if( found != null ) return found; 
             }
 
             return null;
@@ -370,6 +371,7 @@ namespace FraterniTree
             Label.Location = new Point( Label.Location.X - (Label.Width - oldWidth)/2, Label.Location.Y );
 
             if (SelectCallback == null) throw new NotImplementedException();
+
             SelectCallback( this );
         }
 

@@ -446,7 +446,7 @@ namespace TreeDisplay
 
         protected void SetHeight(int h)
         {
-            if( h >= 0 )
+            if( h >= 0 ) 
             {
                 height = h;
             }

@@ -106,30 +106,36 @@ namespace FraterniTree
 
         private void RefreshNoBigListBox(Brother brother)
         {
+            if (brother == null) return;
+            
             if( brother == Root )
             {
                 lbNoRelation.Items.Clear();
             }
 
-            for ( var i = brother.NumberOfChildren - 1; i >= 0; i-- )
+            for ( var i = brother.NumberOfChildren; i >= 0; i-- )//TODO
             {
+                var little = (Brother) brother[i];
+                if( little == null ) continue;
+                
                 if( brother == Root ) {
-                    if( !lbNoRelation.Items.Contains( (Brother) brother[i] ) )
+                    if (!lbNoRelation.Items.Contains( little ))
                     {
-                        lbNoRelation.Items.Add( (Brother) brother[i] );
+                        lbNoRelation.Items.Add( little );
                     }
                 }
 
-                if( !cbTreeParent.Items.Contains( (Brother) brother[i] ) )
+                if (!cbTreeParent.Items.Contains( little) )
                 {
-                    cbTreeParent.Items.Add( (Brother) brother[i] );
+                    cbTreeParent.Items.Add( little );
                 }
 
-                if( !CurrentBrothers.Contains( ((Brother) brother[i]).ToString() ) ) {
-                    CurrentBrothers.Add( ((Brother) brother[i]).ToString() );
+                if (!CurrentBrothers.Contains( little.ToString() ))
+                {
+                    CurrentBrothers.Add( little.ToString() );
                 }
 
-                RefreshNoBigListBox( (Brother) brother[i] );
+                RefreshNoBigListBox( little );
             }
         }
 
@@ -480,26 +486,31 @@ namespace FraterniTree
             }
 
             selected = brother;
-            tbSelectedFirst.Text = brother.First;
-            tbSelectedLast.Text = brother.Last;
-            tbSelectedBig.Text = brother.HasParent() 
-                ? ((Brother) brother.Parent()).ToString() 
-                : string.Empty;
-            tbSelectedLittles.Text = string.Empty;
 
-            for ( var i = 0; i < brother.NumberOfChildren; i++ )
+            if ( selected != null )
             {
-                var littleBrother = (Brother) brother[i];
-                tbSelectedLittles.Text += (i == 0 ? string.Empty : Environment.NewLine) + littleBrother;
-            }
+                tbSelectedFirst.Text = brother.First;
+                tbSelectedLast.Text = brother.Last;
+                tbSelectedBig.Text = brother.HasParent()
+                    ? ((Brother)brother.Parent()).ToString()
+                    : string.Empty;
+                tbSelectedLittles.Text = string.Empty;
 
-            dtpSelectedYear.Value = new DateTime( brother.IniYear, 1, 1 );
-            if( brother.IniMonth != string.Empty )
-            {
-                cbSelectedTerm.SelectedItem = brother.IniMonth;
-            }
+                for (var i = 0; i < brother.NumberOfChildren; i++)
+                {
+                    var littleBrother = (Brother)brother[i];
+                    tbSelectedLittles.Text += (i == 0 ? string.Empty : Environment.NewLine) + littleBrother;
+                }
 
-            chbActive.Checked = brother.Active;
+                dtpSelectedYear.Value = new DateTime(brother.IniYear, 1, 1);
+                if (brother.IniMonth != string.Empty)
+                {
+                    cbSelectedTerm.SelectedItem = brother.IniMonth;
+                }
+
+                chbActive.Checked = brother.Active;
+            }
+            
             btnEditSelected.Enabled = true;
         }
 
@@ -726,7 +737,7 @@ namespace FraterniTree
             xmlDoc += "</" + parentNodeName + ">";
 
             var tmp = new XmlDocument();
-            tmp.LoadXml( xmlDoc );
+            tmp.LoadXml( xmlDoc ); //TODO - spaces here cause bugs
             var xWriter = new XmlTextWriter( filePath, Encoding.UTF8 )
             {
                 Formatting = Formatting.Indented
@@ -1224,7 +1235,10 @@ namespace FraterniTree
             }
 
             if( (selectedEdits & (FieldEdit.IniMonth | FieldEdit.IniYear)) != 0 ) {
-                ((Brother) selected.Parent()).RefreshLittleOrder();
+                if (selected !=null)
+                {
+                    ((Brother)selected.Parent()).RefreshLittleOrder();
+                }
             }
 
             if( treeRoot == selected && cbTreeParent.Text == string.Empty)
