@@ -1037,14 +1037,15 @@ namespace FraterniTree.UserInterface
                 tmpBig.AddChild(newB);
             }
 
-            foreach ( var little in littles ) {
-                space = little.LastIndexOf( ' ' );
-                tmp = Root.FindDescendant(little);
+            for ( var i = 0; i < littles.Length; i++ ) 
+            {
+                space = littles[i].LastIndexOf( ' ' );
+                tmp = Root.FindDescendant(littles[i]);
 
                 Brother littleBrother;
                 if( tmp == null )
                 {
-                    littleBrother = new Brother( little.Substring( space + 1 ), little.Substring( 0, space ), Util.DefaultInitiationTerm, newB.InitiationYear + 1 )
+                    littleBrother = new Brother(littles[i].Substring(space + 1), littles[i].Substring(0, space), Util.DefaultInitiationTerm, newB.InitiationYear + 1)
                     {
                         Label = {ContextMenuStrip = cmNodeActions}
                     };
@@ -1223,9 +1224,10 @@ namespace FraterniTree.UserInterface
                     var littles = tbSelectedLittles.Text.Split( new[] {'\n', '\r'},
                         StringSplitOptions.RemoveEmptyEntries );
 
-                    foreach ( var little in littles ) {
-                        var space = little.LastIndexOf( ' ' );
-                        var tmp = Root.FindDescendant( little );
+                    for ( var i = 0; i < littles.Length; i++ )
+                    {
+                        var space = littles[0].LastIndexOf( ' ' );
+                        var tmp = Root.FindDescendant(littles[0]);
                         Brother littleBrother;
                         if( tmp != null )
                         {
@@ -1242,8 +1244,8 @@ namespace FraterniTree.UserInterface
                         }
                         else
                         {
-                            littleBrother = new Brother( little.Substring( space + 1 ),
-                                little.Substring( 0, space ),
+                            littleBrother = new Brother(littles[0].Substring(space + 1),
+                                littles[0].Substring(0, space),
                                 Util.DefaultInitiationTerm, selected.InitiationYear + 1 )
                             {
                                 Label = {ContextMenuStrip = cmNodeActions}
