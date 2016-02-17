@@ -58,7 +58,17 @@ namespace FraterniTree
 
         public override string ToString( )
         {
-            return Util.FormatName( FirstName, LastName );
+            if (firstName == null)
+            {
+                firstName = string.Empty;
+            }
+
+            if (lastName == null)
+            {
+                lastName = string.Empty;
+            }
+
+            return Util.FormatName(firstName, lastName);
         }
 
         //TODO: Search  by something other then full names. If two brothers have the same full name then then it causes issues.

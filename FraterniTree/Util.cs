@@ -69,7 +69,14 @@ namespace FraterniTree
 
         public static string FormatName( string firstName, string secondName )
         {
-            return string.Format( GetLocalizedString("NameConstructor"), firstName, secondName);
+            try
+            {
+                var formatedName = string.Format( "{0} {1}", firstName, secondName );
+                return formatedName;
+            }
+            catch ( Exception e ) {
+                return "";
+            }
         }
         
     }

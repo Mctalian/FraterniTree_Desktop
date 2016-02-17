@@ -804,16 +804,16 @@ namespace FraterniTree.UserInterface
             var currentParent = xmlDocument.DocumentElement.FirstChild;
             if (Root == null)
             {
-                Root = new Brother( currentParent.Attributes["Last"].Value,
-                    currentParent.Attributes["First"].Value,
-                    currentParent.Attributes["IniTerm"].Value,
-                    int.Parse( currentParent.Attributes["IniYear"].Value ) )
+                var last = currentParent.Attributes["Last"].Value;
+                var first = currentParent.Attributes["First"].Value;
+                var term = currentParent.Attributes["IniTerm"].Value;
+                var year = int.Parse( currentParent.Attributes["IniYear"].Value );
+
+                Root = new Brother( last, first,term, year);
+                Root.Active = Util.ConvertStringToBool( currentParent.Attributes["Active"].Value );
+                Root.Label = new Label()
                 {
-                    Active = Util.ConvertStringToBool( currentParent.Attributes["Active"].Value ),
-                    Label =
-                    {
-                        ContextMenuStrip = cmNodeActions
-                    }
+                    ContextMenuStrip = cmNodeActions
                 };
             }
 
