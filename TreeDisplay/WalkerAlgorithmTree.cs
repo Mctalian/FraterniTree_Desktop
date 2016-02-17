@@ -161,7 +161,8 @@
                     uint numLeftSiblings = 0;
 
                     var tmp = currentNode;
-                    while ( tmp != null && tmp != ancestorNeighbor ) {
+                    while ( tmp != null && tmp != ancestorNeighbor ) 
+                    {
                         numLeftSiblings++;
                         tmp = tmp.GetLeftSibling();
                     }

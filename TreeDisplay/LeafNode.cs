@@ -214,7 +214,8 @@ namespace TreeDisplay
             else
             {
                 var siblingIter = child;
-                while ( siblingIter != null && siblingIter != toBeRemoved ) {
+                while ( siblingIter != null && siblingIter != toBeRemoved ) 
+                {
                     siblingIter = siblingIter.GetRightSibling();
                 }
 

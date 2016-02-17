@@ -120,7 +120,8 @@ namespace FraterniTree.UserInterface
                 var little = (Brother) brother[i];
                 if( little == null ) continue;
                 
-                if( brother == Root ) {
+                if( brother == Root ) 
+                {
                     if (!lbNoRelation.Items.Contains( little ))
                     {
                         lbNoRelation.Items.Add( little );
@@ -260,7 +261,8 @@ namespace FraterniTree.UserInterface
                 parent.Label.AutoSize = false;
             }
 
-            for ( var i = 0; i < count; i++ ) {
+            for ( var i = 0; i < count; i++ ) 
+            {
                 if( !parent[i].Ignored )
                 {
                     AddLabelsToPanel( (Brother) parent[i], generations - 1 );
@@ -307,7 +309,8 @@ namespace FraterniTree.UserInterface
 
             Root.ClearIgnoreFlag();
 
-            if( selected != null ) {
+            if( selected != null ) 
+            {
                 selected.Label.Font = new Font( selected.Label.Font, selected.Label.Font.Style & ~FontStyle.Bold );
             }
 
@@ -385,7 +388,8 @@ namespace FraterniTree.UserInterface
 
             if( leastPosX > 0 || leastPosY > 0 )
             {
-                foreach ( Control c in pnlTree.Controls ) {
+                foreach ( Control c in pnlTree.Controls ) 
+                {
                     c.Location = new Point( c.Location.X + leastPosX, c.Location.Y + leastPosY );
                 }
             }
@@ -527,12 +531,14 @@ namespace FraterniTree.UserInterface
 
             var littles = tbSelectedLittles.Text.Split( new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries );
             
-            if( littles.Length != selected.ChildCount ) {
+            if( littles.Length != selected.ChildCount ) 
+            {
                 selectedEdits |= FieldEdit.Littles;
             }
             else
             {
-                for ( var i = selected.ChildCount - 1; i >= 0; i-- ) {
+                for ( var i = 0; i < selected.ChildCount; i++ ) 
+                {
                     if( !littles.Contains( ((Brother) selected[i]).ToString() ) )
                     {
                         selectedEdits |= FieldEdit.Littles;
@@ -621,7 +627,8 @@ namespace FraterniTree.UserInterface
                     WriteBackToDatabase( (Brother) currentParent.GetFirstChild() );
                 }
 
-                if( currentParent.HasRightSibling() ) {
+                if( currentParent.HasRightSibling() ) 
+                {
                     WriteBackToDatabase( (Brother) currentParent.GetRightSibling() );
                 }
 
@@ -928,7 +935,8 @@ namespace FraterniTree.UserInterface
 
                 bool ret;
 
-                if( start.Connection != null ) {
+                if( start.Connection != null ) 
+                {
                     ret = ConnectToDatabase( start.Connection );
                 }
                 else
@@ -1002,7 +1010,8 @@ namespace FraterniTree.UserInterface
             var space = bigName.LastIndexOf(' ');
             Brother tmpBig;
             var tmp = Root.FindDescendant( bigName );
-            if( tmp != null ) {
+            if( tmp != null ) 
+            {
                 tmpBig = tmp;
             }
             else
@@ -1124,7 +1133,8 @@ namespace FraterniTree.UserInterface
 
         private void btnApplySelected_Click(object sender, EventArgs eventArguments)
         {
-            if( cbSelectedTerm.SelectedIndex != -1 && ((selectedEdits & FieldEdit.IniMonth) != 0) ) {
+            if( cbSelectedTerm.SelectedIndex != -1 && ((selectedEdits & FieldEdit.IniMonth) != 0) ) 
+            {
                 selected.InitiationTerm = Util.StringToInitiationTerm(cbSelectedTerm.SelectedItem.ToString());
             }
 
@@ -1184,7 +1194,8 @@ namespace FraterniTree.UserInterface
                     }
                     else
                     {
-                        if( selected.HasParent() ) {
+                        if( selected.HasParent() ) 
+                        {
                             tmp.AddChild( selected );
                         }
                         else
@@ -1199,7 +1210,8 @@ namespace FraterniTree.UserInterface
             {
                 if( tbSelectedLittles.Text == string.Empty )
                 {
-                    for ( var i = selected.ChildCount - 1; i >= 0; i-- ) {
+                    for ( var i = 0; i < selected.ChildCount; i ++ ) 
+                    {
                         Root.AddChild( (Brother) selected[i] );
                     }
 
@@ -1207,7 +1219,8 @@ namespace FraterniTree.UserInterface
                 }
                 else
                 {
-                    for ( var i = selected.ChildCount - 1; i >= 0; i-- ) {
+                    for ( var i = 0; i < selected.ChildCount; i++ ) 
+                    {
                         Root.AddChild( (Brother) selected[i] );
                     }
 
@@ -1222,7 +1235,8 @@ namespace FraterniTree.UserInterface
                         if( tmp != null )
                         {
                             littleBrother = tmp;
-                            if( littleBrother.HasParent() ) {
+                            if( littleBrother.HasParent() ) 
+                            {
                                 selected.AddChild( littleBrother );
                             }
                             else
@@ -1245,7 +1259,8 @@ namespace FraterniTree.UserInterface
                 }
             }
 
-            if( (selectedEdits & (FieldEdit.IniMonth | FieldEdit.IniYear)) != 0 ) {
+            if( (selectedEdits & (FieldEdit.IniMonth | FieldEdit.IniYear)) != 0 ) 
+            {
                 if (selected !=null)
                 {
                     ((Brother)selected.GetParent()).RecalculateChildOrder();
@@ -1512,7 +1527,8 @@ namespace FraterniTree.UserInterface
 
         private void pnlTree_MouseDoubleClick(object sender, MouseEventArgs eventArguments)
         {
-            if( cbTreeParent.SelectedIndex != -1 ) {
+            if( cbTreeParent.SelectedIndex != -1 ) 
+            {
                 treeViewToolStripMenuItem.Checked = !treeViewToolStripMenuItem.Checked;
             }
 

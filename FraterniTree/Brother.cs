@@ -58,16 +58,15 @@ namespace FraterniTree
 
         public override string ToString( )
         {
-            return string.Format("{0} {1}", FirstName, LastName);
+            return Util.FormatName( FirstName, LastName );
         }
 
-        //TODO: Search  by something other then full names. If two brothers have 
-        //  the same full name then then it causes issues.
+        //TODO: Search  by something other then full names. If two brothers have the same full name then then it causes issues.
         public Brother FindDescendant(string fullName)
         {
             if( ToString() == fullName ) return this; 
 
-            for ( var i = ChildCount - 1; i >= 0; i-- )
+            for ( var i = 0; i < ChildCount; i++ )
             {
                 var searchResult = ((Brother) this[i]).FindDescendant( fullName );
                 
@@ -271,7 +270,7 @@ namespace FraterniTree
 
             if( !currentBrother.HideChildren )
             {
-                for ( var i = currentBrother.ChildCount - 1; i >= 0; i-- ) 
+                for ( var i = 0; i < currentBrother.ChildCount; i++ ) 
                 {
                     RecursiveToggleLeafVisible( (Brother) currentBrother[i] );
                 }

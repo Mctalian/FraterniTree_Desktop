@@ -70,7 +70,8 @@ namespace FraterniTree.UserInterface
 
         private void tbPort_TextChanged(object sender, EventArgs e)
         {
-            if( tbPort.Text.IndexOfAny( new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 ) {
+            if( tbPort.Text.IndexOfAny( new char[10] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 ) 
+            {
                 inputValid[1] = true;
             }
             else
@@ -261,7 +262,7 @@ namespace FraterniTree.UserInterface
             {
                 var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCopyrightAttribute), false );
                 
-                if( attributes.Length == 0 ) { return string.Empty; }
+                if( attributes.Length == 0 ) return string.Empty;
                 
                 return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
             }
@@ -273,7 +274,7 @@ namespace FraterniTree.UserInterface
             {
                 var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCompanyAttribute), false );
 
-                if( attributes.Length == 0 ) { return string.Empty; }
+                if( attributes.Length == 0 ) return string.Empty;
 
                 return ((AssemblyCompanyAttribute) attributes[0]).Company;
             }
