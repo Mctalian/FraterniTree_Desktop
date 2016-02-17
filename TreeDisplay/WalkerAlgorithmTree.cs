@@ -26,7 +26,7 @@
         /// </summary>
         /// <param name="apexNode">The root node of the tree to be positioned</param>
         /// <returns>TRUE if no errors, otherwise returns FALSE</returns>
-        public static bool PositionTree(Node apexNode)
+        public static bool PositionTree(LeafNode apexNode)
         {
             if( apexNode == null ) return true;
 
@@ -37,8 +37,8 @@
 
             // Determine how to adjust all the nodes with respect to
             // the location of the root.
-            _xTopAdjustment = apexNode.CoordinateX - (int) apexNode.Prelim;
-            _yTopAdjustment = apexNode.CoordinateY;
+            _xTopAdjustment = apexNode.HorizontalCoordinate - (int) apexNode.PreliminaryLocation;
+            _yTopAdjustment = apexNode.VerticalCoordinate;
 
             // Do the final positioning with a preorder walk.
             var result = SecondWalk( apexNode, 0, 0 );
@@ -50,9 +50,9 @@
             return result;
         }
 
-        private static void FirstWalk(Node currentNode, int currentLevel)
+        private static void FirstWalk(LeafNode currentNode, int currentLevel)
         {
-            currentNode.Prev = GetPrevNodeAtLevel( currentLevel );
+            currentNode.LeftSibling = GetPrevNodeAtLevel( currentLevel );
             SetPrevNodeAtLevel( currentLevel, currentNode );
             currentNode.Modifier = 0;
 
@@ -60,13 +60,13 @@
             {
                 if( currentNode.HasLeftSibling() )
                 {
-                    currentNode.Prelim = currentNode.GetLeftSibling().Prelim 
+                    currentNode.PreliminaryLocation = currentNode.GetLeftSibling().PreliminaryLocation 
                         + HorizontalSiblingSeparationFine 
-                        + MeanNodeSize( currentNode.GetLeftSibling(), currentNode );
+                        + CalcAverageNodeSize( currentNode.GetLeftSibling(), currentNode );
                 }
                 else
                 {
-                    currentNode.Prelim = 0;
+                    currentNode.PreliminaryLocation = 0;
                 }
             }
             else
@@ -81,25 +81,25 @@
                     FirstWalk( rightMostNode, currentLevel + 1 );
                 }
 
-                var midpoint = (leftMostNode.Prelim + rightMostNode.Prelim) / 2;
+                var midpoint = (leftMostNode.PreliminaryLocation + rightMostNode.PreliminaryLocation) / 2;
 
                 if( currentNode.HasLeftSibling() )
                 {
-                    currentNode.Prelim = currentNode.GetLeftSibling().Prelim 
+                    currentNode.PreliminaryLocation = currentNode.GetLeftSibling().PreliminaryLocation 
                         + HorizontalSiblingSeparationFine 
-                        + MeanNodeSize( currentNode.GetLeftSibling(), currentNode );
+                        + CalcAverageNodeSize( currentNode.GetLeftSibling(), currentNode );
 
-                    currentNode.Modifier = currentNode.Prelim - midpoint;
+                    currentNode.Modifier = currentNode.PreliminaryLocation - midpoint;
                     Apportion( currentNode, currentLevel );
                 }
                 else
                 {
-                    currentNode.Prelim = midpoint;
+                    currentNode.PreliminaryLocation = midpoint;
                 }
             }
         }
 
-        private static bool SecondWalk(Node currentNode, int currentLevel, int modsum)
+        private static bool SecondWalk(LeafNode currentNode, int currentLevel, int modsum)
         {
             var result = true;
             long xTemp = 0;
@@ -107,14 +107,12 @@
 
             if( currentLevel <= MaxLevelDepth )
             {
-                xTemp = _xTopAdjustment + (long) (currentNode.Prelim + modsum);
-                yTemp = _yTopAdjustment + (long) (currentLevel*(VerticalLevelSeparation + currentNode.GetHeight()));
+                xTemp = _xTopAdjustment + (long) (currentNode.PreliminaryLocation + modsum);
+                yTemp = _yTopAdjustment + (long) (currentLevel*(VerticalLevelSeparation + currentNode.Height));
             }
 
-            if( !CheckExtentRange( (int) xTemp, (int) yTemp ) ) return false;
-
-            currentNode.CoordinateX = (int)xTemp;
-            currentNode.CoordinateY = (int)yTemp;
+            currentNode.HorizontalCoordinate = (int)xTemp;
+            currentNode.VerticalCoordinate = (int)yTemp;
 
             if (currentNode.HasChild())
             {
@@ -129,7 +127,7 @@
             return result;
         }
 
-        private static void Apportion(Node currentNode, int currentLevel)
+        private static void Apportion(LeafNode currentNode, int currentLevel)
         {
             var leftMostNode = currentNode.GetFirstChild();
             var neighbor = leftMostNode.LeftNeighbor();
@@ -146,25 +144,26 @@
 
                 for ( var i = 0; i < compareDepth; i++ )
                 {
-                    ancestorLeftMost = ancestorLeftMost.Parent();
-                    ancestorNeighbor = ancestorNeighbor.Parent();
+                    ancestorLeftMost = ancestorLeftMost.GetParent();
+                    ancestorNeighbor = ancestorNeighbor.GetParent();
                     rightModsum += ancestorLeftMost.Modifier;
                     leftModsum += ancestorNeighbor.Modifier;
                 }
 
-                var distance = neighbor.Prelim 
+                var distance = neighbor.PreliminaryLocation 
                     + leftModsum 
                     + HorizontalSubtreeSeparationCoarse 
-                    + MeanNodeSize( leftMostNode, neighbor ) 
-                    - (leftMostNode.Prelim + rightModsum);
+                    + CalcAverageNodeSize( leftMostNode, neighbor ) 
+                    - (leftMostNode.PreliminaryLocation + rightModsum);
 
                 if( distance > 0 )
                 {
                     uint numLeftSiblings = 0;
-                    Node tmp;
 
-                    for ( tmp = currentNode; tmp != null && tmp != ancestorNeighbor; tmp = tmp.GetLeftSibling() ) {
+                    var tmp = currentNode;
+                    while ( tmp != null && tmp != ancestorNeighbor ) {
                         numLeftSiblings++;
+                        tmp = tmp.GetLeftSibling();
                     }
 
                     if (tmp == null) return;
@@ -172,7 +171,7 @@
                     var portion = distance / numLeftSiblings;
                     for (tmp = currentNode; tmp != ancestorNeighbor; tmp = tmp.GetLeftSibling())
                     {
-                        tmp.Prelim = tmp.Prelim + distance;
+                        tmp.PreliminaryLocation = tmp.PreliminaryLocation + distance;
                         tmp.Modifier = tmp.Modifier + distance;
                         distance -= portion;
                     }
@@ -189,60 +188,53 @@
             }
         }
 
-        private static Node GetLeftMost(Node currentNode, int currentLevel, int searchDepth)
+        private static LeafNode GetLeftMost(LeafNode currentNode, int currentLevel, int searchDepth)
         {
             if( currentLevel == searchDepth ) return currentNode; 
-            if( currentNode.IsLeaf() ) return null; 
-
-            Node leftMost;
+            if( currentNode.IsLeaf() ) return null;
+            
             var rightMostNode = currentNode.GetFirstChild();
+            var leftMost = GetLeftMost( rightMostNode, currentLevel + 1, searchDepth );
 
-            for ( leftMost = GetLeftMost( rightMostNode, currentLevel + 1, searchDepth ); leftMost == null && rightMostNode.HasRightSibling();
-                rightMostNode = rightMostNode.GetRightSibling() ) 
+            while ( leftMost == null && rightMostNode.HasRightSibling() ) 
             {
                 leftMost = GetLeftMost( rightMostNode, currentLevel + 1, searchDepth );
+                rightMostNode = rightMostNode.GetRightSibling();
             } 
 
             return leftMost;
         }
 
-        private static float MeanNodeSize(Node leftNode, Node rightNode)
+        private static float CalcAverageNodeSize(LeafNode leftNode, LeafNode rightNode)
         {
             float nodeSize = 0;
 
             if( leftNode != null )
             {
-                nodeSize += (float) leftNode.GetWidth()/2;
+                nodeSize += (float) leftNode.Width / 2;
             }
 
             if( rightNode != null )
             {
-                nodeSize += (float) rightNode.GetWidth()/2;
+                nodeSize += (float) rightNode.Width / 2;
             }
 
             return nodeSize;
         }
 
-        private static bool CheckExtentRange(int xValue, int yValue)
-        {
-            return true;
-        }
-
         private static void InitListofPreviousNodes( )
         {
-            PreviousNode tmp;
-            for ( tmp = _levelZeroPointer; tmp != null; tmp = tmp.NextLevel )
+            for ( var tmp = _levelZeroPointer; tmp != null; tmp = tmp.NextLevel )
             {
                 tmp.PrevNode = null;
             }
         }
 
-        private static Node GetPrevNodeAtLevel(int levelNumber)
+        private static LeafNode GetPrevNodeAtLevel(int levelNumber)
         {
-            PreviousNode temp;
             uint i = 0;
 
-            for ( temp = _levelZeroPointer; temp != null; temp = temp.NextLevel ) 
+            for ( var temp = _levelZeroPointer; temp != null; temp = temp.NextLevel ) 
             {
                 if( i++ == levelNumber ) return temp.PrevNode;
             }
@@ -250,12 +242,11 @@
             return null;
         }
 
-        private static void SetPrevNodeAtLevel(int levelNumber, Node thisNode)
+        private static void SetPrevNodeAtLevel(int levelNumber, LeafNode thisNode)
         {
-            PreviousNode tmp;
             uint i = 0;
 
-            for ( tmp = _levelZeroPointer; tmp != null; tmp = tmp.NextLevel )
+            for ( var tmp = _levelZeroPointer; tmp != null; tmp = tmp.NextLevel )
             {
                 if( i++ == levelNumber )
                 {
@@ -265,12 +256,11 @@
 
                 if( tmp.NextLevel == null )
                 {
-                    var newNode = new PreviousNode
+                    tmp.NextLevel = new PreviousNode
                     {
                         PrevNode = null,
                         NextLevel = null
                     };
-                    tmp.NextLevel = newNode;
                 }
             }
 

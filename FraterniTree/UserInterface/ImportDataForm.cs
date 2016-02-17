@@ -56,26 +56,14 @@ namespace FraterniTree.UserInterface
 
         private void TbValidator( )
         {
-            var ready = true;
-            
-            if( inputValid.Any( b => !b ) ) 
-            { //TODO
-                ready = false;
-                return; //TODO
-            }
+            if (inputValid.Any(b => !b)) return; 
 
-            btnSubmit.Enabled = ready;
+            btnSubmit.Enabled = true;
         }
 
         private void tbServer_TextChanged(object sender, EventArgs e)
         {
-            if( tbServer.Text != string.Empty ) {
-                inputValid[0] = true;
-            }
-            else
-            {
-                inputValid[0] = false;
-            }
+            inputValid[0] = tbServer.Text != string.Empty;
 
             TbValidator();
         }
@@ -95,42 +83,21 @@ namespace FraterniTree.UserInterface
 
         private void tbDb_TextChanged(object sender, EventArgs e)
         {
-            if( tbDb.Text != string.Empty ) 
-            {
-                inputValid[2] = true;
-            }
-            else
-            {
-                inputValid[2] = false;
-            }
+            inputValid[2] = tbDb.Text != string.Empty;
 
             TbValidator();
         }
 
         private void tbUser_TextChanged(object sender, EventArgs e)
         {
-            if( tbUser.Text != string.Empty ) 
-            {
-                inputValid[3] = true;
-            }
-            else
-            {
-                inputValid[3] = false;
-            }
+            inputValid[3] = tbUser.Text != string.Empty;
 
             TbValidator();
         }
 
         private void tbPass_TextChanged(object sender, EventArgs e)
         {
-            if( tbPass.Text != string.Empty ) 
-            {
-                inputValid[4] = true;
-            }
-            else
-            {
-                inputValid[4] = false;
-            }
+            inputValid[4] = tbPass.Text != string.Empty;
 
             TbValidator();
         }
@@ -177,7 +144,7 @@ namespace FraterniTree.UserInterface
 
         private void btnXml_Click(object sender, EventArgs eventArgs)
         {
-            var ofd = new OpenFileDialog
+            var openFileDialog = new OpenFileDialog
             {
                 Filter = Util.GetLocalizedString( "XMLDocumentFilter" ),
                 DefaultExt = Util.GetLocalizedString( "DotXml" ),
@@ -185,11 +152,11 @@ namespace FraterniTree.UserInterface
                 CheckFileExists = true
             };
 
-            var res = ofd.ShowDialog();
+            var res = openFileDialog.ShowDialog();
             if( res == DialogResult.OK )
             {
-                FilePath = ofd.FileName;
-                if( !File.Exists( ofd.FileName ) )
+                FilePath = openFileDialog.FileName;
+                if( !File.Exists( openFileDialog.FileName ) )
                 {
                     ParentNode = Interaction.InputBox(Util.GetLocalizedString("PromptUSerForParentNodeName"),
                         Util.GetLocalizedString("ParentNodeName"),
@@ -198,14 +165,13 @@ namespace FraterniTree.UserInterface
                 else
                 {
                     var tmpDoc = new XmlDocument();
-                    tmpDoc.Load( ofd.FileName );
+                    tmpDoc.Load( openFileDialog.FileName );
                     ParentNode = tmpDoc.DocumentElement.Name;
                 }
                 Settings.Default.RecentXmlPath = FilePath;
             }
 
             IsXml = true;
-
             DialogResult = res;
             Close();
         }
@@ -233,7 +199,6 @@ namespace FraterniTree.UserInterface
 
             btnMysql.Visible = false;
             btnXml.Visible = false;
-
             IsXml = false;
         }
 

@@ -4,7 +4,7 @@
     public class PreviousNode
     {
         public PreviousNode NextLevel;
-        public Node PrevNode;
+        public LeafNode PrevNode;
     }
 
 }

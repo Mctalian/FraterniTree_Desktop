@@ -557,6 +557,15 @@ namespace FraterniTree.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} (1}.
+        /// </summary>
+        internal static string NameConstructor {
+            get {
+                return ResourceManager.GetString("NameConstructor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Next Generation.
         /// </summary>
         internal static string NextGeneration {
@@ -815,6 +824,24 @@ namespace FraterniTree.Properties {
         internal static string XMLDocumentFilter {
             get {
                 return ResourceManager.GetString("XMLDocumentFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UTF-8.
+        /// </summary>
+        internal static string XmlEncoding {
+            get {
+                return ResourceManager.GetString("XmlEncoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1.0.
+        /// </summary>
+        internal static string XmlVersion {
+            get {
+                return ResourceManager.GetString("XmlVersion", resourceCulture);
             }
         }
         

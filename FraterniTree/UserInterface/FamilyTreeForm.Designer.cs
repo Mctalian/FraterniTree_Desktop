@@ -758,7 +758,7 @@
             this.MenuStrip.Name = "MenuStrip";
             this.MenuStrip.Size = new System.Drawing.Size(1000, 24);
             this.MenuStrip.TabIndex = 0;
-            this.MenuStrip.Text = "menuStrip1"; //TODO - Unlocalized
+            this.MenuStrip.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 

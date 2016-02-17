@@ -41,7 +41,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Node.cs" />
+    <Compile Include="LeafNode.cs" />
     <Compile Include="PreviousNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WalkerAlgorithmTree.cs" />

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing.Imaging;
 using System.Resources;
 using FraterniTree.Enums;
@@ -67,9 +66,11 @@ namespace FraterniTree
 
             return (InitiationTerm) Enum.Parse(typeof(InitiationTerm), stringRepresentation);
         }
-        
-        
-        
 
+        public static string FormatName( string firstName, string secondName )
+        {
+            return string.Format( GetLocalizedString("NameConstructor"), firstName, secondName);
+        }
+        
     }
 }

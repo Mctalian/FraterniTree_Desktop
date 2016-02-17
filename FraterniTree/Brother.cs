@@ -10,7 +10,7 @@ namespace FraterniTree
     /// <summary>
     ///     Represents a Fraternity Brother in a Fraternity Family Tree.
     /// </summary>
-    public class Brother : Node
+    public class Brother : LeafNode
     {
         public static Action<Brother> SelectCallback = null;
         public static Action ShiftCallback = null;
@@ -67,7 +67,7 @@ namespace FraterniTree
         {
             if( ToString() == fullName ) return this; 
 
-            for ( var i = DirectChildCount - 1; i >= 0; i-- )
+            for ( var i = ChildCount - 1; i >= 0; i-- )
             {
                 var searchResult = ((Brother) this[i]).FindDescendant( fullName );
                 
@@ -91,7 +91,7 @@ namespace FraterniTree
         {
             SetIgnore( setTo );
             
-            for ( var i = 0; i < DirectChildCount; i++ )
+            for ( var i = 0; i < ChildCount; i++ )
             {
                 var child = this[i];
                 if ( child == null ) continue;
@@ -107,7 +107,7 @@ namespace FraterniTree
             var isSorted = true;
             do
             {
-                for ( var i = 1; i < DirectChildCount; i++ )
+                for ( var i = 1; i < ChildCount; i++ )
                 {
                     var left = (Brother) this[i - 1];
                     var right = (Brother) this[i];
@@ -133,8 +133,8 @@ namespace FraterniTree
         {
             if( !left.HasParent() ) return;
             if( !right.HasParent() ) return;
-            if( (Brother) left.Parent( true ) != (Brother) right.Parent( true ) ) return;
-            if( (Brother) left.Parent( true ) != this ) return;
+            if( (Brother) left.GetParent( true ) != (Brother) right.GetParent( true ) ) return;
+            if( (Brother) left.GetParent( true ) != this ) return;
             if( !left.HasRightSibling( true ) ) return;
             if( !right.HasLeftSibling( true ) ) return;
             if( (Brother) left.GetRightSibling( true ) != right ) return;
@@ -142,7 +142,7 @@ namespace FraterniTree
 
             if( left == (Brother) GetFirstChild( true ) )
             {
-                SetFirstChild( right );
+                SetChild( right );
             }
 
             right.SetLeftSibling( left.GetLeftSibling( true ) );
@@ -196,8 +196,8 @@ namespace FraterniTree
             Label.MouseUp += DetectLeafBeingDragged;
             Label.Paint += SetLeafBackgroundColor;
 
-            SetWidth( Label.Width );
-            SetHeight( Label.Height );
+            Width = Label.Width;
+            Height = Label.Height;
             SetCallback( SetLeafLocation );
         }
 
@@ -207,7 +207,7 @@ namespace FraterniTree
 
         private void SetLeafLocation( )
         {
-            Label.Location = new Point( CoordinateX, CoordinateY );
+            Label.Location = new Point( HorizontalCoordinate, VerticalCoordinate );
         }
 
         private static void RecursiveMoveLeaf(Brother brother, int distanceInXDirection, int distanceInYDirection)
@@ -249,13 +249,13 @@ namespace FraterniTree
 
         public static void RecursiveToggleLeafVisible(Brother currentBrother)
         {
-            var bigBrother = (Brother) currentBrother.Parent();
+            var bigBrother = (Brother) currentBrother.GetParent();
             var bigBrothersLabel = bigBrother.Label;
             var currentBrothersLabel = currentBrother.Label;
 
             if (currentBrothersLabel.Parent == null) 
             {
-                currentBrothersLabel.Visible = !bigBrother.HideChildren; //TODO reverse this logic
+                currentBrothersLabel.Visible = !bigBrother.HideChildren; 
             }
             else
             {
@@ -271,7 +271,7 @@ namespace FraterniTree
 
             if( !currentBrother.HideChildren )
             {
-                for ( var i = currentBrother.DirectChildCount - 1; i >= 0; i-- ) 
+                for ( var i = currentBrother.ChildCount - 1; i >= 0; i-- ) 
                 {
                     RecursiveToggleLeafVisible( (Brother) currentBrother[i] );
                 }
@@ -284,8 +284,8 @@ namespace FraterniTree
         {
             if( Active )
             {
-                Label.ForeColor = Color.White; //TODO - Localize
-                Label.BackColor = Color.DarkGreen; //ToDO
+                Label.ForeColor = Color.White;
+                Label.BackColor = Color.DarkBlue;
             }
             else
             {
@@ -293,7 +293,7 @@ namespace FraterniTree
                 Label.BackColor = Color.Empty;
             }
 
-            var parent = (Brother) Parent();
+            var parent = (Brother) GetParent();
 
             if( parent.Label.Parent != null && !parent.Label.Visible ) 
             {

@@ -376,4 +376,13 @@
   <data name="ZoomOut" xml:space="preserve">
     <value>Zoom &amp;Out</value>
   </data>
+  <data name="NameConstructor" xml:space="preserve">
+    <value>{0} (1}</value>
+  </data>
+  <data name="XmlVersion" xml:space="preserve">
+    <value>1.0</value>
+  </data>
+  <data name="XmlEncoding" xml:space="preserve">
+    <value>UTF-8</value>
+  </data>
 </root>

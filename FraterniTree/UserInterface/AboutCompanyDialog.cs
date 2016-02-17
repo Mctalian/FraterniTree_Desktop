@@ -46,7 +46,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private string AssemblyDescription
+        private static string AssemblyDescription
         {
             get
             {
