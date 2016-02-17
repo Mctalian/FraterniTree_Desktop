@@ -2,6 +2,7 @@
 using System;
 using System.Drawing.Imaging;
 using System.Resources;
+using FraterniTree.Enums;
 
 namespace FraterniTree
 {
@@ -60,7 +61,12 @@ namespace FraterniTree
             }
         }
 
-        
+        public static InitiationTerm StringToInitiationTerm(string stringRepresentation)
+        {
+            if( string.IsNullOrEmpty( stringRepresentation ) ) throw new Exception("The string cannot be empty or null.");
+
+            return (InitiationTerm) Enum.Parse(typeof(InitiationTerm), stringRepresentation);
+        }
         
         
         

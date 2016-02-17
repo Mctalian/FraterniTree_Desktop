@@ -15,7 +15,7 @@ namespace TreeDisplay
             if( !HasChild() ) return 0; 
 
             var gens = 0;
-            for ( var i = 0; i < NumberOfChildren; i++ ) {
+            for ( var i = 0; i < DirectChildCount; i++ ) {
                 if( this[i] != null )
                 {
                     gens = Math.Max( gens, this[i].GetNumGenerations() );
@@ -43,7 +43,7 @@ namespace TreeDisplay
         /// <summary>
         ///     Number of children nodes of this Node.
         /// </summary>
-        public int NumberOfChildren { get; private set; }
+        public int DirectChildCount { get; private set; }
 
         #endregion
 
@@ -111,7 +111,7 @@ namespace TreeDisplay
             offspring = o;
             leftSibling = l;
             rightSibling = r;
-            NumberOfChildren = nC;
+            DirectChildCount = nC;
             CoordinateX = coordinateX;
             CoordinateY = coordinateY;
             width = w;
@@ -179,12 +179,12 @@ namespace TreeDisplay
             }
 
             child.Parent( this );
-            NumberOfChildren++;
+            DirectChildCount++;
         }
 
         public void RemoveNode( )
         {
-            for ( var i = NumberOfChildren - 1; i >= 0; i-- )
+            for ( var i = DirectChildCount - 1; i >= 0; i-- )
             {
                 if( this[i] == null ) continue; 
 
@@ -230,7 +230,7 @@ namespace TreeDisplay
             child.Parent( null );
             child.SetLeftSibling( null );
             child.SetRightSibling( null );
-            NumberOfChildren--;
+            DirectChildCount--;
         }
 
         public Node GetLeftSibling(bool isIndex = false)
@@ -316,7 +316,7 @@ namespace TreeDisplay
         {
             if( offspring == null ) return true; 
 
-            for ( var i = NumberOfChildren - 1; i >= 0; i-- )
+            for ( var i = DirectChildCount - 1; i >= 0; i-- )
             {
                 if( this[i] == null ) continue; 
                 if( this[i].IsIgnored() ) continue; 
@@ -339,7 +339,7 @@ namespace TreeDisplay
         {
             if( offspring == null ) return false;
 
-            for ( var i = NumberOfChildren - 1; i >= 0; i-- )
+            for ( var i = DirectChildCount - 1; i >= 0; i-- )
             {
                 if( this[i] == null || this[i].IsIgnored() ) continue;
 
@@ -403,7 +403,7 @@ namespace TreeDisplay
         public void ExecuteCallback( )
         {
             callback();
-            for ( var i = 0; i < NumberOfChildren; i++ )
+            for ( var i = 0; i < DirectChildCount; i++ )
             {
                 if( this[i] != null )
                 {
@@ -474,7 +474,7 @@ namespace TreeDisplay
         {
             get
             {
-                if( ind > NumberOfChildren - 1 || ind < 0 ) return null;
+                if( ind > DirectChildCount - 1 || ind < 0 ) return null;
 
                 Node childIter;
                 uint i;

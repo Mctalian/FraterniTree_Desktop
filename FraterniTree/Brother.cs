@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using FraterniTree.Enums;
 using TreeDisplay;
 
 namespace FraterniTree
@@ -13,16 +14,19 @@ namespace FraterniTree
     {
         public static Action<Brother> SelectCallback = null;
         public static Action ShiftCallback = null;
-        public bool Active = false;
-        private string firstName;
-        private bool hiddenChildren;
-        private InitiationTerm initiationTerm;
-        public Label Label = new Label();
 
         private string lastName;
+        private string firstName;
+
+        public InitiationTerm InitiationTerm;
+        public bool Active = false;
+        public bool HideChildren;
+
+        public Label Label = new Label();
+
         private Point lastPoint;
 
-        public string Last
+        public string LastName
         {
             get
             {
@@ -36,7 +40,7 @@ namespace FraterniTree
             }
         }
 
-        public string First
+        public string FirstName
         {
             get
             {
@@ -50,97 +54,74 @@ namespace FraterniTree
             }
         }
 
-        public string IniMonth
-        {
-            get
-            {
-                return initiationTerm.ToString();
-            }
-
-            set
-            {
-                initiationTerm = (InitiationTerm) Enum.Parse( typeof (InitiationTerm), value );
-            }
-        }
-
-        public int IniYear { get; set; }
+        public int InitiationYear { get; set; }
 
         public override string ToString( )
         {
-            return First + " " + Last;
+            return string.Format("{0} {1}", FirstName, LastName);
         }
 
-        public Brother FindBrotherByName(string fullName)
+        //TODO: Search  by something other then full names. If two brothers have 
+        //  the same full name then then it causes issues.
+        public Brother FindDescendant(string fullName)
         {
             if( ToString() == fullName ) return this; 
 
-            for ( var i = NumberOfChildren - 1; i >= 0; i-- )
+            for ( var i = DirectChildCount - 1; i >= 0; i-- )
             {
-                var found = ((Brother) this[i]).FindBrotherByName( fullName );
+                var searchResult = ((Brother) this[i]).FindDescendant( fullName );
                 
-                if( found != null ) return found; 
+                if( searchResult != null ) return searchResult; 
             }
 
             return null;
         }
 
-        public void SetDescendantsHidden(bool status)
+        public bool SetIgnoreFlag( )
         {
-            hiddenChildren = status;
+            return SetIgnoreFlagRecursivly( !Active );
         }
 
-        public bool RecursiveSetIgnoreNode( )
+        public void ClearIgnoreFlag( )
         {
-            var isThisIgnored = !Active;
-            for ( var i = NumberOfChildren - 1; i >= 0; i-- )
+            SetIgnoreFlagRecursivly( false );
+        }
+
+        private bool SetIgnoreFlagRecursivly( bool setTo )
+        {
+            SetIgnore( setTo );
+            
+            for ( var i = 0; i < DirectChildCount; i++ )
             {
-                if( isThisIgnored ) 
-                {
-                    isThisIgnored = ((Brother) this[i]).RecursiveSetIgnoreNode();
-                }
-                else
-                {
-                    // Ignore return, but set descendant nodes accordingly //TODO
-                    ((Brother) this[i]).RecursiveSetIgnoreNode();
-                }
+                var child = this[i];
+                if ( child == null ) continue;
+
+                ((Brother)child).SetIgnoreFlagRecursivly( setTo );
             }
 
-            SetIgnore( isThisIgnored );
-            return isThisIgnored;
+            return setTo;
         }
 
-        public void RecursiveClearIgnoreNode( )
+        public void RecalculateChildOrder( )
         {
-            SetIgnore( false );
-            for ( var i = NumberOfChildren - 1; i >= 0; i-- )
-            {
-                if( this[i] == null ) continue; 
-
-                ((Brother) this[i]).RecursiveClearIgnoreNode();
-            }
-        }
-
-        public void RefreshLittleOrder( )
-        {
-            bool isSorted;
+            var isSorted = true;
             do
             {
-                isSorted = true;
-                for ( var i = 1; i < NumberOfChildren; i++ )
+                for ( var i = 1; i < DirectChildCount; i++ )
                 {
                     var left = (Brother) this[i - 1];
                     var right = (Brother) this[i];
 
-                    if( right.IniYear < left.IniYear )
+                    if( right.InitiationYear < left.InitiationYear )
                     {
-                        SwapLittles( left, right );
+                        SwapChildOrder( left, right );
                         isSorted = false;
                     }
-                    else if( right.IniYear == left.IniYear )
+                    else if( right.InitiationYear == left.InitiationYear )
                     {
-                        if( right.initiationTerm < left.initiationTerm )
+                        if( right.InitiationTerm < left.InitiationTerm )
                         {
-                            SwapLittles( left, right );
+                            SwapChildOrder( left, right );
                             isSorted = false;
                         }
                     }
@@ -148,7 +129,7 @@ namespace FraterniTree
             } while ( !isSorted );
         }
 
-        private void SwapLittles(Brother left, Brother right)
+        private void SwapChildOrder(Brother left, Brother right)
         {
             if( !left.HasParent() ) return;
             if( !right.HasParent() ) return;
@@ -184,63 +165,52 @@ namespace FraterniTree
         public void AddChild(Brother child)
         {
             base.AddChild( child );
-            RefreshLittleOrder();
-        }
-
-        private enum InitiationTerm
-        {
-            Winter = 0,
-            Spring = 1,
-            Fall = 2
+            RecalculateChildOrder();
         }
 
         #region Constructors
 
-        private Brother( ) {}
-
         /// <summary>
         ///     Allow a Brother to be created only by specifying the following parameters
         /// </summary>
-        /// <param name="strLast">Last Name of the Brother</param>
-        /// <param name="strFirst">First Name of the Brother</param>
-        /// <param name="month">Initiation Term of the Brother</param>
-        /// <param name="iYear">Initiation Year of the Brother</param>
-        public Brother(string lastName, string firstName, string month, int year)
+        /// <param name="lastName">Last Name of the Brother</param>
+        /// <param name="firstName">First Name of the Brother</param>
+        /// <param name="term">Initiation Term of the Brother</param>
+        /// <param name="year">Initiation Year of the Brother</param>
+        public Brother(string lastName, string firstName, string term, int year)
         {
-            // Initialize Brother object
-            Last = lastName;
-            First = firstName;
-            IniMonth = month;
-            IniYear = year;
+            LastName = lastName;
+            FirstName = firstName;
+            InitiationTerm = Util.StringToInitiationTerm(term);
+            InitiationYear = year;
 
-            // Initialize the label
             Label.Text = ToString();
             Label.TextAlign = ContentAlignment.MiddleCenter;
             Label.Padding = new Padding( 4 );
             Label.AutoSize = true;
             Label.BorderStyle = BorderStyle.FixedSingle;
             Label.Tag = this;
-            Label.MouseClick += m_Label_MouseClick;
-            Label.MouseDown += m_Label_MouseDown;
-            Label.MouseMove += m_Label_MouseMove;
-            Label.MouseUp += m_Label_MouseUp;
-            Label.Paint += m_Label_Paint;
+            Label.MouseClick += SelectLeaf;
+            Label.MouseDown += GetCurrentLeafLocation;
+            Label.MouseMove += MoveLeaf;
+            Label.MouseUp += DetectLeafBeingDragged;
+            Label.Paint += SetLeafBackgroundColor;
 
             SetWidth( Label.Width );
             SetHeight( Label.Height );
-            SetCallback( ApplyNodeLocationsToLabel );
+            SetCallback( SetLeafLocation );
         }
 
         #endregion
 
         #region GUI Label Methods
 
-        private void ApplyNodeLocationsToLabel( )
+        private void SetLeafLocation( )
         {
             Label.Location = new Point( CoordinateX, CoordinateY );
         }
 
-        private static void RecursiveLabelMove(Brother brother, int distanceInXDirection, int distanceInYDirection)
+        private static void RecursiveMoveLeaf(Brother brother, int distanceInXDirection, int distanceInYDirection)
         {
             if( brother.Label.Parent != null )
             {
@@ -248,64 +218,74 @@ namespace FraterniTree
                     brother.Label.Top + distanceInYDirection );
             }
 
-            if( brother.HasRightSibling() ) {
-                RecursiveLabelMove( (Brother) brother.GetRightSibling(), distanceInXDirection, distanceInYDirection );
+            if( brother.HasRightSibling() ) 
+            {
+                RecursiveMoveLeaf( (Brother) brother.GetRightSibling(), distanceInXDirection, distanceInYDirection );
             }
 
-            if( brother.HasChild() ) {
-                RecursiveLabelMove( (Brother) brother.GetFirstChild(), distanceInXDirection, distanceInYDirection );
+            if( brother.HasChild() ) 
+            {
+                RecursiveMoveLeaf( (Brother) brother.GetFirstChild(), distanceInXDirection, distanceInYDirection );
             }
         }
 
-        private void RecursiveLabelCapture(Brother brother, MouseEventArgs mouseEvent)
+        private void RecursiveCaptureLeaf(Brother brother, MouseEventArgs mouseEvent)
         {
             if( brother.Label.Parent == null ) return; 
 
             brother.lastPoint = mouseEvent.Location;
             brother.Label.BringToFront();
 
-            if( brother.HasRightSibling() ) {
-                RecursiveLabelCapture( (Brother) brother.GetRightSibling(), mouseEvent );
+            if( brother.HasRightSibling() ) 
+            {
+                RecursiveCaptureLeaf( (Brother) brother.GetRightSibling(), mouseEvent );
             }
 
             if( brother.HasChild() )
             {
-                RecursiveLabelCapture( (Brother) brother.GetFirstChild(), mouseEvent );
+                RecursiveCaptureLeaf( (Brother) brother.GetFirstChild(), mouseEvent );
             }
         }
 
-        public void RecursiveLabelVisibleToggle(Brother brother)
+        public static void RecursiveToggleLeafVisible(Brother currentBrother)
         {
-            if( brother.Label.Parent == null ) {
-                brother.Label.Visible = !((Brother) brother.Parent()).hiddenChildren;
+            var bigBrother = (Brother) currentBrother.Parent();
+            var bigBrothersLabel = bigBrother.Label;
+            var currentBrothersLabel = currentBrother.Label;
+
+            if (currentBrothersLabel.Parent == null) 
+            {
+                currentBrothersLabel.Visible = !bigBrother.HideChildren; //TODO reverse this logic
             }
             else
             {
-                if( ((Brother) brother.Parent()).Label.Parent == null ) {
-                    brother.Label.Visible = !brother.Label.Visible;
+                if ( bigBrothersLabel.Parent == null) 
+                {
+                    currentBrothersLabel.Visible = !currentBrothersLabel.Visible;
                 }
                 else
                 {
-                    brother.Label.Visible = ((Brother) brother.Parent()).Label.Visible && !((Brother) brother.Parent()).hiddenChildren;
+                    currentBrothersLabel.Visible = bigBrothersLabel.Visible && !bigBrother.HideChildren;
                 }
             }
 
-            if( !brother.hiddenChildren )
+            if( !currentBrother.HideChildren )
             {
-                for ( var i = brother.NumberOfChildren - 1; i >= 0; i-- ) {
-                    RecursiveLabelVisibleToggle( (Brother) brother[i] );
+                for ( var i = currentBrother.DirectChildCount - 1; i >= 0; i-- ) 
+                {
+                    RecursiveToggleLeafVisible( (Brother) currentBrother[i] );
                 }
             }
         }
 
         #region GUI Event Handlers
 
-        private void m_Label_Paint(object sender, PaintEventArgs e)
+        private void SetLeafBackgroundColor(object sender, PaintEventArgs eventArgs)
         {
             if( Active )
             {
                 Label.ForeColor = Color.White; //TODO - Localize
-                Label.BackColor = Color.DarkGreen;
+                Label.BackColor = Color.DarkGreen; //ToDO
             }
             else
             {
@@ -315,12 +295,13 @@ namespace FraterniTree
 
             var parent = (Brother) Parent();
 
-            if( parent.Label.Parent != null && !parent.Label.Visible ) {
-                Label.Visible = parent.Label.Visible && !parent.hiddenChildren;
+            if( parent.Label.Parent != null && !parent.Label.Visible ) 
+            {
+                Label.Visible = parent.Label.Visible && !parent.HideChildren;
             }
         }
 
-        private void m_Label_MouseUp(object sender, MouseEventArgs e)
+        private void DetectLeafBeingDragged(object sender, MouseEventArgs eventArgs)
         {
             if( Label != null )
             {
@@ -334,36 +315,37 @@ namespace FraterniTree
             ShiftCallback();
         }
 
-        private void m_Label_MouseMove(object sender, MouseEventArgs e)
+        private void MoveLeaf(object sender, MouseEventArgs eventArgs)
         {
-            if( e.Button != MouseButtons.Left ) return; 
+            if (eventArgs.Button != MouseButtons.Left) return;
 
-            var dx = e.X - lastPoint.X;
-            var dy = e.Y - lastPoint.Y;
-            Label.Location = new Point( Label.Left + dx, Label.Top + dy );
+            var changeInX = eventArgs.X - lastPoint.X;
+            var changeInY = eventArgs.Y - lastPoint.Y;
+
+            Label.Location = new Point( Label.Left + changeInX, Label.Top + changeInY );
             if( HasChild() )
             {
-                RecursiveLabelMove( (Brother) GetFirstChild(), dx, dy );
+                RecursiveMoveLeaf( (Brother) GetFirstChild(), changeInX, changeInY );
             }
         }
 
-        private void m_Label_MouseDown(object sender, MouseEventArgs e) //TODO - Name
+        private void GetCurrentLeafLocation(object sender, MouseEventArgs eventArgs)
         {
-            if( e.Button != MouseButtons.Left ) return; 
+            if (eventArgs.Button != MouseButtons.Left) return;
 
-            lastPoint = e.Location;
+            lastPoint = eventArgs.Location;
             Label.BringToFront();
             Label.Capture = true;
 
             if( HasChild() )
             {
-                RecursiveLabelCapture( (Brother) GetFirstChild(), e );
+                RecursiveCaptureLeaf((Brother)GetFirstChild(), eventArgs);
             }
         }
 
-        private void m_Label_MouseClick(object sender, MouseEventArgs e)
+        private void SelectLeaf(object sender, MouseEventArgs eventArgs)
         {
-            if( e.Button != MouseButtons.Left ) return; 
+            if( eventArgs.Button != MouseButtons.Left ) return; 
 
             var oldWidth = Label.Width;
             Label.Font = new Font( Label.Font, Label.Font.Style | FontStyle.Bold );

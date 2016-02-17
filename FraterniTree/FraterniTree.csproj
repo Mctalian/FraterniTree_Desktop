@@ -62,6 +62,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\FieldEdit.cs" />
+    <Compile Include="Enums\InitiationTerm.cs" />
     <Compile Include="UserInterface\AboutCompanyDialog.cs">
       <SubType>Form</SubType>
     </Compile>

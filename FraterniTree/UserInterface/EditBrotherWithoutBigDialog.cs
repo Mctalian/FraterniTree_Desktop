@@ -34,7 +34,7 @@ namespace FraterniTree.UserInterface
 
         private void btnOK_Click(object sender, EventArgs eventArgs)
         {
-            var b = FamilyTreeForm.Root.FindBrotherByName( tbEditBig.Text );
+            var b = FamilyTreeForm.Root.FindDescendant( tbEditBig.Text );
             if( b == null )
             {
                 var space = tbEditBig.Text.IndexOf(' ');
