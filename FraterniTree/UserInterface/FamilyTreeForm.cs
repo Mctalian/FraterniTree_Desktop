@@ -14,12 +14,12 @@ using MySql.Data.MySqlClient;
 using TreeDisplay;
 using Timer = System.Timers.Timer;
 
-namespace FraterniTree
+namespace FraterniTree.UserInterface
 {
 
-    public partial class FrmMain : Form
+    public partial class FamilyTreeForm : Form
     {
-        public FrmMain( )
+        public FamilyTreeForm( )
         {
             InitializeComponent();
         }
@@ -890,7 +890,7 @@ namespace FraterniTree
             Brother.SelectCallback = PopulateBrotherEdit;
             Brother.ShiftCallback = BoundsCheckShift;
 
-            var start = new StartUp();
+            var start = new ImportDataForm();
             start.ShowDialog();
             if( start.DialogResult != DialogResult.OK )
             {
@@ -1295,7 +1295,7 @@ namespace FraterniTree
         private void btnEdit_Click(object sender, EventArgs e)
         {
             var b = (Brother) lbNoRelation.SelectedItem; 
-            var editBrother = new EditBrotherNoBig( b );
+            var editBrother = new EditBrotherWithoutBigDialog( b );
             editBrother.ShowDialog();
 
             if( editBrother.DialogResult == DialogResult.OK )
@@ -1697,7 +1697,7 @@ namespace FraterniTree
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs eventArguments)
         {
-            var ab = new AboutBox();
+            var ab = new AboutCompanyDialog();
             ab.ShowDialog();
         }
 

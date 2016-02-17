@@ -1,6 +1,6 @@
-﻿namespace FraterniTree
+﻿namespace FraterniTree.UserInterface
 {
-    partial class AboutBox
+    partial class AboutCompanyDialog
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -149,7 +149,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AboutBox";
+            this.Name = "AboutCompanyDialog";
             this.Padding = new System.Windows.Forms.Padding(9);
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

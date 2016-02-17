@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace FraterniTree
+namespace FraterniTree.UserInterface
 {
 
-    public partial class EditBrotherNoBig : Form
+    public partial class EditBrotherWithoutBigDialog : Form
     {
         private readonly Brother brotherUnderEdit;
 
-        public EditBrotherNoBig(Brother brother)
+        public EditBrotherWithoutBigDialog(Brother brother)
         {
             InitializeComponent();
             brotherUnderEdit = brother;
             lblEditBig.Text = string.Format(Util.GetLocalizedString("PromptUserForFullName"), brother);
-            tbEditBig.AutoCompleteCustomSource = FrmMain.CurrentBrothers;
+            tbEditBig.AutoCompleteCustomSource = FamilyTreeForm.CurrentBrothers;
             btnCancelEdit.Enabled = true;
         }
 
@@ -34,12 +34,12 @@ namespace FraterniTree
 
         private void btnOK_Click(object sender, EventArgs eventArgs)
         {
-            var b = FrmMain.Root.FindBrotherByName( tbEditBig.Text );
+            var b = FamilyTreeForm.Root.FindBrotherByName( tbEditBig.Text );
             if( b == null )
             {
                 var space = tbEditBig.Text.IndexOf(' ');
                 b = new Brother(tbEditBig.Text.Substring(space + 1), tbEditBig.Text.Substring(0, space), Util.DefaultInitiationTerm, Util.DefaultYear);
-                FrmMain.Root.AddChild( b );
+                FamilyTreeForm.Root.AddChild( b );
             }
             b.AddChild( brotherUnderEdit );
         }

@@ -2,12 +2,12 @@
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace FraterniTree
+namespace FraterniTree.UserInterface
 {
 
-    internal partial class AboutBox : Form
+    internal partial class AboutCompanyDialog : Form
     {
-        public AboutBox( )
+        public AboutCompanyDialog( )
         {
             InitializeComponent();
             Text = string.Format( Util.GetLocalizedString("About"), AssemblyTitle );

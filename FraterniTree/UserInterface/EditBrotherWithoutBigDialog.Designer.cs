@@ -1,6 +1,6 @@
-﻿namespace FraterniTree
+﻿namespace FraterniTree.UserInterface
 {
-    partial class EditBrotherNoBig
+    partial class EditBrotherWithoutBigDialog
     {
 
         private System.ComponentModel.IContainer components = null;
@@ -81,7 +81,7 @@
             this.Controls.Add(this.btnOK);
             this.MaximumSize = new System.Drawing.Size(282, 192);
             this.MinimumSize = new System.Drawing.Size(282, 192);
-            this.Name = "EditBrotherNoBig";
+            this.Name = "EditBrotherWithoutBigDialog";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = Util.GetLocalizedString("AddBig");
             this.ResumeLayout(false);

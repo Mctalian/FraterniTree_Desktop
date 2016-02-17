@@ -1,6 +1,6 @@
-﻿namespace FraterniTree
+﻿namespace FraterniTree.UserInterface
 {
-    partial class StartUp
+    partial class ImportDataForm
     {
         /// <summary>
         /// Required designer variable.
@@ -283,7 +283,7 @@
             this.MaximumSize = new System.Drawing.Size(210, 430);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(210, 430);
-            this.Name = "StartUp";
+            this.Name = "ImportDataForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Choose a Tree Source";

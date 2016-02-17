@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace FraterniTree
+namespace FraterniTree.UserInterface
 {
 
     public class NoFlickerPanel : Panel

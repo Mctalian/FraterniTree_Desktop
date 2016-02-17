@@ -8,14 +8,14 @@ using FraterniTree.Properties;
 using Microsoft.VisualBasic;
 using MySql.Data.MySqlClient;
 
-namespace FraterniTree
+namespace FraterniTree.UserInterface
 {
 
-    public partial class StartUp : Form
+    public partial class ImportDataForm : Form
     {
         private readonly bool[] inputValid = new bool[5];
 
-        public StartUp( )
+        public ImportDataForm( )
         {
             InitializeComponent();
 

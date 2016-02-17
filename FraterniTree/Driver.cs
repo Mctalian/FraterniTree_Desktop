@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
+using FraterniTree.UserInterface;
 
 namespace FraterniTree
 {
 
-    internal static class Program
+    internal static class Driver
     {
 
         [STAThread]
@@ -12,7 +13,7 @@ namespace FraterniTree
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new FrmMain() );
+            Application.Run( new FamilyTreeForm() );
         }
 
     }

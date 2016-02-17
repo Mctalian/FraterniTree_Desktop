@@ -62,49 +62,49 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutBox.cs">
+    <Compile Include="UserInterface\AboutCompanyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutBox.Designer.cs">
-      <DependentUpon>AboutBox.cs</DependentUpon>
+    <Compile Include="UserInterface\AboutCompanyDialog.Designer.cs">
+      <DependentUpon>AboutCompanyDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Brother.cs" />
-    <Compile Include="EditBrotherNoBig.cs">
+    <Compile Include="UserInterface\EditBrotherWithoutBigDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditBrotherNoBig.Designer.cs">
-      <DependentUpon>EditBrotherNoBig.cs</DependentUpon>
+    <Compile Include="UserInterface\EditBrotherWithoutBigDialog.Designer.cs">
+      <DependentUpon>EditBrotherWithoutBigDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmMain.cs">
+    <Compile Include="UserInterface\FamilyTreeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.cs">
-      <DependentUpon>frmMain.cs</DependentUpon>
+    <Compile Include="UserInterface\FamilyTreeForm.Designer.cs">
+      <DependentUpon>FamilyTreeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="NoFlickerPanel.cs">
+    <Compile Include="UserInterface\NoFlickerPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="StartUp.cs">
+    <Compile Include="UserInterface\ImportDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="StartUp.Designer.cs">
-      <DependentUpon>StartUp.cs</DependentUpon>
+    <Compile Include="UserInterface\ImportDataForm.Designer.cs">
+      <DependentUpon>ImportDataForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Driver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
-    <EmbeddedResource Include="AboutBox.resx">
-      <DependentUpon>AboutBox.cs</DependentUpon>
+    <EmbeddedResource Include="UserInterface\AboutCompanyDialog.resx">
+      <DependentUpon>AboutCompanyDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditBrotherNoBig.resx">
-      <DependentUpon>EditBrotherNoBig.cs</DependentUpon>
+    <EmbeddedResource Include="UserInterface\EditBrotherWithoutBigDialog.resx">
+      <DependentUpon>EditBrotherWithoutBigDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmMain.resx">
-      <DependentUpon>frmMain.cs</DependentUpon>
+    <EmbeddedResource Include="UserInterface\FamilyTreeForm.resx">
+      <DependentUpon>FamilyTreeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="StartUp.resx">
-      <DependentUpon>StartUp.cs</DependentUpon>
+    <EmbeddedResource Include="UserInterface\ImportDataForm.resx">
+      <DependentUpon>ImportDataForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

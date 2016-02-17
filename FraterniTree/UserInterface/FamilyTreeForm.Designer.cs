@@ -1,6 +1,6 @@
-﻿namespace FraterniTree
+﻿namespace FraterniTree.UserInterface
 {
-    partial class FrmMain
+    partial class FamilyTreeForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FamilyTreeForm));
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitTreeAdd = new System.Windows.Forms.SplitContainer();
@@ -111,7 +111,7 @@
             this.activesOnlyTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generationUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generationDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pnlTree = new FraterniTree.NoFlickerPanel();
+            this.pnlTree = new NoFlickerPanel();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -1048,7 +1048,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.MenuStrip;
             this.MinimumSize = new System.Drawing.Size(1000, 624);
-            this.Name = "FrmMain";
+            this.Name = "FamilyTreeForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
