@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeDisplay", "TreeDisplay\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraterniTree", "FraterniTree\FraterniTree.csproj", "{D39BEDA2-B520-4251-AA42-6097365F8BB8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XMLSamples", "XMLSamples", "{C28240CE-FC0F-4C7B-A89C-EAA96075B2B4}"
+	ProjectSection(SolutionItems) = preProject
+		SampleOne.xml = SampleOne.xml
+		SampleTwo.xml = SampleTwo.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
