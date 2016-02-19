@@ -18,9 +18,7 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        private void InitializeComponent()
+        private void EditBrotherWithoutBig_Initialize()
         {
             this.lblEditBig = new System.Windows.Forms.Label();
             this.tbEditBig = new System.Windows.Forms.TextBox();
@@ -45,7 +43,7 @@
             this.tbEditBig.Name = "tbEditBig";
             this.tbEditBig.Size = new System.Drawing.Size(242, 20);
             this.tbEditBig.TabIndex = 41;
-            this.tbEditBig.TextChanged += new System.EventHandler(this.tbEditBig_TextChanged);
+            this.tbEditBig.TextChanged += new System.EventHandler(this.EditBrotherWithoutBig_Name_onChange);
             // 
             // btnCancelEdit
             // 
@@ -56,7 +54,7 @@
             this.btnCancelEdit.TabIndex = 40;
             this.btnCancelEdit.Text = Util.GetLocalizedString("Cancel");
             this.btnCancelEdit.UseVisualStyleBackColor = true;
-            this.btnCancelEdit.Click += new System.EventHandler(this.btnCancelEdit_Click);
+            this.btnCancelEdit.Click += new System.EventHandler(this.EditBrotherWithoutBig_Cancel_onClick);
             // 
             // btnOK
             // 
@@ -68,7 +66,7 @@
             this.btnOK.TabIndex = 39;
             this.btnOK.Text = Util.GetLocalizedString("Ok");
             this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            this.btnOK.Click += new System.EventHandler(this.EditBrotherWithoutBig_Ok_onClick);
             // 
             // EditBrotherNoBig
             // 
@@ -88,8 +86,6 @@
             this.PerformLayout();
 
         }
-
-        #endregion
 
         private System.Windows.Forms.Label lblEditBig;
         private System.Windows.Forms.TextBox tbEditBig;

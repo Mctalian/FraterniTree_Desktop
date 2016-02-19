@@ -16,9 +16,7 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        private void InitializeComponent()
+        private void AboutDialog_Initialize()
         {
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.labelProductName = new System.Windows.Forms.Label();
@@ -161,8 +159,6 @@
             this.ResumeLayout(false);
 
         }
-
-        #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.Label labelProductName;

@@ -2,10 +2,6 @@
 {
     partial class FamilyTreeForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -20,13 +16,7 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void FamilyTreePanel_Initialize()
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FamilyTreeForm));
@@ -216,8 +206,8 @@
             this.splitTreeInfo.Panel1.BackColor = System.Drawing.Color.White;
             this.splitTreeInfo.Panel1.Controls.Add(this.pnlTree);
             this.ttTree.SetToolTip(this.splitTreeInfo.Panel1, Util.GetLocalizedString("ToggleTreeView"));
-            this.splitTreeInfo.Panel1.Click += new System.EventHandler(this.splitTreeInfo_Panel1_Click);
-            this.splitTreeInfo.Panel1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.splitTreeInfo_Panel1_MouseDoubleClick);
+            this.splitTreeInfo.Panel1.Click += new System.EventHandler(this.OnlyTreePanel_onChange);
+            this.splitTreeInfo.Panel1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreePanel_doubleClick);
             // 
             // splitTreeInfo.Panel2
             // 
@@ -304,7 +294,7 @@
             this.btnCancelSelected.TabIndex = 29;
             this.btnCancelSelected.Text = Util.GetLocalizedString("Cancel");
             this.btnCancelSelected.UseVisualStyleBackColor = true;
-            this.btnCancelSelected.Click += new System.EventHandler(this.btnCancelSelected_Click);
+            this.btnCancelSelected.Click += new System.EventHandler(this.EditBrotherPanel_Cancel_onClick);
             // 
             // btnApplySelected
             // 
@@ -315,7 +305,7 @@
             this.btnApplySelected.TabIndex = 28;
             this.btnApplySelected.Text = Util.GetLocalizedString("Apply");
             this.btnApplySelected.UseVisualStyleBackColor = true;
-            this.btnApplySelected.Click += new System.EventHandler(this.btnApplySelected_Click);
+            this.btnApplySelected.Click += new System.EventHandler(this.EditBrotherPanel_Apply_onClick);
             // 
             // btnEditSelected
             // 
@@ -326,7 +316,7 @@
             this.btnEditSelected.TabIndex = 27;
             this.btnEditSelected.Text = "Edit";
             this.btnEditSelected.UseVisualStyleBackColor = true;
-            this.btnEditSelected.Click += new System.EventHandler(this.btnEditSelected_Click);
+            this.btnEditSelected.Click += new System.EventHandler(this.EditBrotherPanel_Enable);
             // 
             // dtpSelectedYear
             // 
@@ -438,7 +428,7 @@
             this.btnClear.TabIndex = 16;
             this.btnClear.Text = Util.GetLocalizedString("Clear");
             this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.ClearAddBrother);
+            this.btnClear.Click += new System.EventHandler(this.AddBrotherPanel_ClearValues);
             // 
             // btnAdd
             // 
@@ -451,7 +441,7 @@
             this.btnAdd.TabIndex = 15;
             this.btnAdd.Text = Util.GetLocalizedString("Add");
             this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            this.btnAdd.Click += new System.EventHandler(this.AddBrother_onClick);
             // 
             // tbLittles
             // 
@@ -592,7 +582,7 @@
             this.btnEdit.TabIndex = 2;
             this.btnEdit.Text = Util.GetLocalizedString("Edit");
             this.btnEdit.UseVisualStyleBackColor = true;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
+            this.btnEdit.Click += new System.EventHandler(this.EditPanel_Edit_onClick);
             // 
             // lblNoRelation
             // 
@@ -617,8 +607,8 @@
             this.lbNoRelation.Size = new System.Drawing.Size(204, 173);
             this.lbNoRelation.Sorted = true;
             this.lbNoRelation.TabIndex = 0;
-            this.lbNoRelation.SelectedIndexChanged += new System.EventHandler(this.lbNoRelation_SelectedIndexChanged);
-            this.lbNoRelation.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbNoRelation_MouseDoubleClick);
+            this.lbNoRelation.SelectedIndexChanged += new System.EventHandler(this.BrotherNode_SelectedIndexChanged);
+            this.lbNoRelation.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.BrotherNode_onDoubleClick);
             // 
             // btnUp
             // 
@@ -633,7 +623,7 @@
             this.btnUp.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnUp.UseVisualStyleBackColor = true;
             this.btnUp.Visible = false;
-            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            this.btnUp.Click += new System.EventHandler(this.EditPanel_YearUp_onClick);
             // 
             // updwnSubTree
             // 
@@ -645,7 +635,7 @@
             this.updwnSubTree.Size = new System.Drawing.Size(74, 20);
             this.updwnSubTree.TabIndex = 9;
             this.updwnSubTree.Value = new decimal(new int[] { 5, 0, 0, 0});
-            this.updwnSubTree.ValueChanged += new System.EventHandler(this.updwnSubTree_ValueChanged);
+            this.updwnSubTree.ValueChanged += new System.EventHandler(this.Spacing_onChange);
             // 
             // lblSubTree
             // 
@@ -667,7 +657,7 @@
             this.updwnHorizSpace.Size = new System.Drawing.Size(74, 20);
             this.updwnHorizSpace.TabIndex = 7;
             this.updwnHorizSpace.Value = new decimal(new int[] { 5, 0, 0, 0});
-            this.updwnHorizSpace.ValueChanged += new System.EventHandler(this.updwnHorizSpace_ValueChanged);
+            this.updwnHorizSpace.ValueChanged += new System.EventHandler(this.Spacing_onChange);
             // 
             // lblHorizontal
             // 
@@ -689,7 +679,7 @@
             this.updwnVertSpace.Size = new System.Drawing.Size(74, 20);
             this.updwnVertSpace.TabIndex = 5;
             this.updwnVertSpace.Value = new decimal(new int[] { 25, 0, 0, 0});
-            this.updwnVertSpace.ValueChanged += new System.EventHandler(this.updwnVertSpace_ValueChanged);
+            this.updwnVertSpace.ValueChanged += new System.EventHandler(this.Spacing_onChange);
             // 
             // lblVertical
             // 
@@ -710,7 +700,7 @@
             this.updwnNumGen.Size = new System.Drawing.Size(74, 20);
             this.updwnNumGen.TabIndex = 3;
             this.updwnNumGen.Value = new decimal(new int[] { 1, 0, 0, 0});
-            this.updwnNumGen.ValueChanged += new System.EventHandler(this.updwnNumGen_ValueChanged);
+            this.updwnNumGen.ValueChanged += new System.EventHandler(this.VisibleGenerations_onChange);
             // 
             // lblNumGenerations
             // 
@@ -779,7 +769,7 @@
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.saveAsToolStripMenuItem.Text = Util.GetLocalizedString("SaveImageAs");
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.Menu_File_SaveAs_onClick);
             // 
             // toolStripSeparator2
             // 
@@ -793,7 +783,7 @@
             this.saveXmlToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveXmlToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.saveXmlToolStripMenuItem.Text = Util.GetLocalizedString("SaveXml");
-            this.saveXmlToolStripMenuItem.Click += new System.EventHandler(this.saveXmlToolStripMenuItem_Click);
+            this.saveXmlToolStripMenuItem.Click += new System.EventHandler(this.Menu_File_SameXml_onClick);
             // 
             // exportToolStripMenuItem
             // 
@@ -801,7 +791,7 @@
             this.exportToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.exportToolStripMenuItem.Text = Util.GetLocalizedString("AndExportXml");
-            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.Menu_File_ExportXml_onClick);
             // 
             // toolStripSeparator3
             // 
@@ -814,7 +804,7 @@
             this.quitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.quitToolStripMenuItem.Text = Util.GetLocalizedString("AndQuit");
-            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.Menu_File_Quit_onClick);
             // 
             // viewToolStripMenuItem
             // 
@@ -850,7 +840,7 @@
             this.fixedLabelWidthsToolStripMenuItem.Name = "fixedLabelWidthsToolStripMenuItem";
             this.fixedLabelWidthsToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.fixedLabelWidthsToolStripMenuItem.Text = Util.GetLocalizedString("FixedLabelWidths");
-            this.fixedLabelWidthsToolStripMenuItem.Click += new System.EventHandler(this.fixedLabelWidthsToolStripMenuItem_Click);
+            this.fixedLabelWidthsToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_FixedLabelWidths_onClick);
             // 
             // zoomInToolStripMenuItem
             // 
@@ -859,7 +849,7 @@
             this.zoomInToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.zoomInToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.zoomInToolStripMenuItem.Text = Util.GetLocalizedString("ZoomIn");
-            this.zoomInToolStripMenuItem.Click += new System.EventHandler(this.zoomInToolStripMenuItem_Click);
+            this.zoomInToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_ZoomIn_onClick);
             // 
             // zoomOutToolStripMenuItem
             // 
@@ -869,7 +859,7 @@
             | System.Windows.Forms.Keys.Z)));
             this.zoomOutToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.zoomOutToolStripMenuItem.Text = Util.GetLocalizedString("ZoomOut");
-            this.zoomOutToolStripMenuItem.Click += new System.EventHandler(this.zoomOutToolStripMenuItem_Click);
+            this.zoomOutToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_ZoomOut_onClick);
             // 
             // toolStripSeparator1
             // 
@@ -884,7 +874,7 @@
             this.treeViewToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
             this.treeViewToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.treeViewToolStripMenuItem.Text = Util.GetLocalizedString("AndTreeView");
-            this.treeViewToolStripMenuItem.Click += new System.EventHandler(this.treeViewToolStripMenuItem_Click);
+            this.treeViewToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_ToggleTreePanelOnly_onClick);
             // 
             // windowToolStripMenuItem
             // 
@@ -905,7 +895,7 @@
             this.addMemberToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
             this.addMemberToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.addMemberToolStripMenuItem.Text = Util.GetLocalizedString("AndAddMember");
-            this.addMemberToolStripMenuItem.Click += new System.EventHandler(this.addMemberToolStripMenuItem_Click);
+            this.addMemberToolStripMenuItem.Click += new System.EventHandler(this.Menu_Window_AddMemberPane_onClick);
             // 
             // membersWithoutBigsToolStripMenuItem
             // 
@@ -916,7 +906,7 @@
             this.membersWithoutBigsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
             this.membersWithoutBigsToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.membersWithoutBigsToolStripMenuItem.Text = Util.GetLocalizedString("AndMembersWithoutBigs");
-            this.membersWithoutBigsToolStripMenuItem.Click += new System.EventHandler(this.membersWithoutBigsToolStripMenuItem_Click);
+            this.membersWithoutBigsToolStripMenuItem.Click += new System.EventHandler(this.Menu_Window_MembersWithoutBigs_onClick);
             // 
             // treeControlToolStripMenuItem
             // 
@@ -927,7 +917,7 @@
             this.treeControlToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
             this.treeControlToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.treeControlToolStripMenuItem.Text = Util.GetLocalizedString("AndGraphicalTreeControl");
-            this.treeControlToolStripMenuItem.Click += new System.EventHandler(this.treeControlToolStripMenuItem_Click);
+            this.treeControlToolStripMenuItem.Click += new System.EventHandler(this.Menu_Window_TreeSettings_onClick);
             // 
             // helpToolStripMenuItem
             // 
@@ -943,14 +933,14 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.aboutToolStripMenuItem.Text = Util.GetLocalizedString("AndAbout");
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.Menu_Help_About_onClick);
             // 
             // supportToolStripMenuItem
             // 
             this.supportToolStripMenuItem.Name = "supportToolStripMenuItem";
             this.supportToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.supportToolStripMenuItem.Text = Util.GetLocalizedString("AndSupport");
-            this.supportToolStripMenuItem.Click += new System.EventHandler(this.supportToolStripMenuItem_Click);
+            this.supportToolStripMenuItem.Click += new System.EventHandler(this.Menu_Help_Support_onClick);
             // 
             // cmNodeActions
             // 
@@ -967,14 +957,14 @@
             this.toggleHideDescendantsToolStripMenuItem.Name = "toggleHideDescendantsToolStripMenuItem";
             this.toggleHideDescendantsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.toggleHideDescendantsToolStripMenuItem.Text = Util.GetLocalizedString("ToggleDescendants");
-            this.toggleHideDescendantsToolStripMenuItem.Click += new System.EventHandler(this.toggleHideDescendantsToolStripMenuItem_Click);
+            this.toggleHideDescendantsToolStripMenuItem.Click += new System.EventHandler(this.Node_RightClick_HideDescendants_onClick);
             // 
             // removeNodeToolStripMenuItem
             // 
             this.removeNodeToolStripMenuItem.Name = "removeNodeToolStripMenuItem";
             this.removeNodeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.removeNodeToolStripMenuItem.Text = Util.GetLocalizedString("RemoveNode");
-            this.removeNodeToolStripMenuItem.Click += new System.EventHandler(this.removeNodeToolStripMenuItem_Click);
+            this.removeNodeToolStripMenuItem.Click += new System.EventHandler(this.Node_RightClick_Remove_onClick);
             // 
             // toolStripSeparator4
             // 
@@ -986,7 +976,7 @@
             this.makeThisTreeParentToolStripMenuItem.Name = "makeThisTreeParentToolStripMenuItem";
             this.makeThisTreeParentToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.makeThisTreeParentToolStripMenuItem.Text = Util.GetLocalizedString("MakeTheTreeParent");
-            this.makeThisTreeParentToolStripMenuItem.Click += new System.EventHandler(this.makeThisTreeParentToolStripMenuItem_Click);
+            this.makeThisTreeParentToolStripMenuItem.Click += new System.EventHandler(this.Node_RightClick_MakeTreeParent_onClick);
             // 
             // toolStripSeparator5
             // 
@@ -998,14 +988,14 @@
             this.allTreeToolStripMenuItem.Name = "allTreeToolStripMenuItem";
             this.allTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.allTreeToolStripMenuItem.Text = Util.GetLocalizedString("AllTree");
-            this.allTreeToolStripMenuItem.Click += new System.EventHandler(this.allTreeToolStripMenuItem_Click);
+            this.allTreeToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_AllTree_onClick);
             // 
             // activesOnlyTreeToolStripMenuItem
             // 
             this.activesOnlyTreeToolStripMenuItem.Name = "activesOnlyTreeToolStripMenuItem";
             this.activesOnlyTreeToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.activesOnlyTreeToolStripMenuItem.Text = Util.GetLocalizedString("ActiveOnlyTree");
-            this.activesOnlyTreeToolStripMenuItem.Click += new System.EventHandler(this.activesOnlyTreeToolStripMenuItem_Click);
+            this.activesOnlyTreeToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_ActiveOnly_onClick);
             // 
             // generationUpToolStripMenuItem
             // 
@@ -1014,7 +1004,7 @@
             this.generationUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
             this.generationUpToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.generationUpToolStripMenuItem.Text = Util.GetLocalizedString("NextGeneration");
-            this.generationUpToolStripMenuItem.Click += new System.EventHandler(this.generationUpToolStripMenuItem_Click);
+            this.generationUpToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_NextGeneration_onClick);
             // 
             // generationDownToolStripMenuItem
             // 
@@ -1023,7 +1013,7 @@
             this.generationDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
             this.generationDownToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.generationDownToolStripMenuItem.Text = Util.GetLocalizedString("PreviousGeneration");
-            this.generationDownToolStripMenuItem.Click += new System.EventHandler(this.generationDownToolStripMenuItem_Click);
+            this.generationDownToolStripMenuItem.Click += new System.EventHandler(this.Menu_View_PreviousGeneration_onClick);
             // 
             // pnlTree
             // 
@@ -1035,9 +1025,9 @@
             this.pnlTree.Size = new System.Drawing.Size(0, 0);
             this.pnlTree.TabIndex = 0;
             this.ttTree.SetToolTip(this.pnlTree, Util.GetLocalizedString("ToggleTreeView"));
-            this.pnlTree.Click += new System.EventHandler(this.pnlTree_Click);
-            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.splitTreeInfo_Panel1_Paint);
-            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pnlTree_MouseDoubleClick);
+            this.pnlTree.Click += new System.EventHandler(this.OnlyTreePanel_onChange);
+            this.pnlTree.Paint += new System.Windows.Forms.PaintEventHandler(this.FamilyTreePanel_Paint);
+            this.pnlTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreePanel_doubleClick);
             // 
             // frmMain
             // 
@@ -1051,8 +1041,8 @@
             this.Name = "FamilyTreeForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
-            this.Load += new System.EventHandler(this.frmMain_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainFrame_onClose);
+            this.Load += new System.EventHandler(this.mainFrame_onLoad);
             this.pnlMain.ResumeLayout(false);
             this.pnlMain.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -1087,8 +1077,7 @@
 
         }
 
-        #endregion
-
+        private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitTreeAdd;

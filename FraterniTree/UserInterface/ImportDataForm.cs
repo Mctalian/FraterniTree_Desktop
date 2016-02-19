@@ -13,11 +13,10 @@ namespace FraterniTree.UserInterface
 
     public partial class ImportDataForm : Form
     {
-        private readonly bool[] inputValid = new bool[5];
 
         public ImportDataForm( )
         {
-            InitializeComponent();
+            ImportData_Initialize();
 
             Port = 0;
             IsMale = true;
@@ -30,7 +29,7 @@ namespace FraterniTree.UserInterface
             if( Settings.Default.RecentMySqlConnection != null )
             {
                 var sqlToolStrip = new ToolStripMenuItem( Settings.Default.RecentMySqlConnection.Database );
-                sqlToolStrip.Click += genericToolStripMenuItem_Click;
+                sqlToolStrip.Click += ImportData_Menu_UseRecent_onClick;
                 connectToolStripMenuItem.DropDownItems.Add(sqlToolStrip);
                 connectToolStripMenuItem.Enabled = true;
             }
@@ -38,37 +37,26 @@ namespace FraterniTree.UserInterface
             if( Settings.Default.RecentXmlPath == string.Empty ) return;
 
             var xmlToolStrip = new ToolStripMenuItem(Path.GetFileName(Settings.Default.RecentXmlPath));
-            xmlToolStrip.Click += genericToolStripMenuItem_Click;
+            xmlToolStrip.Click += ImportData_Menu_UseRecent_onClick;
             connectToolStripMenuItem.DropDownItems.Add(xmlToolStrip);
             connectToolStripMenuItem.Enabled = true;
         }
 
-        public int Port { get; private set; }
-        public bool IsXml { get; private set; }
-        public bool IsMale { get; private set; }
-        public string Server { get; private set; }
-        public string Base { get; private set; }
-        public string Username { get; private set; }
-        public string Password { get; private set; }
-        public string FilePath { get; private set; }
-        public string ParentNode { get; private set; }
-        public MySqlConnection Connection { get; private set; }
-
-        private void TbValidator( )
+        private void DatabaseValidator( )
         {
             if( inputValid.Any(b => !b) ) return; 
 
             btnSubmit.Enabled = true;
         }
 
-        private void tbServer_TextChanged(object sender, EventArgs e)
+        private void ImportData_Server_onChange(object sender, EventArgs e)
         {
             inputValid[0] = tbServer.Text != string.Empty;
 
-            TbValidator();
+            DatabaseValidator();
         }
 
-        private void tbPort_TextChanged(object sender, EventArgs e)
+        private void ImportData_Port_onChange(object sender, EventArgs e)
         {
             if( tbPort.Text.IndexOfAny( new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'} ) >= 0 ) 
             {
@@ -79,31 +67,31 @@ namespace FraterniTree.UserInterface
                 inputValid[1] = false;
             }
 
-            TbValidator();
+            DatabaseValidator();
         }
 
-        private void tbDb_TextChanged(object sender, EventArgs e)
+        private void ImportData_Database_onChange(object sender, EventArgs e)
         {
             inputValid[2] = tbDb.Text != string.Empty;
 
-            TbValidator();
+            DatabaseValidator();
         }
 
-        private void tbUser_TextChanged(object sender, EventArgs e)
+        private void ImportData_Username_onChange(object sender, EventArgs e)
         {
             inputValid[3] = tbUser.Text != string.Empty;
 
-            TbValidator();
+            DatabaseValidator();
         }
 
-        private void tbPass_TextChanged(object sender, EventArgs e)
+        private void ImportData_Password_onChange(object sender, EventArgs e)
         {
             inputValid[4] = tbPass.Text != string.Empty;
 
-            TbValidator();
+            DatabaseValidator();
         }
 
-        private void btnSubmit_Click(object sender, EventArgs e)
+        private void ImportData_Submit_onClick(object sender, EventArgs e)
         {
             Port = int.Parse( tbPort.Text );
             Server = tbServer.Text;
@@ -113,17 +101,17 @@ namespace FraterniTree.UserInterface
             Close();
         }
 
-        private void btnExit_Click(object sender, EventArgs e)
+        private void ImportData_Exit_onClick(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void rbMale_CheckedChanged(object sender, EventArgs e)
+        private void ImportData_FraternityOrSorority_onChange(object sender, EventArgs e)
         {
             IsMale = rbMale.Checked;
         }
 
-        private void genericToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ImportData_Menu_UseRecent_onClick(object sender, EventArgs e)
         {
             if( ((ToolStripMenuItem) sender).Text == Path.GetFileName( Settings.Default.RecentXmlPath ) )
             {
@@ -143,7 +131,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void btnXml_Click(object sender, EventArgs eventArgs)
+        private void ImportData_ChooseXml_onClick(object sender, EventArgs eventArgs)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -177,7 +165,7 @@ namespace FraterniTree.UserInterface
             Close();
         }
 
-        private void btnMysql_Click(object sender, EventArgs e)
+        private void ImportData_ChooseSql_onClick(object sender, EventArgs e)
         {
             Text = Util.GetLocalizedString("ConnectToDatabase");
             gbGender.Visible = true;
@@ -203,84 +191,18 @@ namespace FraterniTree.UserInterface
             IsXml = false;
         }
 
-        #region Assembly Attribute Accessors
+        private readonly bool[] inputValid = new bool[5];
+        public int Port { get; private set; }
+        public bool IsXml { get; private set; }
+        public bool IsMale { get; private set; }
+        public string Server { get; private set; }
+        public string Base { get; private set; }
+        public string Username { get; private set; }
+        public string Password { get; private set; }
+        public string FilePath { get; private set; }
+        public string ParentNode { get; private set; }
+        public MySqlConnection Connection { get; private set; }
 
-        public string AssemblyTitle
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyTitleAttribute), false );
-
-                if( attributes.Length > 0 )
-                {
-                    var titleAttribute = (AssemblyTitleAttribute) attributes[0];
-                    if( titleAttribute.Title != string.Empty )
-                    {
-                        return titleAttribute.Title;
-                    }
-                }
-
-                return Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase );
-            }
-        }
-
-        public string AssemblyVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
-
-        public string AssemblyDescription
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyDescriptionAttribute), false );
-                
-                if( attributes.Length == 0 ) return string.Empty; 
-
-                return ((AssemblyDescriptionAttribute) attributes[0]).Description;
-            }
-        }
-
-        public string AssemblyProduct
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyProductAttribute), false );
-                
-                if( attributes.Length == 0 ) return string.Empty; 
-
-                return ((AssemblyProductAttribute) attributes[0]).Product;
-            }
-        }
-
-        public string AssemblyCopyright
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCopyrightAttribute), false );
-                
-                if( attributes.Length == 0 ) return string.Empty;
-                
-                return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
-            }
-        }
-
-        public string AssemblyCompany
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof (AssemblyCompanyAttribute), false );
-
-                if( attributes.Length == 0 ) return string.Empty;
-
-                return ((AssemblyCompanyAttribute) attributes[0]).Company;
-            }
-        }
-
-        #endregion
     }
 
 }

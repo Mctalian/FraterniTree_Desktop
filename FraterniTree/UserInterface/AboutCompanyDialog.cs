@@ -9,7 +9,7 @@ namespace FraterniTree.UserInterface
     {
         public AboutCompanyDialog( )
         {
-            InitializeComponent();
+            AboutDialog_Initialize();
             Text = string.Format( Util.GetLocalizedString("About"), AssemblyTitle );
             labelProductName.Text = AssemblyProduct;
             labelVersion.Text = string.Format( Util.GetLocalizedString("Version"), AssemblyVersion );

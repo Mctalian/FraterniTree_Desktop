@@ -1,11 +1,8 @@
 ﻿namespace FraterniTree.UserInterface
 {
+    
     partial class ImportDataForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -20,13 +17,7 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void ImportData_Initialize()
         {
             this.gbGender = new System.Windows.Forms.GroupBox();
             this.rbFemale = new System.Windows.Forms.RadioButton();
@@ -88,7 +79,7 @@
             this.rbMale.TabStop = true;
             this.rbMale.Text = "Fraternity";
             this.rbMale.UseVisualStyleBackColor = true;
-            this.rbMale.CheckedChanged += new System.EventHandler(this.rbMale_CheckedChanged);
+            this.rbMale.CheckedChanged += new System.EventHandler(this.ImportData_FraternityOrSorority_onChange);
             // 
             // btnSubmit
             // 
@@ -102,7 +93,7 @@
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = true;
             this.btnSubmit.Visible = false;
-            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
+            this.btnSubmit.Click += new System.EventHandler(this.ImportData_Submit_onClick);
             // 
             // btnExit
             // 
@@ -115,7 +106,7 @@
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Visible = false;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            this.btnExit.Click += new System.EventHandler(this.ImportData_Exit_onClick);
             // 
             // tbServer
             // 
@@ -124,7 +115,7 @@
             this.tbServer.Size = new System.Drawing.Size(100, 20);
             this.tbServer.TabIndex = 3;
             this.tbServer.Visible = false;
-            this.tbServer.TextChanged += new System.EventHandler(this.tbServer_TextChanged);
+            this.tbServer.TextChanged += new System.EventHandler(this.ImportData_Server_onChange);
             // 
             // tbUser
             // 
@@ -133,7 +124,7 @@
             this.tbUser.Size = new System.Drawing.Size(100, 20);
             this.tbUser.TabIndex = 6;
             this.tbUser.Visible = false;
-            this.tbUser.TextChanged += new System.EventHandler(this.tbUser_TextChanged);
+            this.tbUser.TextChanged += new System.EventHandler(this.ImportData_Username_onChange);
             // 
             // tbDb
             // 
@@ -142,7 +133,7 @@
             this.tbDb.Size = new System.Drawing.Size(100, 20);
             this.tbDb.TabIndex = 5;
             this.tbDb.Visible = false;
-            this.tbDb.TextChanged += new System.EventHandler(this.tbDb_TextChanged);
+            this.tbDb.TextChanged += new System.EventHandler(this.ImportData_Database_onChange);
             // 
             // lblServer
             // 
@@ -184,7 +175,7 @@
             this.tbPass.TabIndex = 7;
             this.tbPass.UseSystemPasswordChar = true;
             this.tbPass.Visible = false;
-            this.tbPass.TextChanged += new System.EventHandler(this.tbPass_TextChanged);
+            this.tbPass.TextChanged += new System.EventHandler(this.ImportData_Password_onChange);
             // 
             // tbPort
             // 
@@ -195,7 +186,7 @@
             this.tbPort.Size = new System.Drawing.Size(100, 20);
             this.tbPort.TabIndex = 4;
             this.tbPort.Visible = false;
-            this.tbPort.TextChanged += new System.EventHandler(this.tbPort_TextChanged);
+            this.tbPort.TextChanged += new System.EventHandler(this.ImportData_Port_onChange);
             // 
             // lblUsername
             // 
@@ -242,7 +233,7 @@
             this.btnXml.TabIndex = 14;
             this.btnXml.Text = "XML";
             this.btnXml.UseVisualStyleBackColor = true;
-            this.btnXml.Click += new System.EventHandler(this.btnXml_Click);
+            this.btnXml.Click += new System.EventHandler(this.ImportData_ChooseXml_onClick);
             // 
             // btnMysql
             // 
@@ -252,7 +243,7 @@
             this.btnMysql.TabIndex = 15;
             this.btnMysql.Text = "MySql Database";
             this.btnMysql.UseVisualStyleBackColor = true;
-            this.btnMysql.Click += new System.EventHandler(this.btnMysql_Click);
+            this.btnMysql.Click += new System.EventHandler(this.ImportData_ChooseSql_onClick);
             // 
             // StartUp
             // 
@@ -296,8 +287,7 @@
 
         }
 
-        #endregion
-
+        private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.GroupBox gbGender;
         private System.Windows.Forms.RadioButton rbFemale;
         private System.Windows.Forms.RadioButton rbMale;

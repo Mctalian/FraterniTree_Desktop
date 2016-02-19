@@ -19,9 +19,10 @@ namespace FraterniTree.UserInterface
 
     public partial class FamilyTreeForm : Form
     {
+        
         public FamilyTreeForm( )
         {
-            InitializeComponent();
+            FamilyTreePanel_Initialize();
         }
 
         private void PopulateBrothers(bool isXml)
@@ -109,23 +110,23 @@ namespace FraterniTree.UserInterface
         {
             if( brother == null ) return;
             
-            if( brother == Root )
-            {
-                lbNoRelation.Items.Clear();
-            }
+            //if( brother == Root )
+            //{
+            //    lbNoRelation.Items.Clear();
+            //}
 
             for ( var i = 0; i < brother.ChildCount; i++ )
             {
                 var little = (Brother) brother[i];
                 if( little == null ) continue;
                 
-                if( brother == Root ) 
-                {
-                    if( !lbNoRelation.Items.Contains( little ) )
-                    {
-                        lbNoRelation.Items.Add( little );
-                    }
-                }
+                //if( brother == Root ) 
+                //{
+                //    if( !lbNoRelation.Items.Contains( little ) )
+                //    {
+                //        lbNoRelation.Items.Add( little );
+                //    }
+                //}
 
                 if( !cbTreeParent.Items.Contains( little) )
                 {
@@ -150,64 +151,6 @@ namespace FraterniTree.UserInterface
             RefreshNoBigListBox( Root );
             DisplayTree( true );
         }
-
-        #region Public Data
-
-        public static Brother Root;
-        public static readonly AutoCompleteStringCollection CurrentBrothers = new AutoCompleteStringCollection();
-
-        #endregion
-
-        #region Private Data
-
-        private static readonly Timer AutoSave = new Timer();
-
-        #region Mysql-Specific Data
-
-        private MySqlConnection databaseConnection;
-
-        #endregion
-
-        #region XML-Specific Data
-
-        private XmlDocument xmlDocument;
-        private string openXmlFilePath = string.Empty;
-        private string xmlParentNodeName = string.Empty;
-
-        #endregion
-
-        #region Gender-Dependent Strings
-
-        private string genderDependentName = Util.GetLocalizedString("MaleName");
-
-        #endregion
-
-        #region Tree Display Data
-
-        private Brother selected;
-        private Brother treeRoot;
-        private int previousSelectedIndex = -1;
-
-        private const float ZoomFactor = 1.5F;
-        private int zoomLevel;
-
-        private int maximumWidth;
-        private int maxGeneration = 1;
-
-        #endregion
-
-        #region Flags
-
-        private bool bIsMale = true;
-        private bool bIsXml;
-        private bool displayApex;
-        private bool fixedWidth;
-        private bool writeBackReady;
-        private FieldEdit selectedEdits = FieldEdit.None;
-
-        #endregion
-
-        #endregion
 
         #region Graphical Tree Display
 
@@ -301,7 +244,7 @@ namespace FraterniTree.UserInterface
             generationDownToolStripMenuItem.Enabled = false;
             generationUpToolStripMenuItem.Enabled = false;
 
-            HideSelectedEdit();
+            EditBrotherPanel_Hide();
             UnzoomControls();
 
             pnlTree.Visible = false;
@@ -452,7 +395,7 @@ namespace FraterniTree.UserInterface
 
         #region Selected Member Information Edit
 
-        private void PopulateBrotherEdit(Brother brother)
+        private void EditBrotherPanel_Initalize(Brother brother)
         {
             selectedEdits = FieldEdit.None;
             splitTreeInfo.Panel2Collapsed = false;
@@ -504,7 +447,7 @@ namespace FraterniTree.UserInterface
             btnEditSelected.Enabled = true;
         }
 
-        private void HideSelectedEdit( )
+        private void EditBrotherPanel_Hide( )
         {
             splitTreeInfo.Panel2Collapsed = true;
         }
@@ -567,7 +510,7 @@ namespace FraterniTree.UserInterface
 
         #region MySql-Specific Methods
 
-        private bool ConnectToDatabase(string server, int port, string dbName, string uName, string pWord)
+        private bool Database_Connect(string server, int port, string dbName, string uName, string pWord)
         {
             var ret = true;
             var connectionString = string.Format(Util.GetLocalizedString("ConnectionString"), server, port, uName, pWord, dbName);
@@ -591,7 +534,7 @@ namespace FraterniTree.UserInterface
             return ret;
         }
 
-        private bool ConnectToDatabase(MySqlConnection conn)
+        private bool Database_Connect(MySqlConnection conn)
         {
             var ret = true;
 
@@ -614,7 +557,7 @@ namespace FraterniTree.UserInterface
             return ret;
         }
 
-        private void WriteBackToDatabase(Brother currentParent)
+        private void Database_WriteBack(Brother currentParent)
         {
             MySqlCommand sqlCommand = null;
             try
@@ -623,12 +566,12 @@ namespace FraterniTree.UserInterface
 
                 if( currentParent.HasChild() )
                 {
-                    WriteBackToDatabase( (Brother) currentParent.GetFirstChild() );
+                    Database_WriteBack( (Brother) currentParent.GetFirstChild() );
                 }
 
                 if( currentParent.HasRightSibling() ) 
                 {
-                    WriteBackToDatabase( (Brother) currentParent.GetRightSibling() );
+                    Database_WriteBack( (Brother) currentParent.GetRightSibling() );
                 }
 
                 if( currentParent == Root ) return; 
@@ -736,7 +679,7 @@ namespace FraterniTree.UserInterface
             return big;
         }
 
-        private void ExportToXml(string filePath, string parentNodeName)
+        private void Export_ToXml_Perform(string filePath, string parentNodeName)
         {
             var xmlDoc = new XmlDocument();
             XmlNode rootNode = xmlDoc.CreateElement(parentNodeName);
@@ -757,7 +700,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void GenerateSampleXml( string filePath )
+        private static void GenerateSampleXml( string filePath )
         {
             var xmlDoc = new XmlDocument();
             XmlNode rootNode = xmlDoc.CreateElement("Sample");
@@ -831,61 +774,13 @@ namespace FraterniTree.UserInterface
                 xmlParentNodeName = xmlDocument.DocumentElement.Name;
             }
 
-            ExportToXml(openXmlFilePath + Util.GetLocalizedString("DotBak"), xmlParentNodeName); 
+            Export_ToXml_Perform(openXmlFilePath + Util.GetLocalizedString("DotBak"), xmlParentNodeName); 
             AutoSave.Start();
         }
 
         #endregion
 
-        #region Screenshot Methods
-
-        private void TakeScreenshot(Panel panel, string filePath)
-        {
-            if( panel == null ) throw new ArgumentNullException( "panel" ); 
-            if( filePath == null ) throw new ArgumentNullException( "filePath" ); 
-
-            var form = panel.FindForm();
-            if( form == null ) throw new ArgumentException( null, "panel" );
-
-            // remember form position
-            var width = form.Width;
-            var height = form.Height;
-            var left = form.Left;
-            var top = form.Top;
-
-            // get panel virtual size
-            var display = panel.DisplayRectangle;
-
-            // get panel position relative to parent form
-            var panelLocation = panel.PointToScreen( panel.Location );
-            var panelPosition = new Size( panelLocation.X - form.Location.X, panelLocation.Y - form.Location.Y );
-
-            // resize form and move it outside the screen
-            var neededWidth = panelPosition.Width + display.Width;
-            var neededHeight = panelPosition.Height + display.Height;
-            form.SetBounds( 0, -neededHeight, neededWidth, neededHeight, BoundsSpecified.All );
-
-            // resize panel (useless if panel has a dock)
-            var pw = panel.Width;
-            var ph = panel.Height;
-            panel.SetBounds( 0, 0, display.Width, display.Height, BoundsSpecified.Size );
-
-            // render the panel on a bitmap
-            try
-            {
-                var bmp = new Bitmap( display.Width, display.Height );
-                panel.DrawToBitmap( bmp, display );
-                bmp.Save( filePath );
-            }
-            finally
-            {
-                // restore
-                panel.SetBounds( 0, 0, pw, ph, BoundsSpecified.Size );
-                form.SetBounds( left, top, width, height, BoundsSpecified.All );
-            }
-        }
-
-        private Image CaptureScreen( )
+        private Image Screenshot( )
         {
             var old = pnlTree.Location;
             pnlTree.Location = new Point( 0, 0 );
@@ -896,15 +791,13 @@ namespace FraterniTree.UserInterface
             return panelImage;
         }
 
-        #endregion
-
         #region GUI Event Handlers
 
         #region Main Form
 
-        private void frmMain_Load(object sender, EventArgs eventArguments)
+        private void mainFrame_onLoad(object sender, EventArgs eventArguments)
         {
-            Brother.SelectCallback = PopulateBrotherEdit;
+            Brother.SelectCallback = EditBrotherPanel_Initalize;
             Brother.ShiftCallback = BoundsCheckShift;
 
             var start = new ImportDataForm();
@@ -916,9 +809,9 @@ namespace FraterniTree.UserInterface
             }
 
             displayApex = displayRootOfAllTreeToolStripMenuItem.Checked;
-            bIsXml = start.IsXml;
+            isXml = start.IsXml;
 
-            if( bIsXml )
+            if( isXml )
             {
                 AutoSave.Elapsed += AutoSave_Elapsed;
                 AutoSave.Interval = 30000;
@@ -930,13 +823,13 @@ namespace FraterniTree.UserInterface
             {
                 Root = new Brother( Util.DefaultLastName, Util.DefaultFirstName, Util.DefaultInitiationTerm, Util.DefaultYear );
 
-                bIsMale = start.IsMale;
+                isMale = start.IsMale;
 
                 bool ret;
 
                 if( start.Connection != null ) 
                 {
-                    ret = ConnectToDatabase( start.Connection );
+                    ret = Database_Connect( start.Connection );
                 }
                 else
                 {
@@ -946,7 +839,7 @@ namespace FraterniTree.UserInterface
                     var pword = start.Password;
                     var portNum = start.Port;
 
-                    ret = ConnectToDatabase( server, portNum, db, user, pword );
+                    ret = Database_Connect( server, portNum, db, user, pword );
                 }
 
                 if( !ret )
@@ -956,11 +849,11 @@ namespace FraterniTree.UserInterface
                 }
             }
 
-            genderDependentName = bIsMale 
+            genderDependentName = isMale 
                 ? Util.GetLocalizedString("MaleName") 
                 : Util.GetLocalizedString("FemaleName");
 
-            PopulateBrothers( bIsXml );
+            PopulateBrothers( isXml );
             tbBig.AutoCompleteCustomSource = CurrentBrothers;
             tbSelectedBig.AutoCompleteCustomSource = CurrentBrothers;
             tbSelectedLittles.AutoCompleteCustomSource = CurrentBrothers;
@@ -968,7 +861,7 @@ namespace FraterniTree.UserInterface
             Text = genderDependentName + Util.GetLocalizedString("Tree") + (xmlParentNodeName != string.Empty ? " - " + xmlParentNodeName : string.Empty);
             Root.Label.ContextMenuStrip = cmNodeActions;
 
-            if( !bIsXml )
+            if( !isXml )
             {
                 writeBackReady = true;
             }
@@ -976,11 +869,11 @@ namespace FraterniTree.UserInterface
             Settings.Default.Save();
         }
 
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        private void mainFrame_onClose(object sender, FormClosingEventArgs e)
         {
             if( writeBackReady )
             {
-                WriteBackToDatabase( Root );
+                Database_WriteBack( Root );
             }
 
             Dispose();
@@ -992,7 +885,7 @@ namespace FraterniTree.UserInterface
 
         #region Add Member Sub-Panel
 
-        private void btnAdd_Click(object sender, EventArgs eventArguments)
+        private void AddBrother_onClick(object sender, EventArgs eventArguments)
         {
             var bigName = tbBig.Text;
             var littles = tbLittles.Text.Split( new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries );
@@ -1061,7 +954,7 @@ namespace FraterniTree.UserInterface
                 }
             }
 
-            ClearAddBrother();
+            AddBrotherPanel_ClearValues();
 
             if( cbTreeParent.Enabled == false )
             {
@@ -1116,7 +1009,7 @@ namespace FraterniTree.UserInterface
             btnAdd.Enabled = true;
         }
 
-        private void ClearAddBrother(object sender = null, EventArgs eventArguments = null)
+        private void AddBrotherPanel_ClearValues(object sender = null, EventArgs eventArguments = null)
         {
             tbFirstName.Text = string.Empty;
             tbLastName.Text = string.Empty;
@@ -1130,7 +1023,7 @@ namespace FraterniTree.UserInterface
 
         #region Selected Node Sub-Panel
 
-        private void btnApplySelected_Click(object sender, EventArgs eventArguments)
+        private void EditBrotherPanel_Apply_onClick(object sender, EventArgs eventArguments)
         {
             if( cbSelectedTerm.SelectedIndex != -1 && ((selectedEdits & FieldEdit.IniMonth) != 0) ) 
             {
@@ -1269,11 +1162,11 @@ namespace FraterniTree.UserInterface
             if( treeRoot == selected && cbTreeParent.Text == string.Empty)
             {
                 cbTreeParent.SelectedItem = treeRoot;
-                PopulateBrotherEdit( treeRoot );
+                EditBrotherPanel_Initalize( treeRoot );
             }
             else
             {
-                PopulateBrotherEdit( selected );
+                EditBrotherPanel_Initalize( selected );
             }
 
             RefreshNoBigListBox( Root );
@@ -1281,12 +1174,12 @@ namespace FraterniTree.UserInterface
             DisplayTree( true );
         }
 
-        private void btnCancelSelected_Click(object sender, EventArgs e)
+        private void EditBrotherPanel_Cancel_onClick(object sender, EventArgs e)
         {
-            PopulateBrotherEdit( selected );
+            EditBrotherPanel_Initalize( selected );
         }
 
-        private void btnEditSelected_Click(object sender, EventArgs e)
+        private void EditBrotherPanel_Enable(object sender, EventArgs e)
         {
             tbSelectedFirst.Enabled = true;
             tbSelectedLast.Enabled = true;
@@ -1301,9 +1194,7 @@ namespace FraterniTree.UserInterface
 
         #endregion
 
-        #region Tree Control Sub-Panel
-
-        private void btnUp_Click(object sender, EventArgs e)
+        private void EditPanel_YearUp_onClick(object sender, EventArgs e)
         {
             var tmp = (Brother) ((Brother) cbTreeParent.SelectedItem).GetParent();
             cbTreeParent.Text = tmp == Root 
@@ -1313,11 +1204,7 @@ namespace FraterniTree.UserInterface
             updwnNumGen.Value++;
         }
 
-        #endregion
-
-        #region Top Node Members Sub-Panel
-
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void EditPanel_Edit_onClick(object sender, EventArgs e)
         {
             var b = (Brother) lbNoRelation.SelectedItem; 
             var editBrother = new EditBrotherWithoutBigDialog( b );
@@ -1330,10 +1217,6 @@ namespace FraterniTree.UserInterface
         }
 
         #endregion
-
-        #endregion
-
-        #region Comboboxes
 
         private void cbTreeParent_SelectedIndexChanged(object sender, EventArgs eventArguments)
         {
@@ -1358,11 +1241,9 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        #endregion
-
         #region List Boxes
 
-        private void lbNoRelation_MouseDoubleClick(object sender, MouseEventArgs eventArguments)
+        private void BrotherNode_onDoubleClick(object sender, MouseEventArgs eventArguments)
         {
             if( lbNoRelation.SelectedIndex != -1 )
             {
@@ -1370,7 +1251,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void lbNoRelation_SelectedIndexChanged(object sender, EventArgs eventArguments) 
+        private void BrotherNode_SelectedIndexChanged(object sender, EventArgs eventArguments) 
         {
             if( lbNoRelation.SelectedIndex != -1
                 && previousSelectedIndex != lbNoRelation.SelectedIndex )
@@ -1390,7 +1271,7 @@ namespace FraterniTree.UserInterface
 
         #region Node Context Menu
 
-        private void removeNodeToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Node_RightClick_Remove_onClick(object sender, EventArgs eventArguments)
         {
             var toolStripItem = sender as ToolStripItem;
             if( toolStripItem == null ) return;
@@ -1422,7 +1303,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void toggleHideDescendantsToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Node_RightClick_HideDescendants_onClick(object sender, EventArgs eventArguments)
         {
             var toolStripItem = sender as ToolStripItem;
             if( toolStripItem == null ) return;
@@ -1457,7 +1338,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void makeThisTreeParentToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Node_RightClick_MakeTreeParent_onClick(object sender, EventArgs eventArguments)
         {
             var tsi = sender as ToolStripItem;
             if( tsi == null ) return;
@@ -1477,7 +1358,7 @@ namespace FraterniTree.UserInterface
 
         #region Numeric Up-Downs
 
-        private void updwnNumGen_ValueChanged(object sender, EventArgs eventArguments)
+        private void VisibleGenerations_onChange(object sender, EventArgs eventArguments)
         {
             maxGeneration = (int) updwnNumGen.Value;
             if( cbTreeParent.SelectedIndex == -1 ) return; 
@@ -1493,62 +1374,38 @@ namespace FraterniTree.UserInterface
             splitTreeInfo.Panel1.PerformLayout();
         }
 
-        private void updwnVertSpace_ValueChanged(object sender, EventArgs eventArguments)
+        private void Spacing_onChange(object sender, EventArgs eventArguments)
         {
             DisplayTree( true );
-        }
-
-        private void updwnHorizSpace_ValueChanged(object sender, EventArgs eventArguments)
-        {
-            DisplayTree( true );
-        }
-
-        private void updwnSubTree_ValueChanged(object sender, EventArgs eventArguments)
-        {
-            DisplayTree( true );
-        }
-
-        #endregion
-
-        #region Panels
-
-        private void pnlTree_Click(object sender, EventArgs eventArguments)
-        {
-            if( selected == null ) return; 
-
-            HideSelectedEdit();
-            var oldWidth = selected.Label.Width;
-            selected.Label.Font = new Font( selected.Label.Font, selected.Label.Font.Style & ~FontStyle.Bold );
-            selected.Label.Refresh();
-            selected.Label.Location = new Point( selected.Label.Location.X + (oldWidth - selected.Label.Width)/2, selected.Label.Location.Y );
-            selected = null;
-        }
-
-        private void pnlTree_MouseDoubleClick(object sender, MouseEventArgs eventArguments)
-        {
-            if( cbTreeParent.SelectedIndex != -1 ) 
-            {
-                treeViewToolStripMenuItem.Checked = !treeViewToolStripMenuItem.Checked;
-            }
-
-            treeViewToolStripMenuItem_Click( treeControlToolStripMenuItem, EventArgs.Empty );
         }
 
         #endregion
 
         #region Split Containers
 
-        private void splitTreeInfo_Panel1_Click(object sender, EventArgs eventArguments)
+        private void OnlyTreePanel_onChange(object sender, EventArgs eventArguments)
         {
-            pnlTree_Click( pnlTree, eventArguments );
+            if (selected == null) return;
+
+            EditBrotherPanel_Hide();
+            var oldWidth = selected.Label.Width;
+            selected.Label.Font = new Font(selected.Label.Font, selected.Label.Font.Style & ~FontStyle.Bold);
+            selected.Label.Refresh();
+            selected.Label.Location = new Point(selected.Label.Location.X + (oldWidth - selected.Label.Width) / 2, selected.Label.Location.Y);
+            selected = null;
         }
 
-        private void splitTreeInfo_Panel1_MouseDoubleClick(object sender, MouseEventArgs eventArguments)
+        private void TreePanel_doubleClick(object sender, MouseEventArgs eventArguments)
         {
-            pnlTree_MouseDoubleClick( pnlTree, eventArguments );
+            if (cbTreeParent.SelectedIndex != -1)
+            {
+                treeViewToolStripMenuItem.Checked = !treeViewToolStripMenuItem.Checked;
+            }
+
+            Menu_View_ToggleTreePanelOnly_onClick(treeControlToolStripMenuItem, EventArgs.Empty);
         }
 
-        private void splitTreeInfo_Panel1_Paint(object sender, PaintEventArgs paintEventArguments)
+        private void FamilyTreePanel_Paint(object sender, PaintEventArgs paintEventArguments)
         {
             foreach ( Control control in pnlTree.Controls )
             {
@@ -1577,8 +1434,6 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        #region Selected Edit Panel
-
         private void SelectedEdit_ValueChanged(object sender, EventArgs eventArguments)
         {
             var isSelectedEdit = IsSelectedDataEdited();
@@ -1587,32 +1442,26 @@ namespace FraterniTree.UserInterface
 
         #endregion
 
-        #endregion
-
-        #region Timers
-
         private void AutoSave_Elapsed(object sender, ElapsedEventArgs eventArguments)
         {
             AutoSave.Stop();
-            ExportToXml(openXmlFilePath + Util.GetLocalizedString("AutoSaveFileExtension"), xmlParentNodeName);
+            Export_ToXml_Perform(openXmlFilePath + Util.GetLocalizedString("AutoSaveFileExtension"), xmlParentNodeName);
             AutoSave.Start();
         }
 
-        #endregion
-
         #region ToolStripMenuItems
 
-        private void allTreeToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_AllTree_onClick(object sender, EventArgs eventArguments)
         {
             cbTreeParent.SelectedItem = Util.GetLocalizedString("AllFilter");
         }
 
-        private void activesOnlyTreeToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_ActiveOnly_onClick(object sender, EventArgs eventArguments)
         {
             cbTreeParent.SelectedItem = Util.GetLocalizedString("ActiveOnlyFilter");
         }
 
-        private void generationUpToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_NextGeneration_onClick(object sender, EventArgs eventArguments)
         {
             if( updwnNumGen.Value < updwnNumGen.Maximum )
             {
@@ -1620,7 +1469,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void generationDownToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_PreviousGeneration_onClick(object sender, EventArgs eventArguments)
         {
             if( updwnNumGen.Value > updwnNumGen.Minimum )
             {
@@ -1628,12 +1477,12 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void quitToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_File_Quit_onClick(object sender, EventArgs eventArguments)
         {
             Close();
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_File_SaveAs_onClick(object sender, EventArgs eventArguments)
         {
             var sfd = new SaveFileDialog
             {
@@ -1643,14 +1492,14 @@ namespace FraterniTree.UserInterface
             var ret = sfd.ShowDialog();
             if( ret == DialogResult.OK )
             {
-                var panelImage = CaptureScreen();
+                var panelImage = Screenshot();
                 var fileExtension = Path.GetExtension( sfd.FileName );
 
                 panelImage.Save(sfd.FileName, Util.GetImageFormatFromFileExtension(fileExtension) );
             }
         }
 
-        private void treeViewToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_ToggleTreePanelOnly_onClick(object sender, EventArgs eventArguments)
         {
             if( cbTreeParent.SelectedIndex == -1 ) return; 
 
@@ -1680,7 +1529,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void zoomInToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_ZoomIn_onClick(object sender, EventArgs eventArguments)
         {
             foreach ( Control control in pnlTree.Controls )
             {
@@ -1693,7 +1542,7 @@ namespace FraterniTree.UserInterface
             zoomLevel++;
         }
 
-        private void zoomOutToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_ZoomOut_onClick(object sender, EventArgs eventArguments)
         {
             foreach ( Control control in pnlTree.Controls )
             {
@@ -1715,18 +1564,18 @@ namespace FraterniTree.UserInterface
             DisplayTree();
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_Help_About_onClick(object sender, EventArgs eventArguments)
         {
             var ab = new AboutCompanyDialog();
             ab.ShowDialog();
         }
 
-        private void supportToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_Help_Support_onClick(object sender, EventArgs eventArguments)
         {
             Process.Start( Util.GetLocalizedString("CompanyWebsite") );
         }
 
-        private void exportToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_File_ExportXml_onClick(object sender, EventArgs eventArguments)
         {
             var sfd = new SaveFileDialog
             {
@@ -1748,12 +1597,12 @@ namespace FraterniTree.UserInterface
 
                 if( parentNodeName != string.Empty )
                 {
-                    ExportToXml( sfd.FileName, parentNodeName );
+                    Export_ToXml_Perform( sfd.FileName, parentNodeName );
                 }
             }
         }
 
-        private void addMemberToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_Window_AddMemberPane_onClick(object sender, EventArgs eventArguments)
         {
             treeViewToolStripMenuItem.Checked = false;
             splitTreeAdd.Panel2Collapsed = !splitTreeAdd.Panel2Collapsed;
@@ -1766,7 +1615,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void membersWithoutBigsToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_Window_MembersWithoutBigs_onClick(object sender, EventArgs eventArguments)
         {
             treeViewToolStripMenuItem.Checked = false;
             if( treeControlToolStripMenuItem.Checked ) 
@@ -1788,7 +1637,7 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void treeControlToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_Window_TreeSettings_onClick(object sender, EventArgs eventArguments)
         {
             treeViewToolStripMenuItem.Checked = false;
 
@@ -1811,20 +1660,45 @@ namespace FraterniTree.UserInterface
             }
         }
 
-        private void fixedLabelWidthsToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_View_FixedLabelWidths_onClick(object sender, EventArgs eventArguments)
         {
             fixedWidth = fixedLabelWidthsToolStripMenuItem.Checked;
             DisplayTree();
         }
 
-        private void saveXmlToolStripMenuItem_Click(object sender, EventArgs eventArguments)
+        private void Menu_File_SameXml_onClick(object sender, EventArgs eventArguments)
         {
-            ExportToXml( openXmlFilePath, xmlParentNodeName );
+            Export_ToXml_Perform( openXmlFilePath, xmlParentNodeName );
         }
 
         #endregion
 
         #endregion
+
+        public static Brother Root;
+        public static readonly AutoCompleteStringCollection CurrentBrothers = new AutoCompleteStringCollection();
+        private static readonly Timer AutoSave = new Timer();
+
+        private const float ZoomFactor = 1.5F;
+
+        private MySqlConnection databaseConnection;
+        private XmlDocument xmlDocument;
+        private FieldEdit selectedEdits = FieldEdit.None;
+        private Brother selected;
+        private Brother treeRoot;
+        private string openXmlFilePath = string.Empty;
+        private string xmlParentNodeName = string.Empty;
+        private string genderDependentName = Util.GetLocalizedString("MaleName");
+        private int zoomLevel;
+        private int maximumWidth;
+        private int maxGeneration = 1;
+        private int previousSelectedIndex = -1;
+        private bool isMale = true;
+        private bool isXml;
+        private bool displayApex;
+        private bool fixedWidth;
+        private bool writeBackReady;
+
     }
 
 }
